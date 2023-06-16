@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Nova Taxi App</string>
     <string name="mapbox_access_token">sk.eyJ1Ijoicm9ubnlucCIsImEiOiJjbGl4N3ZsMTYwNGt6M2d0NTVyaTFoNm56In0.nNuifke9YrTZcfs9xoZ6hg</string>
+    <string name="usuario">Usuario</string>
+    <string name="contrasena">Contraseña</string>
+    <string name="LogIn">Iniciar sesión</string>
+    <string name="DontHaveAnAccount">¿No tiene una cuenta?</string>
+    <string name="SignUp">Registrarse</string>
+    <string name="Access">Acceder</string>
 </resources>
