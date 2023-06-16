@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">NovaTaxiApp</string>
+    <string name="app_name">Nova Taxi App</string>
     <string name="mapbox_access_token">sk.eyJ1Ijoicm9ubnlucCIsImEiOiJjbGl4N3ZsMTYwNGt6M2d0NTVyaTFoNm56In0.nNuifke9YrTZcfs9xoZ6hg</string>
 </resources>
