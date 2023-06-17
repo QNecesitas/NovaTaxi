@@ -1,4 +1,16 @@
 <resources>
     <string name="app_name">Nova Taxi App</string>
     <string name="mapbox_access_token">sk.eyJ1Ijoicm9ubnlucCIsImEiOiJjbGl4N3ZsMTYwNGt6M2d0NTVyaTFoNm56In0.nNuifke9YrTZcfs9xoZ6hg</string>
+    <string name="crear_cuenta">Crear Cuenta</string>
+    <string name="nombre">Nombre de Usuario</string>
+    <string name="correo_electronico">Correo electrónico</string>
+    <string name="numero_de_telefono">Número de teléfono</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="_53">+53</string>
+    <string name="contraseña">Contraseña</string>
+    <string name="Este_campo_no_debe">Este campo no debe estar vacío</string>
+    <string name="Tiene_seguridad_guardar">¿Estás seguro de guardar estos datos?</string>
+    <string name="cancelar_cuenta">Cancelar Cuenta</string>
+    <string name="Tiene_seguridad_cancelar">¿Estás seguro de cancelar estos datos?</string>
 </resources>
