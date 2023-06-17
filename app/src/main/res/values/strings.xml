@@ -7,4 +7,20 @@
     <string name="DontHaveAnAccount">¿No tiene una cuenta?</string>
     <string name="SignUp">Registrarse</string>
     <string name="Access">Acceder</string>
+    <string name="NewPass">¿Olvido su contraseña? Precione</string>
+    <string name="here">aquí</string>
+    <string name="este_campo_no_debe_de_esta_vac_o">Este campo no debe de esta vacío</string>
+    <string name="Se_ha_producido_un_error">Se ha producido un error</string>
+    <string name="Revise_su_conexion">Revise su conexión</string>
+    <string name="Aceptar">Aceptar</string>
+    <string name="aboutDriver">Sobre el conductor</string>
+    <string name="phoneNumberS">Teléfono:</string>
+    <string name="DriverNameS">Nombre:</string>
+    <string name="DirverName">Nombre</string>
+    <string name="phoneNumber">Teléfono</string>
+    <string name="priceKmS">Precio:</string>
+    <string name="priceKm">Precio</string>
+    <string name="x_KM">por KM</string>
+    <string name="carTypeS">Tipo de carro:</string>
+    <string name="carType">Tipo de carro</string>
 </resources>
