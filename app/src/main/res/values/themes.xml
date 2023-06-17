@@ -29,9 +29,21 @@
         <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
     </style>
 
-
-    <style name="ToolbarIcons" parent="ThemeOverlay.AppCompat.ActionBar">
-        <item name="colorControlNormal">@color/md_theme_dark_scrim</item>
+    <style name="Button_redonded_filled" parent="Widget.MaterialComponents.Button">
+        <item name="shapeAppearance">@style/Shape_redonded</item>
+        <item name="strokeColor">@color/white</item>
+        <item name="strokeWidth">1sp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@android:color/black</item>
     </style>
 
+    <style name="Shape_redonded" parent="">
+        <item name="cornerSize">12sp</item>
+    </style>
+
+    <style name="CustomTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="boxBackgroundMode">none</item>
+        <item name="hintTextColor">@android:color/black</item>
+
+    </style>
 </resources>
