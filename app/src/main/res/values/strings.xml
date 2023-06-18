@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Nova Taxi App</string>
-    <string name="mapbox_access_token">sk.eyJ1Ijoicm9ubnlucCIsImEiOiJjbGl4N3ZsMTYwNGt6M2d0NTVyaTFoNm56In0.nNuifke9YrTZcfs9xoZ6hg</string>
+    <string name="mapbox_access_token">pk.eyJ1Ijoicm9ubnlucCIsImEiOiJjbGl4YTg3bDgwNHpwM2RucTlwdWFkOXN1In0.MlTnx-myS4E3LJUeh5CVbw</string>
     <string name="crear_cuenta">Crear Cuenta</string>
     <string name="nombre">Nombre de Usuario</string>
     <string name="correo_electronico">Correo electrónico</string>
@@ -13,4 +13,12 @@
     <string name="Tiene_seguridad_guardar">¿Estás seguro de guardar estos datos?</string>
     <string name="cancelar_cuenta">Cancelar Cuenta</string>
     <string name="Tiene_seguridad_cancelar">¿Estás seguro de cancelar estos datos?</string>
+    <string name="Acceder">Acceder</string>
+    <string name="correo">Correo electrónico</string>
+    <string name="contrasena">Contraseña</string>
+    <string name="Iniciar_sesion">Iniciar sesión</string>
+    <string name="No_posee_cuenta">¿No posee cuenta?</string>
+    <string name="confirmar_contraseña">Confirme su contraseña</string>
+    <string name="olvido_su_contrasena">¿Olvidó su contraseña?</string>
+    <string name="Recuperar">Recuperar</string>
 </resources>

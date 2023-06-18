@@ -4,36 +4,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CreateAccount"
-    android:background="@color/background">
+    android:background="@color/background"
+    tools:context=".Activity_CreateAccount">
 
-<!--Toolbar-->
-
+    <!--Toolbar-->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/AppBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
+        app:layout_constraintTop_toTopOf="parent">
 
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/seed"
+            android:fitsSystemWindows="true"
+            app:title="@string/crear_cuenta"
+            app:titleTextColor="@color/md_theme_light_onPrimaryContainer">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
-        android:background="@color/seed"
-        app:title="@string/crear_cuenta"
-        app:titleTextColor="@color/md_theme_light_onPrimaryContainer">
 
-
-    </androidx.appcompat.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
-    
 
+    <!--Info COntent-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -43,29 +41,29 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginStart="15dp"
             android:layout_marginTop="12dp"
-            android:layout_marginStart="15dp">
+            android:orientation="horizontal">
 
             <ImageView
-                android:layout_margin="12dp"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:src="@drawable/baseline_account_circle_24"
+                android:layout_margin="12dp"
                 android:background="@drawable/clientimage"
-                android:translationZ="8dp"
                 android:importantForAccessibility="no"
-                app:tint="?attr/colorControlNormal"/>
+                android:src="@drawable/baseline_account_circle_24"
+                android:translationZ="8dp"
+                app:tint="?attr/colorControlNormal" />
 
-              <!--UserName-->
+            <!--UserName-->
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_gravity="center_vertical"
                 android:id="@+id/TIL_name"
+                style="@style/Widget.Material3.TextInputLayout.FilledBox"
                 android:layout_width="match_parent"
-                android:layout_marginEnd="20dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:layout_marginStart="12dp"
-                style="@style/CustomTextInputLayout"
+                android:layout_marginEnd="20dp"
                 android:background="@color/white">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -74,32 +72,34 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/nombre"
                     android:inputType="textPersonName"
-                    android:maxLength="250">
+                    android:maxLength="250"
+                    android:background="@color/white">
 
                 </com.google.android.material.textfield.TextInputEditText>
 
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
+
         <!--Email-->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/TIL_email"
-            android:layout_width="wrap_content"
+            style="@style/Widget.Material3.TextInputLayout.FilledBox"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:layout_marginEnd="20dp"
-            style="@style/CustomTextInputLayout"
             android:background="@color/white">
 
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/TIET_email"
-                android:layout_width="wrap_content"
-                android:minWidth="400dp"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:hint="@string/correo_electronico"
                 android:inputType="textEmailAddress"
-                android:maxLength="250">
+                android:maxLength="250"
+                android:background="@color/white">
 
             </com.google.android.material.textfield.TextInputEditText>
         </com.google.android.material.textfield.TextInputLayout>
@@ -123,19 +123,19 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/TIL_phone"
+                style="@style/Widget.Material3.TextInputLayout.FilledBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
                 android:layout_marginStart="5dp"
+                android:layout_marginTop="12dp"
                 android:layout_marginEnd="20dp"
-                style="@style/CustomTextInputLayout"
                 android:background="@color/white">
 
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/TIET_phone"
+                    android:background="@color/white"
                     android:layout_width="match_parent"
-                    android:minWidth="250dp"
                     android:layout_height="wrap_content"
                     android:hint="@string/numero_de_telefono"
                     android:inputType="phone"
@@ -145,22 +145,23 @@
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
+
         <!--Password-->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/TIL_password"
+            style="@style/Widget.Material3.TextInputLayout.FilledBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
             android:layout_marginStart="12dp"
+            android:layout_marginTop="12dp"
             android:layout_marginEnd="20dp"
-            style="@style/CustomTextInputLayout"
             android:background="@color/white">
 
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/TIET_password"
+                android:background="@color/white"
                 android:layout_width="match_parent"
-                android:minWidth="250dp"
                 android:layout_height="wrap_content"
                 android:hint="@string/contraseña"
                 android:inputType="textPassword"
@@ -168,31 +169,57 @@
 
             </com.google.android.material.textfield.TextInputEditText>
         </com.google.android.material.textfield.TextInputLayout>
+
+        <!--COnfirm Password-->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/TIL_confirm_password"
+            style="@style/Widget.Material3.TextInputLayout.FilledBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="20dp"
+            android:background="@color/white">
+
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/TIET_confirm_password"
+                android:background="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/confirmar_contraseña"
+                android:inputType="textPassword"
+                android:maxLength="100">
+
+            </com.google.android.material.textfield.TextInputEditText>
+        </com.google.android.material.textfield.TextInputLayout>
+
     </LinearLayout>
+
     <!--Button Cancel-->
     <Button
+        android:id="@+id/cancel_account"
+        style="@style/Button_redonded_filled"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/cancelar"
         android:layout_margin="12dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        style="@style/Button_redonded_filled"
         android:backgroundTint="@color/white"
-        android:id="@+id/cancel_account">
+        android:text="@string/cancelar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
     </Button>
+
     <!--Button Accept-->
     <Button
+        android:id="@+id/accept_account"
+        style="@style/Button_redonded_filled"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/aceptar"
         android:layout_margin="12dp"
+        android:text="@string/aceptar"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        style="@style/Button_redonded_filled"
-        android:textColor="@color/white"
-        android:id="@+id/accept_account">
+        app:layout_constraintEnd_toEndOf="parent">
 
     </Button>
 

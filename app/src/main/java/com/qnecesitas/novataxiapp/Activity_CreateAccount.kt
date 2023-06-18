@@ -3,9 +3,16 @@ package com.qnecesitas.novataxiapp
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.qnecesitas.novataxiapp.databinding.ActivityCreateAccountBinding
+import com.qnecesitas.novataxiapp.modelview.CreateAccountViewModel
+import com.qnecesitas.novataxiapp.modelview.CreateAccountViewModelFactory
+import androidx.activity.viewModels
 
-class CreateAccount : AppCompatActivity() {
+class Activity_CreateAccount : AppCompatActivity() {
+
     private lateinit var binding: ActivityCreateAccountBinding
+    private val viewModel: CreateAccountViewModel by viewModels {
+        CreateAccountViewModelFactory()
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivityCreateAccountBinding.inflate(layoutInflater)
@@ -98,6 +105,7 @@ class CreateAccount : AppCompatActivity() {
         //create the alert dialog and show it
         builder.create().show()
     }
+
 
 
 }

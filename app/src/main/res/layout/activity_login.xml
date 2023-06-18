@@ -7,38 +7,47 @@
     tools:context=".Activity_Login">
 
     <!--CL Top-->
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <View
         android:id="@+id/clTop"
         android:layout_width="match_parent"
         android:layout_height="0sp"
         android:background="?attr/colorPrimary"
         android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@id/clBottom"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"/>
 
-        <!--IV Icon-->
+
+    <!--IV Icon-->
+    <androidx.cardview.widget.CardView
+        app:cardCornerRadius="@dimen/cardview_icon"
+        android:translationZ="@dimen/cardview_elevation"
+        android:elevation="@dimen/cardview_elevation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/tvLogIn">
+
         <ImageView
             android:id="@+id/ivIcon"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:layout_marginTop="50dp"
             android:src="@mipmap/ic_launcher_round"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:importantForAccessibility="no" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+    </androidx.cardview.widget.CardView>
 
     <!--TV Log In-->
     <TextView
+        android:textStyle="bold"
         android:id="@+id/tvLogIn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
-        android:text="@string/Access"
+        android:text="@string/Acceder"
         android:textColor="@color/white"
-        android:textSize="@dimen/text_h"
+        android:textSize="@dimen/text_xh"
         app:layout_constraintBottom_toTopOf="@id/cvLogin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -83,7 +92,7 @@
                     android:id="@+id/tietUser"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/usuario"
+                    android:hint="@string/correo_electronico"
                     android:inputType="text"
                     android:maxLength="20"
                     android:textColor="?attr/colorSecondary"
@@ -126,7 +135,7 @@
                 android:layout_marginTop="12dp"
                 android:backgroundTint="?attr/colorSecondary"
                 android:padding="12dp"
-                android:text="@string/LogIn"
+                android:text="@string/Iniciar_sesion"
                 android:textSize="16sp" />
 
             <!--LL Dont Have Account-->
@@ -142,7 +151,7 @@
                     android:id="@+id/tvDontHaveAccount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/DontHaveAnAccount"
+                    android:text="@string/No_posee_cuenta"
                     android:textSize="16sp" />
 
                 <TextView
@@ -150,7 +159,34 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="@string/SignUp"
+                    android:text="@string/crear_cuenta"
+                    android:textColor="?attr/colorSecondary" />
+
+
+            </LinearLayout>
+
+            <!--Forgot your password-->
+            <LinearLayout
+                android:id="@+id/llForgotPassw"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvForgotPassw"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/olvido_su_contrasena"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tvForgotPasswClick"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/Recuperar"
                     android:textColor="?attr/colorSecondary" />
 
 
@@ -162,17 +198,13 @@
 
     </androidx.cardview.widget.CardView>
 
-
     <!--CL Bottom-->
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <View
         android:id="@+id/clBottom"
         android:layout_width="match_parent"
         android:layout_height="0sp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/clTop">
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        app:layout_constraintTop_toBottomOf="@id/clTop"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

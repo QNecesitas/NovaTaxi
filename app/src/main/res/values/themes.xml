@@ -41,9 +41,5 @@
         <item name="cornerSize">12sp</item>
     </style>
 
-    <style name="CustomTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
-        <item name="boxBackgroundMode">none</item>
-        <item name="hintTextColor">@android:color/black</item>
 
-    </style>
 </resources>
