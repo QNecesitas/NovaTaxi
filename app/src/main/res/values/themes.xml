@@ -41,5 +41,9 @@
         <item name="cornerSize">12sp</item>
     </style>
 
+    <style name="ToolbarIcons" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="colorControlNormal">@color/white</item>
+    </style>
+
 
 </resources>

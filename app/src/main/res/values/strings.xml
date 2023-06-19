@@ -27,4 +27,14 @@
     <string name="Aceptar">Aceptar</string>
     <string name="Recuperar_contrasena">Recuperar contraseña</string>
     <string name="enviaremos_contrasena_correo">Enviaremos su contraseña al correo que introduzca</string>
+    <string name="sobreConductor">Sobre el conductor</string>
+    <string name="NombreCondS">Nombre:</string>
+    <string name="Nombre">Nombre</string>
+    <string name="telefonoS">Teléfono:</string>
+    <string name="telefono">Teléfono</string>
+    <string name="precioKmS">Precio:</string>
+    <string name="precioKm">Precio</string>
+    <string name="por_KM">por Km</string>
+    <string name="tipoCarS">Tipo de carro:</string>
+    <string name="tipoCar">Tipo de carro</string>
 </resources>

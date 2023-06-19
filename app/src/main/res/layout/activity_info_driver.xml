@@ -23,8 +23,8 @@
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
             android:theme="@style/ToolbarIcons"
-            app:title="@string/aboutDriver"
-            app:titleTextColor="@color/white">
+            app:title="@string/sobreConductor"
+            app:titleTextColor="@color/md_theme_light_onPrimaryContainer">
 
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
@@ -73,7 +73,7 @@
                         android:textStyle="bold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/DriverNameS"
+                        android:text="@string/NombreCondS"
                         android:textSize="@dimen/text_h"/>
 
                     <!--TV Name-->
@@ -82,7 +82,7 @@
                         android:textSize="16sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/DirverName"/>
+                        android:text="@string/Nombre"/>
 
                 </LinearLayout>
 
@@ -114,7 +114,7 @@
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:textSize="@dimen/text_h"
-                  android:text="@string/phoneNumberS"/>
+                  android:text="@string/telefonoS"/>
 
               <!--TV Phone Number-->
               <TextView
@@ -122,7 +122,7 @@
                   android:layout_marginStart="10dp"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
-                  android:text="@string/phoneNumber"
+                  android:text="@string/telefono"
                   android:textSize="16sp"/>
 
           </LinearLayout>
@@ -156,7 +156,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/text_h"
-                    android:text="@string/priceKmS"/>
+                    android:text="@string/precioKmS"/>
 
                 <!--TV Price-->
                 <TextView
@@ -164,7 +164,7 @@
                     android:layout_marginStart="10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/priceKm"
+                    android:text="@string/precioKm"
                     android:textSize="16sp"/>
 
                 <!--TV KM-->
@@ -174,7 +174,7 @@
                     android:textSize="16sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/x_KM"/>
+                    android:text="@string/por_KM"/>
 
             </LinearLayout>
 
@@ -207,7 +207,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/text_h"
-                    android:text="@string/carTypeS"/>
+                    android:text="@string/tipoCarS"/>
 
                 <!--TV Car Type-->
                 <TextView
@@ -215,7 +215,7 @@
                     android:layout_marginStart="10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/carType"
+                    android:text="@string/tipoCar"
                     android:textSize="16sp"/>
 
             </LinearLayout>
