@@ -27,4 +27,5 @@
     <string name="Aceptar">Aceptar</string>
     <string name="Recuperar_contrasena">Recuperar contraseña</string>
     <string name="enviaremos_contrasena_correo">Enviaremos su contraseña al correo que introduzca</string>
+    <string name="contraseña_no_coincide">La contraseña no coincide</string>
 </resources>

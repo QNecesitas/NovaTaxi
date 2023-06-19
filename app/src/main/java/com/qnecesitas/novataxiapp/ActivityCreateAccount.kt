@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.qnecesitas.novataxiapp.databinding.ActivityCreateAccountBinding
 import androidx.activity.viewModels
+import com.mapbox.maps.extension.style.expressions.dsl.generated.boolean
 
 class ActivityCreateAccount : AppCompatActivity() {
 
@@ -33,37 +34,54 @@ class ActivityCreateAccount : AppCompatActivity() {
     }
 
     private fun isEntryValid(): Boolean {
+        var result = true
 
         if (binding.TIETName.text.toString().trim().isNotEmpty()) {
             binding.TIETName.error = null
         } else {
             binding.TIETName.error = getString(R.string.Este_campo_no_debe)
-            return false
+            result = false
         }
 
         if (binding.TIETEmail.text.toString().trim().isNotEmpty()) {
             binding.TIETEmail.error = null
         } else {
             binding.TIETEmail.error = getString(R.string.Este_campo_no_debe)
-            return false
+            result = false
         }
 
         if (binding.TIETPhone.text.toString().trim().isNotEmpty()) {
             binding.TIETPhone.error = null
         } else {
             binding.TIETPhone.error = getString(R.string.Este_campo_no_debe)
-            return false
+            result = false
         }
 
         if (binding.TIETPassword.text.toString().trim().isNotEmpty() ) {
             binding.TIETPassword.error = null
         } else {
             binding.TIETPassword.error = getString(R.string.Este_campo_no_debe)
-            return false
+            result = false
+        }
+
+        if(binding.TIETConfirmPassword.text.toString().isNotBlank()){
+            binding.TIETConfirmPassword.error = null
+        } else {
+            binding.TIETConfirmPassword.error = getString(R.string.Este_campo_no_debe)
+            result = false
+        }
+
+        if (binding.TIETConfirmPassword.text.toString() == binding.TIETPassword.text.toString()){
+            binding.TIETConfirmPassword.error = null
+        } else {
+            binding.TIETConfirmPassword.error = getString(R.string.contraseña_no_coincide)
+            result = false
         }
 
 
-        return true
+
+
+        return result
     }
 
 
