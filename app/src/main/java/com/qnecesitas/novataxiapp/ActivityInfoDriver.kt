@@ -3,9 +3,8 @@ package com.qnecesitas.novataxiapp
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.qnecesitas.novataxiapp.databinding.ActivityInfoDriverBinding
-import com.qnecesitas.novataxiapp.databinding.ActivityLoginBinding
 
-class Activity_InfoDriver : AppCompatActivity() {
+class ActivityInfoDriver : AppCompatActivity() {
 
     private lateinit var binding: ActivityInfoDriverBinding
 

@@ -3,11 +3,11 @@ package com.qnecesitas.novataxiapp
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.qnecesitas.novataxiapp.databinding.ActivityCreateAccountBinding
-import com.qnecesitas.novataxiapp.modelview.CreateAccountViewModel
-import com.qnecesitas.novataxiapp.modelview.CreateAccountViewModelFactory
+import com.qnecesitas.novataxiapp.viewmodel.CreateAccountViewModel
+import com.qnecesitas.novataxiapp.viewmodel.CreateAccountViewModelFactory
 import androidx.activity.viewModels
 
-class Activity_CreateAccount : AppCompatActivity() {
+class ActivityCreateAccount : AppCompatActivity() {
 
     private lateinit var binding: ActivityCreateAccountBinding
     private val viewModel: CreateAccountViewModel by viewModels {

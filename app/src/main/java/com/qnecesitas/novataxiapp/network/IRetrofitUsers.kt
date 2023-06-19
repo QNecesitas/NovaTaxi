@@ -1,14 +1,19 @@
 package com.qnecesitas.novataxiapp.network
 
-import retrofit2.http.FormUrlEncoded
+import com.qnecesitas.novataxiapp.model.User
+import retrofit2.Call
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 interface IRetrofitUsers {
 
-    @FormUrlEncoded
+
     @GET("FetchUserInformation.php")
     fun getUserInformation(
-        email: String, password: String){
-    }
+        @Query("token") token: String,
+        @Query("version") version: Double,
+        @Query("email") idCategory: String,
+        @Query("password") password: String
+    ): Call<List<User>>
 
 }

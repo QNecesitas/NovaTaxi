@@ -30,7 +30,7 @@ class NetworkTools {
             //set listeners for dialog buttons
             builder.setPositiveButton(
                 R.string.Aceptar,
-                DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
+                DialogInterface.OnClickListener { dialog, _ -> dialog.dismiss() })
 
             //create the alert dialog and show it
             builder.create().show()

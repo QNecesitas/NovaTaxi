@@ -21,4 +21,8 @@
     <string name="confirmar_contraseña">Confirme su contraseña</string>
     <string name="olvido_su_contrasena">¿Olvidó su contraseña?</string>
     <string name="Recuperar">Recuperar</string>
+    <string name="usuario_o_contrase_a_incorrectos">Usuario o contraseña incorrectos</string>
+    <string name="Se_ha_producido_un_error">Se ha producido un error</string>
+    <string name="Revise_su_conexion">Revise su conexión a Internet e intente de nuevo</string>
+    <string name="Aceptar">Aceptar</string>
 </resources>

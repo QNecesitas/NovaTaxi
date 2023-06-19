@@ -13,13 +13,13 @@
         android:theme="@style/AppTheme"
         tools:targetApi="31">
         <activity
-            android:name=".Activity_InfoDriver"
+            android:name=".ActivityInfoDriver"
             android:exported="false" />
         <activity
-            android:name=".Activity_Login"
+            android:name=".ActivityLogin"
             android:exported="false" />
         <activity
-            android:name=".Activity_CreateAccount"
+            android:name=".ActivityCreateAccount"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
