@@ -39,4 +39,9 @@
     <string name="tipoCar">Tipo de carro</string>
     <string name="cantSeatS">Cantidad de asientos:</string>
     <string name="cantSeat">Cantidad</string>
+    <string name="Mapa">Mapa</string>
+    <string name="ubicaci_n">Ubicación</string>
+    <string name="destino">Destino</string>
+    <string name="pedir_taxi">Pedir Taxi</string>
+    <string name="m_s_detalles">Más detalles</string>
 </resources>
