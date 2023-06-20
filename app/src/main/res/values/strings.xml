@@ -37,4 +37,6 @@
     <string name="por_KM">por Km</string>
     <string name="tipoCarS">Tipo de carro:</string>
     <string name="tipoCar">Tipo de carro</string>
+    <string name="cantSeatS">Cantidad de asientos:</string>
+    <string name="cantSeat">Cantidad</string>
 </resources>
