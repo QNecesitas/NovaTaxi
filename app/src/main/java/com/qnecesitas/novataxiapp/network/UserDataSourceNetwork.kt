@@ -24,4 +24,14 @@ class UserDataSourceNetwork : IRetrofitUsers {
     ): Call<List<User>> {
         return productApi.getUserInformation(token, version, idCategory, password)
     }
+
+    override fun addUserInformation(
+        token: String ,
+        name: String ,
+        email: String ,
+        phone: String ,
+        password: String
+    ): Call<String> {
+        return productApi.addUserInformation(token,name,email,phone,password)
+    }
 }

@@ -26,6 +26,16 @@
             app:title="@string/crear_cuenta"
             app:titleTextColor="@color/md_theme_light_onPrimaryContainer">
 
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_margin="12sp"
+                android:visibility="gone"
+                android:id="@+id/loading_account">
+
+            </ProgressBar>
+
 
         </androidx.appcompat.widget.Toolbar>
 

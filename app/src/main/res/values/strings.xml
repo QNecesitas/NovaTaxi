@@ -38,4 +38,7 @@
     <string name="tipoCarS">Tipo de carro:</string>
     <string name="tipoCar">Tipo de carro</string>
     <string name="contraseña_no_coincide">La contraseña no coincide</string>
+    <string name="operacion_realizada_con_exito">Operación realizada con éxito</string>
+    <string name="correo_enviado">Correo enviado</string>
+    <string name="hemos_enviado_correo">Le hemos enviado un correo a %s .Por favor confirme su cuenta</string>
 </resources>
