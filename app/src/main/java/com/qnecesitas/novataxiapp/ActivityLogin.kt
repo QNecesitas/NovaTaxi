@@ -1,11 +1,17 @@
 package com.qnecesitas.novataxiapp
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.qnecesitas.novataxiapp.auxiliary.NetworkTools
 import com.qnecesitas.novataxiapp.databinding.ActivityLoginBinding
+import com.qnecesitas.novataxiapp.databinding.LiEmailToRecoverBinding
 import com.qnecesitas.novataxiapp.viewmodel.LoginViewModel
 import com.qnecesitas.novataxiapp.viewmodel.LoginViewModelFactory
 
@@ -102,8 +108,26 @@ class ActivityLogin : AppCompatActivity() {
     }
 
     private fun clickRecover(){
-
+        liRecoverPassword()
     }
 
+    private fun liRecoverPassword() {
+        val inflater = LayoutInflater.from(binding.root.context)
+        val liBinding = LiEmailToRecoverBinding.inflate(inflater)
+        val builder = AlertDialog.Builder(binding.root.context)
+        builder.setView(liBinding.root)
+        val alertDialog = builder.create()
+
+
+
+
+
+        //Finish
+        builder.setCancelable(true)
+        builder.setTitle(R.string.Recuperar_contrasena)
+        alertDialog.window!!.setGravity(Gravity.CENTER)
+        alertDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        alertDialog.show()
+    }
 
 }

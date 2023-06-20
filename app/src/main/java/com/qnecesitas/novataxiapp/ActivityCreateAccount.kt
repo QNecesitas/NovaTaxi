@@ -3,16 +3,12 @@ package com.qnecesitas.novataxiapp
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.qnecesitas.novataxiapp.databinding.ActivityCreateAccountBinding
-import com.qnecesitas.novataxiapp.viewmodel.CreateAccountViewModel
-import com.qnecesitas.novataxiapp.viewmodel.CreateAccountViewModelFactory
 import androidx.activity.viewModels
 
 class ActivityCreateAccount : AppCompatActivity() {
 
     private lateinit var binding: ActivityCreateAccountBinding
-    private val viewModel: CreateAccountViewModel by viewModels {
-        CreateAccountViewModelFactory()
-    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivityCreateAccountBinding.inflate(layoutInflater)

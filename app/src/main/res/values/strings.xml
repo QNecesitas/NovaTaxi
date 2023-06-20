@@ -25,4 +25,6 @@
     <string name="Se_ha_producido_un_error">Se ha producido un error</string>
     <string name="Revise_su_conexion">Revise su conexión a Internet e intente de nuevo</string>
     <string name="Aceptar">Aceptar</string>
+    <string name="Recuperar_contrasena">Recuperar contraseña</string>
+    <string name="enviaremos_contrasena_correo">Enviaremos su contraseña al correo que introduzca</string>
 </resources>

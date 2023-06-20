@@ -15,12 +15,14 @@ import retrofit2.Response
 
 class LoginViewModel : ViewModel() {
 
+
+
     //List user
     private val _listUsers = MutableLiveData<MutableList<User>>()
     val listUser: LiveData<MutableList<User>> get() = _listUsers
 
     //Progress state
-    enum class StateConstants {LOADING, SUCCESS, ERROR }
+    enum class StateConstants {LOADING, SUCCESS, ERROR}
     private val _state = MutableLiveData<StateConstants>()
     val state: LiveData<StateConstants> get() = _state
 
