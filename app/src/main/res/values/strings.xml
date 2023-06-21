@@ -37,4 +37,9 @@
     <string name="por_KM">por Km</string>
     <string name="tipoCarS">Tipo de carro:</string>
     <string name="tipoCar">Tipo de carro</string>
+    <string name="Correo_enviado">Correo enviado</string>
+    <string name="se_ha_enviado_contrasena">Se le ha enviado un correo con su contraseña a la dirección que proporcionó</string>
+    <string name="Enviar_contrasena">Enviar contraseña</string>
+    <string name="se_enviara_contrasena">Tiene seguridad de enviar su contraseña al correo: %s</string>
+    <string name="version_incorrecta">Nueva versión disponible en: %s</string>
 </resources>

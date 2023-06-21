@@ -8,7 +8,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.qnecesitas.novataxiapp.auxiliary.Constants
 import com.qnecesitas.novataxiapp.auxiliary.UserAccount
 import com.qnecesitas.novataxiapp.model.User
+import com.qnecesitas.novataxiapp.network.AuxiliaryDataSourceNetwork
 import com.qnecesitas.novataxiapp.network.UserDataSourceNetwork
+import com.shashank.sony.fancytoastlib.FancyToast
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -26,8 +28,22 @@ class LoginViewModel : ViewModel() {
     private val _state = MutableLiveData<StateConstants>()
     val state: LiveData<StateConstants> get() = _state
 
+    //Progress state recover
+    private val _stateRecover = MutableLiveData<StateConstants>()
+    val stateRecover: LiveData<StateConstants> get() = _stateRecover
+
+    //Progress state version
+    private val _stateVersion = MutableLiveData<StateConstants>()
+    val stateVersion: LiveData<StateConstants> get() = _stateVersion
+
+    //Version in network
+    private val _versionInNetwork = MutableLiveData<String>()
+    val versionInNetwork: LiveData<String> get() = _versionInNetwork
+
+
     //Network Data Source
     private var userDataSourceNetwork: UserDataSourceNetwork = UserDataSourceNetwork()
+    private var auxiliaryDataSourceNetwork: AuxiliaryDataSourceNetwork = AuxiliaryDataSourceNetwork()
 
 
 
@@ -68,6 +84,68 @@ class LoginViewModel : ViewModel() {
     fun saveUserInfo(user: User?, context: Context){
         user?.let { UserAccount.setUserInfo(it, context) }
     }
+
+    //Send recover petition
+    fun sendRecoverPetition(email: String){
+        _stateRecover.value = StateConstants.SUCCESS
+        val call = userDataSourceNetwork.sendRecoverPetition(
+            Constants.PHP_TOKEN,
+            Constants.APP_VERSION,
+            email
+        )
+        getResponseRecoverPetition(call)
+    }
+
+    //Get the response is operation ok
+    private fun getResponseRecoverPetition(call: Call<String>){
+        call.enqueue(object : Callback<String> {
+            override fun onResponse(
+                call: Call<String>,
+                response: Response<String>
+            ) {
+                if (response.isSuccessful) {
+                    _stateRecover.value = StateConstants.SUCCESS
+                } else {
+                    _stateRecover.value = StateConstants.ERROR
+                }
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                _stateRecover.value = StateConstants.ERROR
+            }
+        })
+    }
+
+
+    //Fetch APP_Version
+    fun getAppVersion(){
+        val call = auxiliaryDataSourceNetwork.fetchVersion(
+            Constants.APP_VERSION
+        )
+        getResponseVersion(call)
+    }
+
+    //Get the response is version ok
+    private fun getResponseVersion(call: Call<String>){
+        call.enqueue(object : Callback<String> {
+            override fun onResponse(
+                call: Call<String>,
+                response: Response<String>
+            ) {
+                if (response.isSuccessful) {
+                    _stateRecover.value = StateConstants.SUCCESS
+                } else {
+                    _stateRecover.value = StateConstants.ERROR
+                }
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                _stateRecover.value = StateConstants.ERROR
+            }
+        })
+    }
+
+
 }
 
 class LoginViewModelFactory() : ViewModelProvider.Factory {

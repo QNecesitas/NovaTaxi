@@ -12,8 +12,16 @@ interface IRetrofitUsers {
     fun getUserInformation(
         @Query("token") token: String,
         @Query("version") version: Double,
-        @Query("email") idCategory: String,
+        @Query("email") email: String,
         @Query("password") password: String
     ): Call<List<User>>
+
+
+    @GET("SendRecoverPetition.php")
+    fun sendRecoverPetition(
+        @Query("token") token: String,
+        @Query("version") version: Double,
+        @Query("email") email: String
+    ): Call<String>
 
 }
