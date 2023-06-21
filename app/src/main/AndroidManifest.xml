@@ -25,6 +25,9 @@
             android:name=".ActivityPutMap"
             android:exported="false" />
         <activity
+            android:name=".ActivityMapHome"
+            android:exported="false" />
+        <activity
             android:name=".ActivityInfoDriver"
             android:exported="false" />
         <activity

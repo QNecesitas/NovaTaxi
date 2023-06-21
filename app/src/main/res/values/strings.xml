@@ -66,4 +66,11 @@
     <string name="numero_telefono">+53 51419534</string>
     <string name="direccion_empresa">Calle 13 no203 a entre 58 y 56, Holguín, Cuba</string>
     <string name="sobre_nosotros_desc">¡Bienvenido a nuestra empresa de taxis! Nos enorgullece ofrecer un servicio de transporte seguro y confiable a nuestros clientes. Nuestros conductores están altamente capacitados y cuentan con años de experiencia en la industria del transporte. Ya sea que necesite un viaje al aeropuerto o simplemente quiera explorar la ciudad, estamos aquí para ayudarlo. En nuestra empresa, nos esforzamos por brindar un servicio excepcional a nuestros clientes. Nos aseguramos de que nuestros vehículos estén siempre limpios y bien mantenidos para garantizar su comodidad y seguridad.</string>
+    <string name="cantSeatS">Cantidad de asientos:</string>
+    <string name="cantSeat">Cantidad</string>
+    <string name="Mapa">Mapa</string>
+    <string name="ubicaci_n">Ubicación</string>
+    <string name="destino">Destino</string>
+    <string name="pedir_taxi">Pedir Taxi</string>
+    <string name="m_s_detalles">Más detalles</string>
 </resources>

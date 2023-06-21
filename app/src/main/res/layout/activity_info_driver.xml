@@ -48,12 +48,33 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!--IV Picture Driver-->
-            <ImageView
-                android:layout_marginStart="20dp"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:src="@drawable/baseline_account_circle_24"/>
+            <!--cv_image-->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cv_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:translationZ="4dp"
+                app:cardCornerRadius="4dp"
+                app:cardElevation="@dimen/cardview_elevation">
+
+                <!--IV Picture Driver-->
+                <ImageView
+                    android:background="?attr/colorSecondary"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:src="@drawable/baseline_drive_eta_24"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </androidx.cardview.widget.CardView>
+
+
 
             <!--CV Name Driver-->
             <androidx.cardview.widget.CardView
@@ -78,6 +99,7 @@
 
                     <!--TV Name-->
                     <TextView
+                        android:id="@+id/tvName"
                         android:layout_marginStart="10dp"
                         android:textSize="16sp"
                         android:layout_width="wrap_content"
@@ -95,7 +117,6 @@
         <!--CV Phone Number-->
       <androidx.cardview.widget.CardView
           android:id="@+id/cvPhoneNumber"
-          android:layout_marginTop="10dp"
           android:layout_marginEnd="10dp"
           android:layout_marginStart="10dp"
           android:layout_width="match_parent"
@@ -226,12 +247,61 @@
         </androidx.cardview.widget.CardView>
 
 
+        <!--CV Cant Seats-->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cvCantSeat"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
+            <!--LL Container-->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!--TV CantSeat-->
+                <TextView
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/text_h"
+                    android:text="@string/cantSeatS"/>
+
+                <!--TV Cant Seats-->
+                <TextView
+                    android:id="@+id/tvCantSeat"
+                    android:layout_marginStart="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cantSeat"
+                    android:textSize="16sp"/>
+
+            </LinearLayout>
+
+
+
+
+        </androidx.cardview.widget.CardView>
 
 
 
 
     </LinearLayout>
+
+    <!--Progress-->
+    <ProgressBar
+        android:id="@+id/progress"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/appBar"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 
 
