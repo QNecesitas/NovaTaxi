@@ -41,4 +41,8 @@
     <string name="operacion_realizada_con_exito">Operación realizada con éxito</string>
     <string name="correo_enviado">Correo enviado</string>
     <string name="hemos_enviado_correo">Le hemos enviado un correo a %s .Por favor confirme su cuenta</string>
+    <string name="mantenga_presionado_en_el_mapa_para_seleccionar_su_ubicaci_n">Mantenga presionado en el mapa para seleccionar su ubicación</string>
+    <string name="adicionar_localizacion">Agregar Localización</string>
+    <string name="aun_no_ubicacion">Aún no ha seleccionado su ubicación</string>
+    <string name="no_ha_añadido_su_posicion">No ha añadido su posición</string>
 </resources>
