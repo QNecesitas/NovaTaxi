@@ -7,18 +7,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.qnecesitas.novataxiapp.auxiliary.Constants
 import com.qnecesitas.novataxiapp.model.Driver
-import com.qnecesitas.novataxiapp.model.User
 import com.qnecesitas.novataxiapp.network.DriverDataSourceNetwork
-import com.qnecesitas.novataxiapp.network.UserDataSourceNetwork
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import kotlin.math.pow
+import kotlin.math.sqrt
 
-class DriverViewModel : ViewModel() {
+class MapHomeViewModel: ViewModel() {
 
     //List user
-    private val _listDriver = MutableLiveData<MutableList<Driver>>()
-    val listDriver: LiveData<MutableList<Driver>> get() = _listDriver
+    private val _listSmallDriver = MutableLiveData<MutableList<Driver>>()
+    val listSmallDriver: LiveData<MutableList<Driver>> get() = _listSmallDriver
 
     //Progress state
     enum class StateConstants { LOADING, SUCCESS, ERROR }
@@ -31,20 +31,22 @@ class DriverViewModel : ViewModel() {
 
 
     /*
-    Call and enqueue
-     */
-    //Send InfoDriver
-    fun getDriver(email: String) {
-        _state.value = DriverViewModel.StateConstants.LOADING
-        val call = driverDataSourceNetwork.getDriverInformation(
+      Call and enqueue
+       */
+    //Bring InfoDriver
+    fun getDriverProv(prov: Int, latUser: Double, longUser: Double, latCar:Double, longCar:Double) {
+        _state.value = StateConstants.LOADING
+
+        //Call
+        val call = driverDataSourceNetwork.getDriverProv(
             Constants.PHP_TOKEN,
-            email
+            prov
         )
-        getResponseInfoDriver(call)
+        getResponseInfoDriverProv(call,latUser,longUser)
     }
 
     //Get the response about the Driver info
-    private fun getResponseInfoDriver(call: Call<List<Driver>>) {
+    private fun getResponseInfoDriverProv(call: Call<List<Driver>>,latUser: Double, longUser: Double) {
         call.enqueue(object : Callback<List<Driver>> {
             override fun onResponse(
                 call: Call<List<Driver>>,
@@ -52,7 +54,8 @@ class DriverViewModel : ViewModel() {
             ) {
                 if (response.isSuccessful) {
                     _state.value = StateConstants.SUCCESS
-                    _listDriver.value = response.body()?.toMutableList()
+                    filterDriver(response.body()?.toMutableList(),latUser,longUser)
+                    Log.e("XXXXXX", listSmallDriver.value.toString())
                 } else {
                     _state.value = StateConstants.ERROR
                 }
@@ -65,18 +68,29 @@ class DriverViewModel : ViewModel() {
     }
 
 
-    /*
-    Methods
-     */
+    private fun filterDriver(alDriver: MutableList<Driver>?,latUser: Double, longUser: Double){
+        val alResult = alDriver?.filter {
+            it.maxDist < calDist(latUser ,longUser, it.lat, it.long)
+        }?.toMutableList()
+
+        _listSmallDriver.value = alResult
+    }
+
+
+    //Calculate Distance
+    private fun calDist(latUser: Double, longUser: Double, latCar:Double, longCar:Double): Double{
+        return  sqrt((latCar - latUser).pow(2.0) + (longCar - longUser).pow(2.0))
+    }
 
 
 }
 
-class DriverViewModelFactory() : ViewModelProvider.Factory {
+
+class MapHomeViewModelFactory() : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(DriverViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return DriverViewModel() as T
+            return MapHomeViewModel() as T
         }
         throw IllegalArgumentException("Unknown viewModel class")
     }

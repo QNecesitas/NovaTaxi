@@ -13,6 +13,11 @@ interface IRetrofitDriver {
         @Query("email") email: String
     ): Call<List<Driver>>
 
+    @GET("FetchDriverSmallInformation.php")
+    fun getDriverProv(
+        @Query("token") token: String,
+        @Query("prov") prov: Int
+    ): Call<List<Driver>>
 
 
 }

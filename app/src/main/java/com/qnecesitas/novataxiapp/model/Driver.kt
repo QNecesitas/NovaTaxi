@@ -6,5 +6,9 @@ data class Driver(
     val phone:String,
     val price:Double,
     val typeCar:String,
-    val cantSeat:Int
+    val cantSeat:Int,
+    val maxDist: Int,
+    val fk_prov: String,
+    val lat: Double,
+    val long: Double
 )

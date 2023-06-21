@@ -2,7 +2,6 @@ package com.qnecesitas.novataxiapp.network
 
 import com.qnecesitas.novataxiapp.auxiliary.Constants
 import com.qnecesitas.novataxiapp.model.Driver
-import com.qnecesitas.novataxiapp.model.User
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -22,6 +21,13 @@ class DriverDataSourceNetwork: IRetrofitDriver {
         email: String
     ): Call<List<Driver>> {
         return productApi.getDriverInformation(token, email)
+    }
+
+    override fun getDriverProv(
+        token: String,
+        prov: Int
+    ): Call<List<Driver>> {
+        return productApi.getDriverProv(token, prov)
     }
 
 }

@@ -70,10 +70,10 @@
                     android:id="@+id/TIET_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@color/white"
                     android:hint="@string/nombre"
                     android:inputType="textPersonName"
-                    android:maxLength="250"
-                    android:background="@color/white">
+                    android:maxLength="250">
 
                 </com.google.android.material.textfield.TextInputEditText>
 
@@ -96,10 +96,10 @@
                 android:id="@+id/TIET_email"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@color/white"
                 android:hint="@string/correo_electronico"
                 android:inputType="textEmailAddress"
-                android:maxLength="250"
-                android:background="@color/white">
+                android:maxLength="250">
 
             </com.google.android.material.textfield.TextInputEditText>
         </com.google.android.material.textfield.TextInputLayout>
@@ -134,9 +134,9 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/TIET_phone"
-                    android:background="@color/white"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@color/white"
                     android:hint="@string/numero_de_telefono"
                     android:inputType="phone"
                     android:maxLength="8">
@@ -160,9 +160,9 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/TIET_password"
-                android:background="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/white"
                 android:hint="@string/contraseña"
                 android:inputType="textPassword"
                 android:maxLength="100">
@@ -184,9 +184,9 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/TIET_confirm_password"
-                android:background="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/white"
                 android:hint="@string/confirmar_contraseña"
                 android:inputType="textPassword"
                 android:maxLength="100">

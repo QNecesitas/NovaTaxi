@@ -12,10 +12,11 @@
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/seed"
         android:fitsSystemWindows="true"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@color/seed">
+        app:layout_constraintTop_toTopOf="parent">
+
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -30,65 +31,63 @@
 
     <!--LL Container-->
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
         android:id="@+id/llContainer"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:orientation="vertical"
         android:weightSum="4"
-        app:layout_constraintTop_toBottomOf="@id/appBar"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/appBar">
 
         <!--CL Map container-->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_weight="4"
             android:layout_width="match_parent"
-            android:layout_height="0dp">
+            android:layout_height="0dp"
+            android:layout_weight="4">
 
             <!--Map-->
-            <com.mapbox.maps.MapView
-                xmlns:mapbox="http://schemas.android.com/apk/res-auto"
+            <com.mapbox.maps.MapView xmlns:mapbox="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/mapView"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                mapbox:layout_constraintBottom_toBottomOf="parent"
+                mapbox:layout_constraintTop_toTopOf="parent"
                 mapbox:mapbox_cameraTargetLat="23.1352663"
                 mapbox:mapbox_cameraTargetLng="-82.3597052665681"
-                mapbox:mapbox_cameraZoom="12.0"
-                mapbox:layout_constraintTop_toTopOf="parent"
-                mapbox:layout_constraintBottom_toBottomOf="parent" />
+                mapbox:mapbox_cameraZoom="12.0" />
 
             <!--ExtBtn Ubication User-->
             <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
                 android:id="@+id/extBtnUbicUser"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/ubicaci_n"
-                android:layout_marginTop="40dp"
                 android:layout_marginStart="20dp"
-                android:textColor="@color/gray_icon"
-                app:iconTint="@color/gray_icon"
-                app:icon="@drawable/baseline_add_location_24"
+                android:layout_marginTop="40dp"
                 android:backgroundTint="@color/white"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
+                android:text="@string/ubicaci_n"
+                android:textColor="@color/gray_icon"
+                app:icon="@drawable/baseline_add_location_24"
+                app:iconTint="@color/gray_icon"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
             </com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton>
 
 
             <!--ExtBtn Ubication Destiny-->
             <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-                android:text="@string/destino"
                 android:id="@+id/extBtnUbicDest"
-                android:textColor="@color/gray_icon"
-                app:iconTint="@color/gray_icon"
-                android:backgroundTint="@color/white"
                 android:layout_width="wrap_content"
-                app:icon="@drawable/baseline_location_on_24"
                 android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="40dp"
                 android:layout_marginEnd="20dp"
-                app:layout_constraintTop_toTopOf="parent"/>
-
+                android:backgroundTint="@color/white"
+                android:text="@string/destino"
+                android:textColor="@color/gray_icon"
+                app:icon="@drawable/baseline_location_on_24"
+                app:iconTint="@color/gray_icon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -96,23 +95,32 @@
 
         <!--CL Taxis Available container-->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:visibility="gone"
             android:id="@+id/clAvailableTaxis"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:visibility="gone">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvTaxis"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     </LinearLayout>
 
-
+    <!--Progress-->
+    <ProgressBar
+        android:id="@+id/progress"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/appBar"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
