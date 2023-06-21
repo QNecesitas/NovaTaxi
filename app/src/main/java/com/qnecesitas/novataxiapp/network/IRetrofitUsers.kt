@@ -2,7 +2,10 @@ package com.qnecesitas.novataxiapp.network
 
 import com.qnecesitas.novataxiapp.model.User
 import retrofit2.Call
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface IRetrofitUsers {
@@ -15,6 +18,17 @@ interface IRetrofitUsers {
         @Query("email") email: String,
         @Query("password") password: String
     ): Call<List<User>>
+
+    @FormUrlEncoded
+    @POST("AddUserInformation.php")
+    fun addUserInformation(
+        @Field("token") token: String,
+        @Field("name") name: String,
+        @Field("email") email: String,
+        @Field("phone") phone:String,
+        @Field("password") password: String,
+    ): Call<String>
+
 
 
     @GET("SendRecoverPetition.php")

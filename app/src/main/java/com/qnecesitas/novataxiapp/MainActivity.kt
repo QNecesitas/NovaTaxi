@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         @SuppressLint("HandlerLeak") val handler: Handler = object : Handler() {
             override fun handleMessage(message: Message) {
                 if (message.arg1 == 1) {
-                    //TODO val intent = Intent(this@MainActivity , Activity_Login::class.java)
+                    val intent = Intent(this@MainActivity , ActivityPutMap::class.java)
                     startActivity(intent)
                 }
             }

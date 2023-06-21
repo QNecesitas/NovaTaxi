@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ActivityAboutDev">
+
+    <!--Toolbar-->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/AAD_AppBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/AAD_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true"
+            android:background="@color/seed"
+            app:title="@string/sobre_desarrolladores"
+            app:titleTextColor="@color/md_theme_light_onPrimaryContainer">
+
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+
+    <!--Container Scroll-->
+    <ScrollView
+        app:layout_constraintTop_toBottomOf="@+id/AAD_AppBar"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="0sp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!--CV Logo-->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/AAD_CV_Logo"
+                android:layout_marginEnd="20sp"
+                android:layout_marginStart="20sp"
+                android:layout_marginTop="20sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="8sp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:background="@color/seed"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/AAU_CV_Logo_picture"
+                        android:layout_marginTop="20sp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:cardCornerRadius="10sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:src="@drawable/logo_qnecesitas"
+                            android:layout_width="70sp"
+                            android:layout_height="70sp"
+                            android:importantForAccessibility="no" />
+
+                    </androidx.cardview.widget.CardView>
+
+
+                    <TextView
+                        android:textColor="@color/md_theme_light_onPrimaryContainer"
+                        android:textStyle="bold"
+                        android:id="@+id/AAU_nombre_empresa"
+                        android:layout_marginTop="5sp"
+                        android:text="@string/qnecesitas"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/AAU_CV_Logo_picture"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:textColor="@color/md_theme_light_onPrimaryContainer"
+                        android:layout_marginBottom="20sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_marginTop="2sp"
+                        android:text="@string/productos_informaticos"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/AAU_nombre_empresa"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!--CV Info-->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/AAD_CV_Info"
+                app:cardCornerRadius="8sp"
+                android:layout_marginEnd="20sp"
+                android:layout_marginStart="20sp"
+                android:layout_marginTop="20sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+
+                    <!--Phone number-->
+                    <LinearLayout
+                        android:layout_marginTop="10sp"
+                        android:layout_marginStart="10sp"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:ignore="UseCompoundDrawables">
+
+                        <ImageView
+                            android:layout_width="24sp"
+                            android:layout_height="24sp"
+                            android:src="@drawable/baseline_local_phone_24"
+                            android:importantForAccessibility="no" />
+
+                        <TextView
+                            android:layout_marginStart="5sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="24sp"
+                            android:text="@string/nuestro_numero"/>
+
+
+                    </LinearLayout>
+
+
+                    <!--Email-->
+                    <LinearLayout
+                        android:layout_marginTop="8sp"
+                        android:layout_marginStart="10sp"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:ignore="UseCompoundDrawables">
+
+                        <ImageView
+                            android:layout_width="24sp"
+                            android:layout_height="24sp"
+                            android:src="@drawable/baseline_email_24"
+                            android:importantForAccessibility="no" />
+
+                        <TextView
+                            android:layout_marginStart="5sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="24sp"
+                            android:text="@string/ronnynordelo_gmail_com"/>
+
+
+                    </LinearLayout>
+
+                    <!--Location-->
+                    <LinearLayout
+                        android:layout_marginBottom="10sp"
+                        android:layout_marginTop="8sp"
+                        android:layout_marginStart="10sp"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:ignore="UseCompoundDrawables">
+
+                        <ImageView
+                            android:layout_width="24sp"
+                            android:layout_height="24sp"
+                            android:src="@drawable/fb_icon"
+                            android:importantForAccessibility="no" />
+
+                        <TextView
+                            android:autoLink="web"
+                            android:layout_marginStart="5sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="24sp"
+                            android:text="@string/https_www_facebook_com_qnecesitas_paginaprincipal"/>
+
+
+
+                    </LinearLayout>
+
+
+                    <!--web-->
+                    <LinearLayout
+                        android:layout_marginBottom="10sp"
+                        android:layout_marginTop="8sp"
+                        android:layout_marginStart="10sp"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:ignore="UseCompoundDrawables">
+
+                        <ImageView
+                            android:layout_width="24sp"
+                            android:layout_height="24sp"
+                            android:src="@drawable/web"
+                            android:importantForAccessibility="no" />
+
+                        <TextView
+                            android:autoLink="web"
+                            android:layout_marginStart="5sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="24sp"
+                            android:text="@string/qnecesitas_nat_cu"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+            </androidx.cardview.widget.CardView>
+
+
+            <!--Mision-->
+            <androidx.cardview.widget.CardView
+                android:layout_marginBottom="100sp"
+                app:cardCornerRadius="8sp"
+                android:id="@+id/AAD_CV_Mision"
+                android:layout_marginEnd="20sp"
+                android:layout_marginStart="20sp"
+                android:layout_marginTop="20sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_marginStart="10sp"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/misi_n"/>
+
+                    <TextView
+                        android:layout_marginStart="10sp"
+                        android:layout_marginTop="4sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/mision_nuestra"
+                        android:layout_marginBottom="10sp"/>
+
+                </LinearLayout>
+
+
+            </androidx.cardview.widget.CardView>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
