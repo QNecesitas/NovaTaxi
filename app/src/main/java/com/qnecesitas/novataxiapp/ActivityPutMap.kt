@@ -113,8 +113,8 @@ class ActivityPutMap : AppCompatActivity() {
 
         }else{
             val intent = Intent()
-            intent.putExtra("longitude", pointSelect!!.longitude().toString())
-            intent.putExtra("latitude", pointSelect!!.latitude().toString())
+            intent.putExtra("longitude", pointSelect!!.longitude())
+            intent.putExtra("latitude", pointSelect!!.latitude())
             setResult(Activity.RESULT_OK, intent)
             finish()
         }

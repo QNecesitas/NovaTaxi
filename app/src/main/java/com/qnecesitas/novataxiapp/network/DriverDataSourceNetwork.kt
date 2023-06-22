@@ -23,11 +23,10 @@ class DriverDataSourceNetwork: IRetrofitDriver {
         return productApi.getDriverInformation(token, email)
     }
 
-    override fun getDriverProv(
+    override fun getDriver(
         token: String,
-        prov: Int
     ): Call<List<Driver>> {
-        return productApi.getDriverProv(token, prov)
+        return productApi.getDriver(token)
     }
 
 }

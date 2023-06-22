@@ -29,18 +29,33 @@ class MapHomeViewModel: ViewModel() {
     //Network Data Source
     private var driverDataSourceNetwork: DriverDataSourceNetwork = DriverDataSourceNetwork()
 
+    //LatitudeClient
+    private val _latitudeClient = MutableLiveData<Double>()
+    val latitudeClient: LiveData<Double> get() = _latitudeClient
+
+    //LongitudeClient
+    private val _longitudeClient = MutableLiveData<Double>()
+    val longitudeClient: LiveData<Double> get() = _longitudeClient
+
+    //LatitudeDestiny
+    private val _latitudeDestiny = MutableLiveData<Double>()
+    val latitudeDestiny: LiveData<Double> get() = _latitudeDestiny
+
+    //LongitudeDestiny
+    private val _longitudeDestiny = MutableLiveData<Double>()
+    val longitudeDestiny: LiveData<Double> get() = _longitudeDestiny
+
 
     /*
       Call and enqueue
        */
     //Bring InfoDriver
-    fun getDriverProv(prov: Int, latUser: Double, longUser: Double, latCar:Double, longCar:Double) {
+    fun getDriverProv(latUser: Double, longUser: Double) {
         _state.value = StateConstants.LOADING
 
         //Call
-        val call = driverDataSourceNetwork.getDriverProv(
+        val call = driverDataSourceNetwork.getDriver(
             Constants.PHP_TOKEN,
-            prov
         )
         getResponseInfoDriverProv(call,latUser,longUser)
     }
@@ -82,13 +97,26 @@ class MapHomeViewModel: ViewModel() {
         return  sqrt((latCar - latUser).pow(2.0) + (longCar - longUser).pow(2.0))
     }
 
+    //SetLocations
+    fun setLatitudeClient(lat: Double){
+        _latitudeClient.value = lat
+    }
+    fun setLongitudeClient(long: Double){
+        _longitudeClient.value = long
+    }
+    fun setLatitudeDestiny(lat: Double){
+        _latitudeDestiny.value = lat
+    }
+    fun setLongitudeDestiny(long: Double){
+        _longitudeDestiny.value = long
+    }
 
 }
 
 
 class MapHomeViewModelFactory() : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(DriverViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(MapHomeViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return MapHomeViewModel() as T
         }
