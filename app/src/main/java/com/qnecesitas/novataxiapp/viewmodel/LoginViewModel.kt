@@ -40,6 +40,9 @@ class LoginViewModel : ViewModel() {
     private val _versionInNetwork = MutableLiveData<String>()
     val versionInNetwork: LiveData<String> get() = _versionInNetwork
 
+    //Version response
+    private val _versionResponse = MutableLiveData<String>()
+    val versionResponse: LiveData<String> get() = _versionResponse
 
     //Network Data Source
     private var userDataSourceNetwork: UserDataSourceNetwork = UserDataSourceNetwork()
@@ -133,7 +136,12 @@ class LoginViewModel : ViewModel() {
                 response: Response<String>
             ) {
                 if (response.isSuccessful) {
-                    _stateRecover.value = StateConstants.SUCCESS
+                    val result = response.body()
+                    if(result == "Success") {
+                        _stateRecover.value = StateConstants.SUCCESS
+                    }else{
+                        _versionResponse.value = result
+                    }
                 } else {
                     _stateRecover.value = StateConstants.ERROR
                 }

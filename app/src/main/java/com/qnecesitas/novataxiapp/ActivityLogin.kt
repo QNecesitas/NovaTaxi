@@ -1,7 +1,5 @@
 package com.qnecesitas.novataxiapp
 
-import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -13,7 +11,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.qnecesitas.novataxiapp.auxiliary.NetworkTools
-import com.qnecesitas.novataxiapp.auxiliary.UserAccount
 import com.qnecesitas.novataxiapp.databinding.ActivityLoginBinding
 import com.qnecesitas.novataxiapp.databinding.LiEmailToRecoverBinding
 import com.qnecesitas.novataxiapp.viewmodel.LoginViewModel
@@ -60,7 +57,8 @@ class ActivityLogin : AppCompatActivity() {
                     it?.get(0),
                     this
                 )
-                TODO( "Ir a activity maps")
+                val intent = Intent(this, ActivityMapHome::class.java)
+                startActivity(intent)
             }
         }
 
@@ -106,6 +104,10 @@ class ActivityLogin : AppCompatActivity() {
                 }
             }
         }
+
+        viewModel.versionResponse.observe(this){
+            showAlertDialogNotVersion(it)
+        }
     }
 
     private fun clickIntro(){
@@ -138,6 +140,7 @@ class ActivityLogin : AppCompatActivity() {
 
     private fun clickNewAccount(){
         val intent = Intent(this, ActivityCreateAccount::class.java)
+        startActivity(intent)
     }
 
     private fun clickRecover(){
@@ -181,15 +184,16 @@ class ActivityLogin : AppCompatActivity() {
         builder.setMessage(getString(R.string.se_enviara_contrasena, email))
         //set listeners for dialog buttons
         builder.setPositiveButton(
-            R.string.Aceptar,
-            DialogInterface.OnClickListener { dialog, _ ->
-                dialog.dismiss()
-                viewModel.sendRecoverPetition(email)
-            })
+            R.string.Aceptar
+        ) { dialog, _ ->
+            dialog.dismiss()
+            viewModel.sendRecoverPetition(email)
+        }
 
         //create the alert dialog and show it
         builder.create().show()
     }
+
     private fun showAlertDialogEmailSent() {
         //init alert dialog
         val builder = android.app.AlertDialog.Builder(this)
@@ -198,10 +202,10 @@ class ActivityLogin : AppCompatActivity() {
         builder.setMessage(getString(R.string.se_ha_enviado_contrasena))
         //set listeners for dialog buttons
         builder.setPositiveButton(
-            R.string.Aceptar,
-            DialogInterface.OnClickListener { dialog, _ ->
-                dialog.dismiss()
-            })
+            R.string.Aceptar
+        ) { dialog, _ ->
+            dialog.dismiss()
+        }
 
         //create the alert dialog and show it
         builder.create().show()
@@ -215,10 +219,10 @@ class ActivityLogin : AppCompatActivity() {
         builder.setMessage(getString(R.string.version_incorrecta, url))
         //set listeners for dialog buttons
         builder.setPositiveButton(
-            R.string.Aceptar,
-            DialogInterface.OnClickListener { dialog, _ ->
-                dialog.dismiss()
-            })
+            R.string.Aceptar
+        ) { dialog, _ ->
+            dialog.dismiss()
+        }
 
         //create the alert dialog and show it
         builder.create().show()
