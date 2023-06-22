@@ -73,4 +73,5 @@
     <string name="destino">Destino</string>
     <string name="pedir_taxi">Pedir Taxi</string>
     <string name="m_s_detalles">Más detalles</string>
+    <string name="mi_ubicaci_n">Mi ubicación</string>
 </resources>

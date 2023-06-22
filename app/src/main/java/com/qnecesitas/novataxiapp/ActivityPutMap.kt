@@ -15,25 +15,37 @@ import android.view.Gravity
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
+import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.geojson.Point
+import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
 import com.mapbox.maps.Style
+import com.mapbox.maps.extension.style.expressions.dsl.generated.interpolate
+import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
+import com.mapbox.maps.plugin.gestures.OnMoveListener
 import com.mapbox.maps.plugin.gestures.addOnMapLongClickListener
+import com.mapbox.maps.plugin.gestures.gestures
+import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener
+import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
+import com.mapbox.maps.plugin.locationcomponent.location
 import com.qnecesitas.novataxiapp.databinding.ActivityPutMapBinding
 import com.shashank.sony.fancytoastlib.FancyToast
+import java.lang.ref.WeakReference
 
 class ActivityPutMap : AppCompatActivity() {
-
     //Binding
     private lateinit var binding: ActivityPutMapBinding
 
     //Map
     private lateinit var pointAnnotationManager: PointAnnotationManager
     private var pointSelect: Point? = null
+
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,12 +125,13 @@ class ActivityPutMap : AppCompatActivity() {
 
         }else{
             val intent = Intent()
-            intent.putExtra("longitude", pointSelect!!.longitude().toString())
-            intent.putExtra("latitude", pointSelect!!.latitude().toString())
+            intent.putExtra("longitude", pointSelect!!.longitude())
+            intent.putExtra("latitude", pointSelect!!.latitude())
             setResult(Activity.RESULT_OK, intent)
             finish()
         }
     }
+
 
 
 
