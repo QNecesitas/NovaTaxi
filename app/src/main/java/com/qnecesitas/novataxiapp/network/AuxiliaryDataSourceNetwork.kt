@@ -14,7 +14,7 @@ class AuxiliaryDataSourceNetwork : IRetrofitAuxiliary {
         .build()
 
     private val productApi: IRetrofitAuxiliary = retrofit.create(IRetrofitAuxiliary::class.java)
-    override fun fetchVersion(version: Double): Call<String> {
+    override fun fetchVersion(version: String): Call<String> {
         return productApi.fetchVersion(version)
     }
 

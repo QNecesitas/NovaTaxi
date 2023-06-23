@@ -14,7 +14,7 @@ interface IRetrofitUsers {
     @GET("FetchUserInformation.php")
     fun getUserInformation(
         @Query("token") token: String,
-        @Query("version") version: Double,
+        @Query("version") version: String,
         @Query("email") email: String,
         @Query("password") password: String
     ): Call<List<User>>
@@ -34,7 +34,7 @@ interface IRetrofitUsers {
     @GET("SendRecoverPetition.php")
     fun sendRecoverPetition(
         @Query("token") token: String,
-        @Query("version") version: Double,
+        @Query("version") version: String,
         @Query("email") email: String
     ): Call<String>
 

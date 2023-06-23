@@ -11,6 +11,7 @@ import com.qnecesitas.novataxiapp.viewmodel.DriverViewModelFactory
 import com.qnecesitas.novataxiapp.viewmodel.LoginViewModel
 import com.qnecesitas.novataxiapp.viewmodel.LoginViewModelFactory
 
+@Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
 class ActivityInfoDriver : AppCompatActivity() {
 
     //Binding
