@@ -65,8 +65,6 @@ class ActivityPutMap : AppCompatActivity() {
     }
 
 
-
-
     private fun addAnnotationToMap(point: Point) {
         bitmapFromDrawableRes(
             this@ActivityPutMap,

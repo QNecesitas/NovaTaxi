@@ -34,7 +34,7 @@
     <string name="telefono">Teléfono</string>
     <string name="precioKmS">Precio:</string>
     <string name="precioKm">Precio</string>
-    <string name="por_KM">por Km</string>
+    <string name="por_KM">CUP por Km</string>
     <string name="tipoCarS">Tipo de carro:</string>
     <string name="tipoCar">Tipo de carro</string>
     <string name="Correo_enviado">Correo enviado</string>
@@ -74,4 +74,13 @@
     <string name="pedir_taxi">Pedir Taxi</string>
     <string name="m_s_detalles">Más detalles</string>
     <string name="errorObtenerUbic">Error al obtener la ubicación</string>
+    <string name="NoCarroEncontrado">No hay autos disponibles</string>
+    <string name="NoCarro">No encontramos algún taxi disponible.</string>
+    <string name="salir">Salir</string>
+    <string name="seguro_desea_salir">Realmente desea salir de la aplicación</string>
+    <string name="Si">Si</string>
+    <string name="no">No</string>
+    <string name="ConfirmTaxi">Confirmar</string>
+    <string name="SeguroPedirTaxi">¿Usted está seguro de pedir este taxi?</string>
+    <string name="Cancelar">Cancelar</string>
 </resources>

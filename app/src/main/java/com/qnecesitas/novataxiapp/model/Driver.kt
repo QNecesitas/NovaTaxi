@@ -8,7 +8,6 @@ data class Driver(
     val typeCar:String,
     val cantSeat:Int,
     val maxDist: Int,
-    val fk_prov: String,
-    val lat: Double,
-    val long: Double
+    val latitude: Double,
+    val longitude: Double
 )
