@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
@@ -28,6 +29,10 @@ import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.mapbox.maps.plugin.gestures.addOnMapLongClickListener
 import com.qnecesitas.novataxiapp.databinding.ActivityPutMapBinding
+import com.qnecesitas.novataxiapp.viewmodel.MapHomeViewModel
+import com.qnecesitas.novataxiapp.viewmodel.MapHomeViewModelFactory
+import com.qnecesitas.novataxiapp.viewmodel.PutMapViewModel
+import com.qnecesitas.novataxiapp.viewmodel.PutMapViewModelFactory
 import com.shashank.sony.fancytoastlib.FancyToast
 
 
@@ -38,6 +43,11 @@ class ActivityPutMap : AppCompatActivity() {
     //Map
     private lateinit var pointAnnotationManager: PointAnnotationManager
     private var pointSelect: Point? = null
+
+    //ViewModel
+    private val viewModel: PutMapViewModel by viewModels {
+        PutMapViewModelFactory()
+    }
 
 
 
@@ -59,8 +69,9 @@ class ActivityPutMap : AppCompatActivity() {
         pointAnnotationManager = annotationApi.createPointAnnotationManager()
         binding.mapView.getMapboxMap().loadStyleUri(Style.MAPBOX_STREETS)
         binding.mapView.getMapboxMap().addOnMapLongClickListener {
-                point ->
-            addAnnotationToMap(point)
+
+        val point = Point.fromLngLat(it.longitude(), it.latitude())
+            addAnnotationToMap(point, R.drawable.marker_map)
 
             true
         }
@@ -90,18 +101,32 @@ class ActivityPutMap : AppCompatActivity() {
     }
 
 
-    private fun addAnnotationToMap(point: Point) {
+    private fun addAnnotationToMap(point: Point, @DrawableRes drawable: Int) {
         bitmapFromDrawableRes(
             this@ActivityPutMap,
-            R.drawable.marker_map
+            drawable
         )?.let {
             val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
                 .withPoint(point)
                 .withIconImage(it)
                 .withIconSize(2.0)
-            pointAnnotationManager.deleteAll()
             pointAnnotationManager.create(pointAnnotationOptions)
-            pointSelect = point
+            if(drawable == R.drawable.marker_map){
+                if(viewModel.pointUbic.value == null){
+                    viewModel.setPointUbic(pointAnnotationManager.annotations.last())
+                }else{
+                    pointAnnotationManager.delete(viewModel.pointUbic.value!!)
+                    viewModel.setPointUbic(pointAnnotationManager.annotations.last())
+                }
+            }
+            if(drawable == R.drawable.baseline_blur_circular_24) {
+                if (viewModel.pointGPS.value == null) {
+                    viewModel.setPointGPS(pointAnnotationManager.annotations.last())
+                } else {
+                    pointAnnotationManager.delete(viewModel.pointGPS.value!!)
+                    viewModel.setPointGPS(pointAnnotationManager.annotations.last())
+                }
+            }
 
         }
     }
@@ -148,6 +173,8 @@ class ActivityPutMap : AppCompatActivity() {
             this@ActivityPutMap.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val locationListener: LocationListener = object : LocationListener {
             override fun onLocationChanged(location: Location) {
+                val point = Point.fromLngLat(location.longitude,location.latitude)
+                addAnnotationToMap(point, R.drawable.baseline_blur_circular_24)
 
 
 

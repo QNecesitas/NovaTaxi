@@ -64,5 +64,6 @@
     <color name="white">#FFFFFF</color>
     <color name="background">#F2F2F2</color>
     <color name="gray_icon">#6D6D6D</color>
+    <color name="blue_ubic">#2196F3</color>
 
 </resources>
