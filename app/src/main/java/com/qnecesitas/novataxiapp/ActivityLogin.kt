@@ -1,11 +1,10 @@
 package com.qnecesitas.novataxiapp
 
-import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +12,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.qnecesitas.novataxiapp.auxiliary.NetworkTools
-import com.qnecesitas.novataxiapp.auxiliary.UserAccount
 import com.qnecesitas.novataxiapp.databinding.ActivityLoginBinding
 import com.qnecesitas.novataxiapp.databinding.LiEmailToRecoverBinding
 import com.qnecesitas.novataxiapp.viewmodel.LoginViewModel
@@ -60,7 +58,8 @@ class ActivityLogin : AppCompatActivity() {
                     it?.get(0),
                     this
                 )
-                TODO( "Ir a activity maps")
+                val intent = Intent(this, ActivityMapHome::class.java)
+                startActivity(intent)
             }
         }
 
@@ -91,6 +90,7 @@ class ActivityLogin : AppCompatActivity() {
         }
 
         viewModel.stateVersion.observe(this){
+            Log.i("TEST","OK")
             when(it){
                 LoginViewModel.StateConstants.LOADING -> binding.progress.visibility = View.VISIBLE
                 LoginViewModel.StateConstants.SUCCESS -> {
@@ -105,6 +105,10 @@ class ActivityLogin : AppCompatActivity() {
                     binding.progress.visibility = View.GONE
                 }
             }
+        }
+
+        viewModel.versionResponse.observe(this){
+            showAlertDialogNotVersion(it)
         }
     }
 
@@ -138,6 +142,7 @@ class ActivityLogin : AppCompatActivity() {
 
     private fun clickNewAccount(){
         val intent = Intent(this, ActivityCreateAccount::class.java)
+        startActivity(intent)
     }
 
     private fun clickRecover(){
@@ -181,15 +186,16 @@ class ActivityLogin : AppCompatActivity() {
         builder.setMessage(getString(R.string.se_enviara_contrasena, email))
         //set listeners for dialog buttons
         builder.setPositiveButton(
-            R.string.Aceptar,
-            DialogInterface.OnClickListener { dialog, _ ->
-                dialog.dismiss()
-                viewModel.sendRecoverPetition(email)
-            })
+            R.string.Aceptar
+        ) { dialog, _ ->
+            dialog.dismiss()
+            viewModel.sendRecoverPetition(email)
+        }
 
         //create the alert dialog and show it
         builder.create().show()
     }
+
     private fun showAlertDialogEmailSent() {
         //init alert dialog
         val builder = android.app.AlertDialog.Builder(this)
@@ -198,10 +204,10 @@ class ActivityLogin : AppCompatActivity() {
         builder.setMessage(getString(R.string.se_ha_enviado_contrasena))
         //set listeners for dialog buttons
         builder.setPositiveButton(
-            R.string.Aceptar,
-            DialogInterface.OnClickListener { dialog, _ ->
-                dialog.dismiss()
-            })
+            R.string.Aceptar
+        ) { dialog, _ ->
+            dialog.dismiss()
+        }
 
         //create the alert dialog and show it
         builder.create().show()
@@ -211,18 +217,34 @@ class ActivityLogin : AppCompatActivity() {
         //init alert dialog
         val builder = android.app.AlertDialog.Builder(this)
         builder.setCancelable(true)
-        builder.setTitle(R.string.Correo_enviado)
+        builder.setTitle(R.string.Version_desactualizada)
         builder.setMessage(getString(R.string.version_incorrecta, url))
         //set listeners for dialog buttons
         builder.setPositiveButton(
-            R.string.Aceptar,
-            DialogInterface.OnClickListener { dialog, _ ->
-                dialog.dismiss()
-            })
+            R.string.Aceptar
+        ) { dialog, _ ->
+            dialog.dismiss()
+        }
 
         //create the alert dialog and show it
         builder.create().show()
     }
 
+    private fun showAlertDialogNotConfirmed() {
+        //init alert dialog
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setCancelable(true)
+        builder.setTitle(R.string.Correo_no_confirmado)
+        builder.setMessage(getString(R.string.confirme_su_correo))
+        //set listeners for dialog buttons
+        builder.setPositiveButton(
+            R.string.Aceptar
+        ) { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        //create the alert dialog and show it
+        builder.create().show()
+    }
 
 }

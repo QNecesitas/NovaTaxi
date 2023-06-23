@@ -175,6 +175,7 @@ class ActivityMapHome : AppCompatActivity() {
             ).show()
         }
     }
+        //binding.extBtnUbicDest.setOnClickListener{ viewModel.getDriverProv() }
 
     fun locationDestAccept(result: ActivityResult){
         if (result.resultCode == Activity.RESULT_OK){

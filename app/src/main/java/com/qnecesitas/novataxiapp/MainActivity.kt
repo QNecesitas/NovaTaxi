@@ -10,14 +10,16 @@ import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
-    private val TIEMPO_DE_ESPERA: Long = 2000
+    private val delayTime: Long = 2000
+
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(/* layoutResID = */ R.layout.activity_main)
-        val escondedor = window.decorView
-        escondedor.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE
+        val decorator = window.decorView
+        decorator.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE
                 or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -30,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         @SuppressLint("HandlerLeak") val handler: Handler = object : Handler() {
             override fun handleMessage(message: Message) {
                 if (message.arg1 == 1) {
-                    val intent = Intent(this@MainActivity, ActivityMapHome::class.java)
+                    val intent = Intent(this@MainActivity, ActivityLogin::class.java)
                     startActivity(intent)
                 }
             }
@@ -43,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         //Thread
         val thread = Thread {
             try {
-                Thread.sleep(TIEMPO_DE_ESPERA)
+                Thread.sleep(delayTime)
             } catch (e: Exception) {
                 e.printStackTrace()
             }

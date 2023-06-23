@@ -41,7 +41,7 @@
     <string name="se_ha_enviado_contrasena">Se le ha enviado un correo con su contraseña a la dirección que proporcionó</string>
     <string name="Enviar_contrasena">Enviar contraseña</string>
     <string name="se_enviara_contrasena">Tiene seguridad de enviar su contraseña al correo: %s</string>
-    <string name="version_incorrecta">Nueva versión disponible en: %s</string>
+    <string name="version_incorrecta">Descargue la nueva versión disponible en: %s</string>
     <string name="contraseña_no_coincide">La contraseña no coincide</string>
     <string name="operacion_realizada_con_exito">Operación realizada con éxito</string>
     <string name="correo_enviado">Correo enviado</string>
@@ -83,4 +83,7 @@
     <string name="ConfirmTaxi">Confirmar</string>
     <string name="SeguroPedirTaxi">¿Usted está seguro de pedir este taxi?</string>
     <string name="Cancelar">Cancelar</string>
+    <string name="Version_desactualizada">Versión desactualizada</string>
+    <string name="Correo_no_confirmado">Correo no confirmado</string>
+    <string name="confirme_su_correo">Confirme su correo para continuar. Si está teniendo problemas en esto, comuníquese al: +5355759386</string>
 </resources>

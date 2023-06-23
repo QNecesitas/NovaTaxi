@@ -13,7 +13,7 @@ class Constants {
         const val PHP_TOKEN = "NovaTaxi_325"
 
         //Version
-        const val APP_VERSION = 1.0
+        const val APP_VERSION = "1.0"
 
     }
 
