@@ -63,5 +63,4 @@ dependencies {
     implementation ('com.mapbox.maps:android:10.14.0'){
         exclude group: 'group_name', module: 'module_name'
     }
-    implementation("com.google.android.gms:play-services-location:21.0.1")
 }

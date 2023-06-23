@@ -63,7 +63,8 @@
                     android:background="?attr/colorSecondary"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
-                    android:src="@drawable/baseline_drive_eta_24"/>
+                    android:src="@drawable/baseline_drive_eta_24"
+                    android:contentDescription="@string/foto_del_conductor" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="wrap_content"

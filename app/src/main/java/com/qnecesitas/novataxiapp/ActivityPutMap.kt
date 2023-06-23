@@ -1,40 +1,33 @@
 package com.qnecesitas.novataxiapp
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.Gravity
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
-import com.mapbox.android.gestures.MoveGestureDetector
+import androidx.core.app.ActivityCompat
 import com.mapbox.geojson.Point
-import com.mapbox.maps.CameraOptions
-import com.mapbox.maps.MapView
 import com.mapbox.maps.Style
-import com.mapbox.maps.extension.style.expressions.dsl.generated.interpolate
-import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
-import com.mapbox.maps.plugin.gestures.OnMoveListener
 import com.mapbox.maps.plugin.gestures.addOnMapLongClickListener
-import com.mapbox.maps.plugin.gestures.gestures
-import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener
-import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
-import com.mapbox.maps.plugin.locationcomponent.location
 import com.qnecesitas.novataxiapp.databinding.ActivityPutMapBinding
 import com.shashank.sony.fancytoastlib.FancyToast
-import java.lang.ref.WeakReference
+
 
 class ActivityPutMap : AppCompatActivity() {
     //Binding
@@ -72,7 +65,9 @@ class ActivityPutMap : AppCompatActivity() {
         binding.addLocation.setOnClickListener{
             addLocation()
         }
-
+        binding.realTimeButton.setOnClickListener{
+            getLocationRealtime()
+        }
 
     }
 
@@ -121,7 +116,7 @@ class ActivityPutMap : AppCompatActivity() {
     private fun addLocation(){
 
         if(pointSelect == null){
-            FancyToast.makeText(this,getString(R.string.no_ha_añadido_su_posicion),FancyToast.LENGTH_LONG,FancyToast.WARNING,false,).show()
+            FancyToast.makeText(this,getString(R.string.no_ha_añadido_su_posicion),FancyToast.LENGTH_LONG,FancyToast.WARNING,false).show()
 
         }else{
             val intent = Intent()
@@ -132,7 +127,29 @@ class ActivityPutMap : AppCompatActivity() {
         }
     }
 
+    private fun getLocationRealtime(){
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        if ( ActivityCompat.checkSelfPermission(
+                this ,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            Toast.makeText(this@ActivityPutMap, "Lat: ${location?.latitude}", Toast.LENGTH_LONG).show()
+            val locationListener = object : LocationListener {
+                override fun onLocationChanged(location2: Location) {
+                   Toast.makeText(this@ActivityPutMap, "Lat: ${location2.latitude}", Toast.LENGTH_LONG).show()
+                }
+                override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+            }
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, locationListener)
 
+        } else {
 
+            Toast.makeText(this@ActivityPutMap, "Permiso", Toast.LENGTH_LONG).show()
+            null
+        }
+    }
 
 }
