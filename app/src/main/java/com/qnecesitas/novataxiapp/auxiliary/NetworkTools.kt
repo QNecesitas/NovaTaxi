@@ -35,6 +35,7 @@ class NetworkTools {
             //create the alert dialog and show it
             builder.create().show()
         }
+
     }
 
 }

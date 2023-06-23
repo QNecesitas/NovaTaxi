@@ -1,18 +1,21 @@
 package com.qnecesitas.novataxiapp.viewmodel
 
+import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.mapbox.geojson.Point
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
 import com.qnecesitas.novataxiapp.auxiliary.Constants
 import com.qnecesitas.novataxiapp.model.Driver
 import com.qnecesitas.novataxiapp.network.DriverDataSourceNetwork
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import kotlin.math.pow
-import kotlin.math.sqrt
+import kotlin.math.*
+
 
 class MapHomeViewModel: ViewModel() {
 
@@ -44,6 +47,13 @@ class MapHomeViewModel: ViewModel() {
     //LongitudeDestiny
     private val _longitudeDestiny = MutableLiveData<Double>()
     val longitudeDestiny: LiveData<Double> get() = _longitudeDestiny
+
+    //Points
+    private val _pointUbic = MutableLiveData<PointAnnotation>()
+    val pointUbic: LiveData<PointAnnotation> get() = _pointUbic
+
+    private val _pointDest = MutableLiveData<PointAnnotation>()
+    val pointDest: LiveData<PointAnnotation> get() = _pointDest
 
 
     /*
@@ -85,16 +95,22 @@ class MapHomeViewModel: ViewModel() {
 
     private fun filterDriver(alDriver: MutableList<Driver>?,latUser: Double, longUser: Double){
         val alResult = alDriver?.filter {
-            it.maxDist < calDist(latUser ,longUser, it.lat, it.long)
+            it.maxDist > calDist(latUser ,longUser, it.latitude, it.longitude)
         }?.toMutableList()
 
         _listSmallDriver.value = alResult
+        Log.e("lol",_listSmallDriver.value.toString())
     }
 
 
     //Calculate Distance
-    private fun calDist(latUser: Double, longUser: Double, latCar:Double, longCar:Double): Double{
+    private fun calDit(latUser: Double, longUser: Double, latCar:Double, longCar:Double): Double{
         return  sqrt((latCar - latUser).pow(2.0) + (longCar - longUser).pow(2.0))
+    }
+
+    private fun calDist(latUser: Double, longUser: Double, latCar: Double, longCar: Double): Double {
+        Log.e("lol",((Math.sqrt((latUser - latCar) * (latUser - latCar) + (longUser - longCar) * (longUser - longCar)) + 0.004) * 100.0).toString())
+           return ((Math.sqrt((latUser - latCar) * (latUser - latCar) + (longUser - longCar) * (longUser - longCar)) + 0.004) * 100.0)
     }
 
     //SetLocations
@@ -109,6 +125,14 @@ class MapHomeViewModel: ViewModel() {
     }
     fun setLongitudeDestiny(long: Double){
         _longitudeDestiny.value = long
+    }
+
+    //SetPoints
+    fun setPointUbic(point: PointAnnotation){
+        _pointUbic.value = point
+    }
+    fun setPointDest(point: PointAnnotation){
+        _pointDest.value = point
     }
 
 }
