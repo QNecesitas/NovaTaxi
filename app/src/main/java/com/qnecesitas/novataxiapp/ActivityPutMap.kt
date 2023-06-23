@@ -14,10 +14,12 @@ import android.location.LocationListener
 import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.mapbox.geojson.Point
 import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.annotation.annotations
@@ -67,6 +69,22 @@ class ActivityPutMap : AppCompatActivity() {
         }
         binding.realTimeButton.setOnClickListener{
             getLocationRealtime()
+        }
+
+
+
+        val permissionCheck:Int =ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)
+
+        if(permissionCheck == PackageManager.PERMISSION_DENIED){
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.ACCESS_FINE_LOCATION)){
+
+            }else{
+                ActivityCompat.requestPermissions(
+                    this , arrayOf<String>(
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) , 1
+                )
+            }
         }
 
     }
@@ -128,28 +146,25 @@ class ActivityPutMap : AppCompatActivity() {
     }
 
     private fun getLocationRealtime(){
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        if ( ActivityCompat.checkSelfPermission(
-                this ,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-            val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-            Toast.makeText(this@ActivityPutMap, "Lat: ${location?.latitude}", Toast.LENGTH_LONG).show()
-            val locationListener = object : LocationListener {
-                override fun onLocationChanged(location2: Location) {
-                   Toast.makeText(this@ActivityPutMap, "Lat: ${location2.latitude}", Toast.LENGTH_LONG).show()
-                }
-                override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+        val locationManager =
+            this@ActivityPutMap.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val locationListener: LocationListener = object : LocationListener {
+            override fun onLocationChanged(location: Location) {
+
+
+
             }
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, locationListener)
-
-        } else {
-
-            Toast.makeText(this@ActivityPutMap, "Permiso", Toast.LENGTH_LONG).show()
-            null
+            override fun onStatusChanged(provider: String , status: Int , extras: Bundle) {}
+            override fun onProviderEnabled(provider: String) {}
+            override fun onProviderDisabled(provider: String) {}
         }
+        val permissionCheck:Int =ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)
+        locationManager.requestLocationUpdates(
+            LocationManager.NETWORK_PROVIDER ,
+            0 ,
+            0f ,
+            locationListener
+        )
     }
 
 }
