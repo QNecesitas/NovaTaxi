@@ -86,7 +86,6 @@ class LoginViewModel : ViewModel() {
 
     //Send recover petition
     fun sendRecoverPetition(email: String){
-        _stateRecover.value = StateConstants.SUCCESS
         val call = userDataSourceNetwork.sendRecoverPetition(
             Constants.PHP_TOKEN,
             Constants.APP_VERSION,
