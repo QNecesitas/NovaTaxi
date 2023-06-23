@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -89,6 +90,7 @@ class ActivityLogin : AppCompatActivity() {
         }
 
         viewModel.stateVersion.observe(this){
+            Log.i("TEST","OK")
             when(it){
                 LoginViewModel.StateConstants.LOADING -> binding.progress.visibility = View.VISIBLE
                 LoginViewModel.StateConstants.SUCCESS -> {
@@ -215,7 +217,7 @@ class ActivityLogin : AppCompatActivity() {
         //init alert dialog
         val builder = android.app.AlertDialog.Builder(this)
         builder.setCancelable(true)
-        builder.setTitle(R.string.Correo_enviado)
+        builder.setTitle(R.string.Version_desactualizada)
         builder.setMessage(getString(R.string.version_incorrecta, url))
         //set listeners for dialog buttons
         builder.setPositiveButton(
@@ -228,5 +230,21 @@ class ActivityLogin : AppCompatActivity() {
         builder.create().show()
     }
 
+    private fun showAlertDialogNotConfirmed() {
+        //init alert dialog
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setCancelable(true)
+        builder.setTitle(R.string.Correo_no_confirmado)
+        builder.setMessage(getString(R.string.confirme_su_correo))
+        //set listeners for dialog buttons
+        builder.setPositiveButton(
+            R.string.Aceptar
+        ) { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        //create the alert dialog and show it
+        builder.create().show()
+    }
 
 }
