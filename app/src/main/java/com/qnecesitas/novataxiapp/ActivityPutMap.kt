@@ -1,22 +1,26 @@
 package com.qnecesitas.novataxiapp
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.mapbox.geojson.Point
-import com.mapbox.maps.MapView
 import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
@@ -26,14 +30,17 @@ import com.mapbox.maps.plugin.gestures.addOnMapLongClickListener
 import com.qnecesitas.novataxiapp.databinding.ActivityPutMapBinding
 import com.shashank.sony.fancytoastlib.FancyToast
 
-class ActivityPutMap : AppCompatActivity() {
 
+class ActivityPutMap : AppCompatActivity() {
     //Binding
     private lateinit var binding: ActivityPutMapBinding
 
     //Map
     private lateinit var pointAnnotationManager: PointAnnotationManager
     private var pointSelect: Point? = null
+
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +67,25 @@ class ActivityPutMap : AppCompatActivity() {
         binding.addLocation.setOnClickListener{
             addLocation()
         }
+        binding.realTimeButton.setOnClickListener{
+            getLocationRealtime()
+        }
 
+
+
+        val permissionCheck:Int =ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)
+
+        if(permissionCheck == PackageManager.PERMISSION_DENIED){
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.ACCESS_FINE_LOCATION)){
+
+            }else{
+                ActivityCompat.requestPermissions(
+                    this , arrayOf<String>(
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) , 1
+                )
+            }
+        }
 
     }
 
@@ -107,7 +132,7 @@ class ActivityPutMap : AppCompatActivity() {
     private fun addLocation(){
 
         if(pointSelect == null){
-            FancyToast.makeText(this,getString(R.string.no_ha_añadido_su_posicion),FancyToast.LENGTH_LONG,FancyToast.WARNING,false,).show()
+            FancyToast.makeText(this,getString(R.string.no_ha_añadido_su_posicion),FancyToast.LENGTH_LONG,FancyToast.WARNING,false).show()
 
         }else{
             val intent = Intent()
@@ -118,6 +143,26 @@ class ActivityPutMap : AppCompatActivity() {
         }
     }
 
+    private fun getLocationRealtime(){
+        val locationManager =
+            this@ActivityPutMap.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val locationListener: LocationListener = object : LocationListener {
+            override fun onLocationChanged(location: Location) {
 
+
+
+            }
+            override fun onStatusChanged(provider: String , status: Int , extras: Bundle) {}
+            override fun onProviderEnabled(provider: String) {}
+            override fun onProviderDisabled(provider: String) {}
+        }
+        val permissionCheck:Int =ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)
+        locationManager.requestLocationUpdates(
+            LocationManager.NETWORK_PROVIDER ,
+            0 ,
+            0f ,
+            locationListener
+        )
+    }
 
 }

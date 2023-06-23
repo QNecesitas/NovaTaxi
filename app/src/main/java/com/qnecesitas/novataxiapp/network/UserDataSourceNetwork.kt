@@ -27,10 +27,9 @@ class UserDataSourceNetwork : IRetrofitUsers {
 
     override fun sendRecoverPetition(
         token: String,
-        version: String,
         email: String
     ): Call<String> {
-        return productApi.sendRecoverPetition(token,version, email)
+        return productApi.sendRecoverPetition(token, email)
     }
 
     override fun addUserInformation(

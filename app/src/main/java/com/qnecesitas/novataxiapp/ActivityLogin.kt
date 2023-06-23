@@ -6,12 +6,15 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.qnecesitas.novataxiapp.auxiliary.NetworkTools
+import com.qnecesitas.novataxiapp.auxiliary.UserAccount
 import com.qnecesitas.novataxiapp.databinding.ActivityLoginBinding
 import com.qnecesitas.novataxiapp.databinding.LiEmailToRecoverBinding
 import com.qnecesitas.novataxiapp.viewmodel.LoginViewModel
@@ -48,18 +51,12 @@ class ActivityLogin : AppCompatActivity() {
             clickIntro()
         }
 
-
         //Observers
         viewModel.listUser.observe(this) {
             if (it?.isEmpty() == true) {
                 binding.tietPassword.error = getString(R.string.usuario_o_contrase_a_incorrectos)
             } else {
-                viewModel.saveUserInfo(
-                    it?.get(0),
-                    this
-                )
-                val intent = Intent(this, ActivityMapHome::class.java)
-                startActivity(intent)
+                checkStateAndGo(it[0].state)
             }
         }
 
@@ -112,7 +109,10 @@ class ActivityLogin : AppCompatActivity() {
         }
     }
 
+    //Click in Start Session
     private fun clickIntro(){
+        val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(binding.tietPassword.windowToken , 0)
         if(isInformationGood()){
             if(NetworkTools.isOnline(this, true)) {
                 viewModel.getAppVersion()
@@ -120,6 +120,7 @@ class ActivityLogin : AppCompatActivity() {
         }
     }
 
+    //Check if the information is blank
     private fun isInformationGood(): Boolean{
         var result = true
 
@@ -140,11 +141,35 @@ class ActivityLogin : AppCompatActivity() {
         return result
     }
 
+    //Check the state of the account
+    private fun checkStateAndGo(state: String){
+        when (state){
+            "await" -> showAlertDialogNotConfirmed()
+            "accepted" -> {
+                viewModel.saveUserInfo(
+                    viewModel.listUser.value?.get(0),
+                    this
+                )
+                val intent = Intent(this, ActivityMapHome::class.java)
+                startActivity(intent)
+            }
+            "blocked" -> showAlertDialogBlocked()
+        }
+    }
+
+
+
+
+    //Click in create new Account
     private fun clickNewAccount(){
         val intent = Intent(this, ActivityCreateAccount::class.java)
         startActivity(intent)
     }
 
+
+
+
+    //Click in recover option
     private fun clickRecover(){
         liRecoverPassword()
     }
@@ -163,7 +188,7 @@ class ActivityLogin : AppCompatActivity() {
 
         liBinding.btnAccept.setOnClickListener {
             if(liBinding.tiet.text.toString().isNotBlank()){
-                showAlertDialogConfirmEmail(liBinding.tiet.toString())
+                showAlertDialogConfirmEmail(liBinding.tiet.text.toString())
             }else{
                 liBinding.tiet.error = getString(R.string.Este_campo_no_debe)
             }
@@ -178,6 +203,9 @@ class ActivityLogin : AppCompatActivity() {
         alertDialog.show()
     }
 
+
+
+
     private fun showAlertDialogConfirmEmail(email: String) {
         //init alert dialog
         val builder = android.app.AlertDialog.Builder(this)
@@ -190,6 +218,12 @@ class ActivityLogin : AppCompatActivity() {
         ) { dialog, _ ->
             dialog.dismiss()
             viewModel.sendRecoverPetition(email)
+        }
+
+        builder.setNegativeButton(
+            R.string.cancelar
+        ) { dialog, _ ->
+            dialog.dismiss()
         }
 
         //create the alert dialog and show it
@@ -243,6 +277,51 @@ class ActivityLogin : AppCompatActivity() {
             dialog.dismiss()
         }
 
+        //create the alert dialog and show it
+        builder.create().show()
+    }
+
+    private fun showAlertDialogBlocked() {
+        //init alert dialog
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setCancelable(true)
+        builder.setTitle(R.string.Cuenta_bloqueada)
+        builder.setMessage(getString(R.string.No_podra_usar_app))
+        //set listeners for dialog buttons
+        builder.setPositiveButton(
+            R.string.Aceptar
+        ) { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        //create the alert dialog and show it
+        builder.create().show()
+    }
+
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        showAlertDialogExit()
+    }
+
+    private fun showAlertDialogExit() {
+        //init alert dialog
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setCancelable(false)
+        builder.setTitle(R.string.salir)
+        builder.setMessage(R.string.seguro_desea_salir)
+        //set listeners for dialog buttons
+        builder.setPositiveButton(R.string.Si) { _, _ ->
+            //finish the activity
+            val intent = Intent(Intent.ACTION_MAIN)
+            intent.addCategory(Intent.CATEGORY_HOME)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+        }
+        builder.setNegativeButton(R.string.No) { dialog, _ ->
+            //dialog gone
+            dialog.dismiss()
+        }
         //create the alert dialog and show it
         builder.create().show()
     }

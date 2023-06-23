@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
-            android:background="@color/seed"
+            android:background="@color/md_theme_light_primaryContainer"
             app:title="@string/sobre_desarrolladores"
             app:titleTextColor="@color/md_theme_light_onPrimaryContainer">
 
@@ -51,7 +51,7 @@
                 app:cardCornerRadius="8sp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:background="@color/seed"
+                    android:background="@color/md_theme_light_primaryContainer"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 

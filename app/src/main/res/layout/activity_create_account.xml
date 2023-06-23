@@ -21,7 +21,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/seed"
+            android:background="@color/md_theme_light_primaryContainer"
             android:fitsSystemWindows="true"
             app:title="@string/crear_cuenta"
             app:titleTextColor="@color/md_theme_light_onPrimaryContainer">
@@ -41,7 +41,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!--Info COntent-->
+    <!--Info Content-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -180,7 +180,7 @@
             </com.google.android.material.textfield.TextInputEditText>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!--COnfirm Password-->
+        <!--Confirm Password-->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/TIL_confirm_password"
             style="@style/Widget.Material3.TextInputLayout.FilledBox"

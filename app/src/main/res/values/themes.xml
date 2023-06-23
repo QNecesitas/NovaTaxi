@@ -42,7 +42,7 @@
     </style>
 
     <style name="ToolbarIcons" parent="ThemeOverlay.AppCompat.ActionBar">
-        <item name="colorControlNormal">@color/white</item>
+        <item name="colorControlNormal">@android:color/black</item>
     </style>
 
 

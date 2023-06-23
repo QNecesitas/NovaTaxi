@@ -34,7 +34,6 @@ interface IRetrofitUsers {
     @GET("SendRecoverPetition.php")
     fun sendRecoverPetition(
         @Query("token") token: String,
-        @Query("version") version: String,
         @Query("email") email: String
     ): Call<String>
 

@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
-            android:background="@color/seed"
+            android:background="@color/md_theme_light_primaryContainer"
             app:title="Mapa"
             app:titleTextColor="@color/md_theme_light_onPrimaryContainer" />
     </com.google.android.material.appbar.AppBarLayout>
@@ -49,9 +49,9 @@
         android:id="@+id/mapView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        mapbox:mapbox_cameraTargetLat="23.1352663"
-        mapbox:mapbox_cameraTargetLng="-82.3597052665681"
-        mapbox:mapbox_cameraZoom="12.0"
+        mapbox:mapbox_cameraTargetLat="20.886953"
+        mapbox:mapbox_cameraTargetLng="-76.2593"
+        mapbox:mapbox_cameraZoom="13.5"
         mapbox:layout_constraintTop_toBottomOf="@+id/ASM_CL_aclarar_mant_pulsado"
         mapbox:layout_constraintBottom_toBottomOf="parent"
 
@@ -61,11 +61,26 @@
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10sp"
-        android:layout_marginBottom="10sp"
+        android:layout_marginStart="12sp"
+        android:layout_marginBottom="12sp"
         android:text="@string/adicionar_localizacion"
         app:icon="@drawable/baseline_location_on_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:id="@+id/add_location"/>
+
+
+        <ImageView
+            android:id="@+id/realTimeButton"
+            android:padding="4dp"
+            android:translationZ="12dp"
+            android:background="@drawable/clientimage"
+            android:layout_margin="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/add_location"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/baseline_gps_fixed_24"
+            android:contentDescription="@string/mi_ubicaci_n" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

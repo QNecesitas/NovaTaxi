@@ -76,14 +76,19 @@
     <string name="errorObtenerUbic">Error al obtener la ubicación</string>
     <string name="NoCarroEncontrado">No hay autos disponibles</string>
     <string name="NoCarro">No encontramos algún taxi disponible.</string>
-    <string name="salir">Salir</string>
-    <string name="seguro_desea_salir">Realmente desea salir de la aplicación</string>
-    <string name="Si">Si</string>
     <string name="no">No</string>
     <string name="ConfirmTaxi">Confirmar</string>
     <string name="SeguroPedirTaxi">¿Usted está seguro de pedir este taxi?</string>
     <string name="Cancelar">Cancelar</string>
     <string name="Version_desactualizada">Versión desactualizada</string>
     <string name="Correo_no_confirmado">Correo no confirmado</string>
-    <string name="confirme_su_correo">Confirme su correo para continuar. Si está teniendo problemas en esto, comuníquese al: +5355759386</string>
+    <string name="confirme_su_correo">Confirme el correo que le hemos enviado para continuar. Si está teniendo problemas en esto, comuníquese al: +5355759386</string>
+    <string name="Cuenta_bloqueada">Cuenta bloqueada</string>
+    <string name="No_podra_usar_app">Por términos de seguridad y legales su cuenta ha sido bloqueada</string>
+    <string name="Si">Sí</string>
+    <string name="No">No</string>
+    <string name="salir">Salir</string>
+    <string name="seguro_desea_salir">¿Desea salir de la aplicación?</string>
+    <string name="mi_ubicaci_n">Mi ubicación</string>
+    <string name="foto_del_conductor">Foto del conductor</string>
 </resources>

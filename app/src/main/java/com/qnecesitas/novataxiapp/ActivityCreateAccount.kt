@@ -1,7 +1,6 @@
 package com.qnecesitas.novataxiapp
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -11,6 +10,7 @@ import com.qnecesitas.novataxiapp.auxiliary.NetworkTools
 import com.qnecesitas.novataxiapp.viewmodel.CreateAccountViewModel
 import com.qnecesitas.novataxiapp.viewmodel.CreateAccountViewModelFactory
 
+@Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
 class ActivityCreateAccount : AppCompatActivity() {
 
     //Binding
@@ -114,7 +114,7 @@ class ActivityCreateAccount : AppCompatActivity() {
 
       //Message Date Correct
     private fun showAlertConfirm() {
-        val builder = android.app.AlertDialog.Builder(this)
+        val builder = AlertDialog.Builder(this)
         builder.setCancelable(true)
             .setTitle(getString(R.string.crear_cuenta))
             .setMessage(getString(R.string.Tiene_seguridad_guardar))
@@ -132,7 +132,7 @@ class ActivityCreateAccount : AppCompatActivity() {
 
      //Message Cancel
     private fun showAlertCancel() {
-        val builder = android.app.AlertDialog.Builder(this)
+        val builder = AlertDialog.Builder(this)
         builder.setCancelable(true)
             .setTitle(getString(R.string.cancelar_cuenta))
             .setMessage(getString(R.string.Tiene_seguridad_cancelar))
@@ -159,7 +159,7 @@ class ActivityCreateAccount : AppCompatActivity() {
     }
 
      //Message Confirm Email
-    fun showAlertDialogSuccess(email :String) {
+     private fun showAlertDialogSuccess(email :String) {
         //init alert dialog
         val builder = AlertDialog.Builder(this)
         builder.setCancelable(true)
@@ -167,13 +167,13 @@ class ActivityCreateAccount : AppCompatActivity() {
         builder.setMessage(getString(R.string.hemos_enviado_correo,email))
         //set listeners for dialog buttons
         builder.setPositiveButton(
-            R.string.Aceptar,
-            DialogInterface.OnClickListener { dialog , _ ->
-                dialog.dismiss()
-                finish()
-            })
+            R.string.Aceptar
+        ) { dialog , _ ->
+            dialog.dismiss()
+            finish()
+        }
 
-        //create the alert dialog and show it
+         //create the alert dialog and show it
         builder.create().show()
     }
 
