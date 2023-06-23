@@ -10,7 +10,7 @@ interface IRetrofitAuxiliary {
 
     @GET("FetchVersion.php")
     fun fetchVersion(
-        @Query("version") version: Double,
+        @Query("version") version: String,
     ): Call<String>
 
 

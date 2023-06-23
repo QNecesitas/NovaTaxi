@@ -61,7 +61,7 @@ class ActivityMapHome : AppCompatActivity() {
         //Map
         binding.mapView?.getMapboxMap()?.loadStyleUri(Style.MAPBOX_STREETS)
 
-        binding.extBtnUbicDest.setOnClickListener{ viewModel.getDriverProv() }
+        //binding.extBtnUbicDest.setOnClickListener{ viewModel.getDriverProv() }
 
     }
 

@@ -1,6 +1,7 @@
 package com.qnecesitas.novataxiapp.viewmodel
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,7 +11,6 @@ import com.qnecesitas.novataxiapp.auxiliary.UserAccount
 import com.qnecesitas.novataxiapp.model.User
 import com.qnecesitas.novataxiapp.network.AuxiliaryDataSourceNetwork
 import com.qnecesitas.novataxiapp.network.UserDataSourceNetwork
-import com.shashank.sony.fancytoastlib.FancyToast
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -35,10 +35,6 @@ class LoginViewModel : ViewModel() {
     //Progress state version
     private val _stateVersion = MutableLiveData<StateConstants>()
     val stateVersion: LiveData<StateConstants> get() = _stateVersion
-
-    //Version in network
-    private val _versionInNetwork = MutableLiveData<String>()
-    val versionInNetwork: LiveData<String> get() = _versionInNetwork
 
     //Version response
     private val _versionResponse = MutableLiveData<String>()
@@ -138,12 +134,13 @@ class LoginViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     val result = response.body()
                     if(result == "Success") {
-                        _stateRecover.value = StateConstants.SUCCESS
+                        Log.i("TEST", "OK")
+                        _stateVersion.value = StateConstants.SUCCESS
                     }else{
                         _versionResponse.value = result
                     }
                 } else {
-                    _stateRecover.value = StateConstants.ERROR
+                    _stateVersion.value = StateConstants.ERROR
                 }
             }
 
@@ -156,7 +153,7 @@ class LoginViewModel : ViewModel() {
 
 }
 
-class LoginViewModelFactory() : ViewModelProvider.Factory {
+class LoginViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
