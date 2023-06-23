@@ -70,8 +70,8 @@ class ActivityPutMap : AppCompatActivity() {
         binding.mapView.getMapboxMap().loadStyleUri(Style.MAPBOX_STREETS)
         binding.mapView.getMapboxMap().addOnMapLongClickListener {
 
-        val point = Point.fromLngLat(it.longitude(), it.latitude())
-            addAnnotationToMap(point, R.drawable.marker_map)
+            val point = Point.fromLngLat(it.longitude() , it.latitude())
+            addAnnotationToMap(point , R.drawable.marker_map)
 
             true
         }
