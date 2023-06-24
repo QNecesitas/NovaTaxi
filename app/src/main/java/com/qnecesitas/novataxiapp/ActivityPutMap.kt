@@ -14,8 +14,6 @@ import android.location.LocationListener
 import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
@@ -29,8 +27,6 @@ import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.mapbox.maps.plugin.gestures.addOnMapLongClickListener
 import com.qnecesitas.novataxiapp.databinding.ActivityPutMapBinding
-import com.qnecesitas.novataxiapp.viewmodel.MapHomeViewModel
-import com.qnecesitas.novataxiapp.viewmodel.MapHomeViewModelFactory
 import com.qnecesitas.novataxiapp.viewmodel.PutMapViewModel
 import com.qnecesitas.novataxiapp.viewmodel.PutMapViewModelFactory
 import com.shashank.sony.fancytoastlib.FancyToast
@@ -49,7 +45,8 @@ class ActivityPutMap : AppCompatActivity() {
         PutMapViewModelFactory()
     }
 
-
+    //Permissions
+    private val permissionCode = 34
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -102,7 +99,7 @@ class ActivityPutMap : AppCompatActivity() {
 
 
     private fun addAnnotationToMap(point: Point, @DrawableRes drawable: Int) {
-        bitmapFromDrawableRes(
+        viewModel.bitmapFromDrawableRes(
             this@ActivityPutMap,
             drawable
         )?.let {
@@ -112,11 +109,11 @@ class ActivityPutMap : AppCompatActivity() {
                 .withIconSize(2.0)
             pointAnnotationManager.create(pointAnnotationOptions)
             if(drawable == R.drawable.marker_map){
-                if(viewModel.pointUbic.value == null){
-                    viewModel.setPointUbic(pointAnnotationManager.annotations.last())
+                if(viewModel.pointLocation.value == null){
+                    viewModel.setPointLocation(pointAnnotationManager.annotations.last())
                 }else{
-                    pointAnnotationManager.delete(viewModel.pointUbic.value!!)
-                    viewModel.setPointUbic(pointAnnotationManager.annotations.last())
+                    pointAnnotationManager.delete(viewModel.pointLocation.value!!)
+                    viewModel.setPointLocation(pointAnnotationManager.annotations.last())
                 }
             }
             if(drawable == R.drawable.baseline_blur_circular_24) {
@@ -131,28 +128,6 @@ class ActivityPutMap : AppCompatActivity() {
         }
     }
 
-    private fun bitmapFromDrawableRes(context: Context , @DrawableRes resourceId: Int) =
-        convertDrawableToBitmap(AppCompatResources.getDrawable(context, resourceId))
-
-    private fun convertDrawableToBitmap(sourceDrawable: Drawable?): Bitmap? {
-        if (sourceDrawable == null) {
-            return null
-        }
-        return if (sourceDrawable is BitmapDrawable) {
-            sourceDrawable.bitmap
-        } else {
-            val constantState = sourceDrawable.constantState ?: return null
-            val drawable = constantState.newDrawable().mutate()
-            val bitmap: Bitmap = Bitmap.createBitmap(
-                drawable.intrinsicWidth, drawable.intrinsicHeight,
-                Bitmap.Config.ARGB_8888
-            )
-            val canvas = Canvas(bitmap)
-            drawable.setBounds(0, 0, canvas.width, canvas.height)
-            drawable.draw(canvas)
-            bitmap
-        }
-    }
     //Add Location
     private fun addLocation(){
 
@@ -168,28 +143,41 @@ class ActivityPutMap : AppCompatActivity() {
         }
     }
 
-    private fun getLocationRealtime(){
+    private fun getLocationRealtime() {
         val locationManager =
             this@ActivityPutMap.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val locationListener: LocationListener = object : LocationListener {
             override fun onLocationChanged(location: Location) {
-                val point = Point.fromLngLat(location.longitude,location.latitude)
+                val point = Point.fromLngLat(location.longitude, location.latitude)
                 addAnnotationToMap(point, R.drawable.baseline_blur_circular_24)
 
 
-
             }
-            override fun onStatusChanged(provider: String , status: Int , extras: Bundle) {}
+
+            @Deprecated("Deprecated in Java")
+            override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {
+            }
+
             override fun onProviderEnabled(provider: String) {}
             override fun onProviderDisabled(provider: String) {}
         }
-        val permissionCheck:Int =ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)
-        locationManager.requestLocationUpdates(
-            LocationManager.NETWORK_PROVIDER ,
-            0 ,
-            0f ,
-            locationListener
-        )
+
+        val permissionCheck: Int =
+            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            locationManager.requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER,
+                0,
+                0f,
+                locationListener
+            )
+        } else {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                permissionCode
+            )
+        }
     }
 
 }
