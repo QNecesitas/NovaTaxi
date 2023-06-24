@@ -21,6 +21,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.mapbox.geojson.Point
 import com.mapbox.maps.Style
+import com.mapbox.maps.extension.style.expressions.dsl.generated.get
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
@@ -83,17 +84,7 @@ class ActivityPutMap : AppCompatActivity() {
 
         val permissionCheck:Int =ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)
 
-        if(permissionCheck == PackageManager.PERMISSION_DENIED){
-            if(ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.ACCESS_FINE_LOCATION)){
-
-            }else{
-                ActivityCompat.requestPermissions(
-                    this , arrayOf<String>(
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ) , 1
-                )
-            }
-        }
+        getLocationRealtime()
 
     }
 
