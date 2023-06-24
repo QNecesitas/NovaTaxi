@@ -1,13 +1,25 @@
 package com.qnecesitas.novataxiapp.viewmodel
 
-import android.content.Intent
+import android.content.Context
+import android.location.Location
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonParser
+import com.mapbox.api.directions.v5.models.Bearing
+import com.mapbox.api.directions.v5.models.RouteOptions
 import com.mapbox.geojson.Point
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
+import com.mapbox.navigation.base.extensions.applyDefaultNavigationOptions
+import com.mapbox.navigation.base.extensions.applyLanguageAndVoiceUnitOptions
+import com.mapbox.navigation.base.route.NavigationRoute
+import com.mapbox.navigation.base.route.NavigationRouterCallback
+import com.mapbox.navigation.base.route.RouterFailure
+import com.mapbox.navigation.base.route.RouterOrigin
+import com.mapbox.navigation.core.MapboxNavigation
 import com.qnecesitas.novataxiapp.auxiliary.Constants
 import com.qnecesitas.novataxiapp.model.Driver
 import com.qnecesitas.novataxiapp.network.DriverDataSourceNetwork
@@ -104,10 +116,6 @@ class MapHomeViewModel: ViewModel() {
 
 
     //Calculate Distance
-    private fun calDit(latUser: Double, longUser: Double, latCar:Double, longCar:Double): Double{
-        return  sqrt((latCar - latUser).pow(2.0) + (longCar - longUser).pow(2.0))
-    }
-
     private fun calDist(latUser: Double, longUser: Double, latCar: Double, longCar: Double): Double {
         Log.e("lol",((Math.sqrt((latUser - latCar) * (latUser - latCar) + (longUser - longCar) * (longUser - longCar)) + 0.004) * 100.0).toString())
            return ((Math.sqrt((latUser - latCar) * (latUser - latCar) + (longUser - longCar) * (longUser - longCar)) + 0.004) * 100.0)
@@ -134,6 +142,73 @@ class MapHomeViewModel: ViewModel() {
     fun setPointDest(point: PointAnnotation){
         _pointDest.value = point
     }
+
+
+    fun fetchARoute(context: Context,mapboxNavigation: MapboxNavigation) {
+
+        //Declarations
+        val originPoint = Point.fromLngLat(
+            longitudeClient.value!!,
+            latitudeClient.value!!
+        )
+
+        val destPoint = Point.fromLngLat(
+            longitudeDestiny.value!!,
+            latitudeDestiny.value!!
+        )
+
+        val originLocation = Location("test").apply {
+            longitude = longitudeClient.value!!
+            latitude =  latitudeClient.value!!
+            bearing = 10f
+        }
+
+        val routeOptions = RouteOptions.builder()
+            .applyDefaultNavigationOptions()
+            .applyLanguageAndVoiceUnitOptions(context)
+            .coordinatesList(listOf(originPoint,destPoint))
+            .alternatives(false)
+            .bearingsList(
+                listOf(
+                    Bearing.builder()
+                        .angle(originLocation.bearing.toDouble())
+                        .degrees(45.0)
+                        .build(),
+                    null
+                )
+            )
+            .build()
+        mapboxNavigation.requestRoutes(
+            routeOptions,
+            object : NavigationRouterCallback {
+                override fun onCanceled(routeOptions: RouteOptions, routerOrigin: RouterOrigin) {
+// This particular callback is executed if you invoke
+// mapboxNavigation.cancelRouteRequest()
+                }
+
+                override fun onFailure(reasons: List<RouterFailure>, routeOptions: RouteOptions) {
+
+                }
+
+                override fun onRoutesReady(
+                    routes: List<NavigationRoute>,
+                    routerOrigin: RouterOrigin
+                ) {
+// GSON instance used only to print the response prettily
+                    val gson = GsonBuilder().setPrettyPrinting().create()
+                    val json = routes.map {
+                        gson.toJson(
+                            JsonParser.parseString(it.directionsRoute.toJson())
+                        )
+                    }
+                    Log.e("tusae", json.toString())
+
+                }
+            }
+        )
+
+    }
+
 
 }
 

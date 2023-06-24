@@ -12,7 +12,6 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -20,6 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
+import com.mapbox.api.directions.v5.models.RouteOptions
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapView
 import com.mapbox.maps.Style
@@ -27,6 +27,24 @@ import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
+import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
+import com.mapbox.maps.plugin.locationcomponent.location
+import com.mapbox.navigation.base.options.NavigationOptions
+import com.mapbox.navigation.base.route.NavigationRoute
+import com.mapbox.navigation.base.route.NavigationRouterCallback
+import com.mapbox.navigation.base.route.RouterFailure
+import com.mapbox.navigation.base.route.RouterOrigin
+import com.mapbox.navigation.base.trip.model.RouteProgress
+import com.mapbox.navigation.core.MapboxNavigation
+import com.mapbox.navigation.core.lifecycle.MapboxNavigationApp
+import com.mapbox.navigation.core.lifecycle.requireMapboxNavigation
+import com.mapbox.navigation.core.trip.session.RouteProgressObserver
+import com.mapbox.navigation.ui.maps.route.arrow.api.MapboxRouteArrowApi
+import com.mapbox.navigation.ui.maps.route.arrow.api.MapboxRouteArrowView
+import com.mapbox.navigation.ui.maps.route.arrow.model.RouteArrowOptions
+import com.mapbox.navigation.ui.maps.route.line.api.MapboxRouteLineApi
+import com.mapbox.navigation.ui.maps.route.line.api.MapboxRouteLineView
+import com.mapbox.navigation.ui.maps.route.line.model.MapboxRouteLineOptions
 import com.qnecesitas.novataxiapp.adapters.DriverAdapter
 import com.qnecesitas.novataxiapp.auxiliary.NetworkTools
 import com.qnecesitas.novataxiapp.databinding.ActivityMapHomeBinding
@@ -53,9 +71,26 @@ class ActivityMapHome : AppCompatActivity() {
     private lateinit var resultLauncherUbic: ActivityResultLauncher<Intent>
     private lateinit var resultLauncherDest: ActivityResultLauncher<Intent>
 
-    private val tokenMap = "sk.eyJ1Ijoicm9ubnlucCIsImEiOiJjbGl4N3ZsMTYwNGt6M2d0NTVyaTFoNm56In0.nNuifke9YrTZcfs9xoZ6hg"
 
+    val routeLineOptions = MapboxRouteLineOptions.Builder(this).build()
+    val routeLineView = MapboxRouteLineView(routeLineOptions)
+    val routeLineApi = MapboxRouteLineApi(routeLineOptions)
 
+    val annotationApi = binding.mapView.annotations
+
+    val onPositionChangedListener = OnIndicatorPositionChangedListener { point ->
+        val result = routeLineApi.updateTraveledRouteLine(point)
+        routeLineView.renderRouteLineUpdate(binding.mapView.getMapboxMap().getStyle()!!, result)
+    }
+    //MapBox
+    private val mapboxNavigation: MapboxNavigation by requireMapboxNavigation(
+        onInitialize = this::initNavigation
+    )
+
+    //Arrow
+    val routeArrow = MapboxRouteArrowApi()
+    val routeArrowOptions = RouteArrowOptions.Builder(this).build()
+    val routeArrowView = MapboxRouteArrowView(routeArrowOptions)
 
     /*
     On Create
@@ -64,6 +99,7 @@ class ActivityMapHome : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMapHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
 
 
         //Recycler
@@ -82,11 +118,14 @@ class ActivityMapHome : AppCompatActivity() {
             }
 
 
+
         //Observers
         viewModel.listSmallDriver.observe(this) {
             if(viewModel.listSmallDriver.value?.isNotEmpty() == true){
                 driverAdapter.submitList(viewModel.listSmallDriver.value)
                 binding.clAvailableTaxis.visibility = View.VISIBLE
+                viewModel.fetchARoute(this,mapboxNavigation)
+                drawRute()
             }else{
                 driverAdapter.submitList(viewModel.listSmallDriver.value)
                 binding.clAvailableTaxis.visibility = View.GONE
@@ -105,6 +144,15 @@ class ActivityMapHome : AppCompatActivity() {
             }
         }
 
+        val routeProgressObserver = RouteProgressObserver { routeProgress ->
+            routeLineApi.updateWithRouteProgress(routeProgress) { result ->
+                routeLineView.renderRouteLineUpdate(binding.mapView.getMapboxMap()
+                    .getStyle()!!, result)
+            }
+        }
+
+        mapView?.location?.addOnIndicatorPositionChangedListener(onPositionChangedListener)
+
         //Map
         binding.mapView.getMapboxMap().loadStyleUri(Style.MAPBOX_STREETS)
 
@@ -113,7 +161,6 @@ class ActivityMapHome : AppCompatActivity() {
         binding.extBtnUbicDest.setOnClickListener{ getUserDest() }
 
         //Add Map Event
-        val annotationApi = binding.mapView.annotations
         pointAnnotationManager = annotationApi.createPointAnnotationManager()
 
         //Recycler Listeners
@@ -133,7 +180,14 @@ class ActivityMapHome : AppCompatActivity() {
 
     }
 
-
+    //init
+    private fun initNavigation() {
+        MapboxNavigationApp.setup(
+            NavigationOptions.Builder(this)
+                .accessToken(getString(R.string.mapbox_access_token))
+                .build()
+        )
+    }
 
 
     //Get Locations
@@ -245,11 +299,6 @@ class ActivityMapHome : AppCompatActivity() {
 
 
 
-    // Calcula la ruta utilizando la API de direcciones de Mapbox
-    fun calRute(){
-    }
-
-
 
     //Methods Maps
     private fun addAnnotationToMap(point: Point, @DrawableRes drawable: Int) {
@@ -261,22 +310,22 @@ class ActivityMapHome : AppCompatActivity() {
                 .withPoint(point)
                 .withIconImage(it)
                 .withIconSize(2.0)
-            pointAnnotationManager.create(pointAnnotationOptions)
+            val pointAnnotation = pointAnnotationManager.create(pointAnnotationOptions)
 
             if(drawable == R.drawable.baseline_person_pin_24){
                 if(viewModel.pointUbic.value == null){
-                    viewModel.setPointUbic(pointAnnotationManager.annotations.last())
+                    viewModel.setPointUbic(pointAnnotation)
                 }else{
                     pointAnnotationManager.delete(viewModel.pointUbic.value!!)
-                    viewModel.setPointUbic(pointAnnotationManager.annotations.last())
+                    viewModel.setPointUbic(pointAnnotation)
                 }
             }
             if(drawable == R.drawable.marker_map) {
                 if (viewModel.pointDest.value == null) {
-                    viewModel.setPointDest(pointAnnotationManager.annotations.last())
+                    viewModel.setPointDest(pointAnnotation)
                 } else {
                     pointAnnotationManager.delete(viewModel.pointDest.value!!)
-                    viewModel.setPointDest(pointAnnotationManager.annotations.last())
+                    viewModel.setPointDest(pointAnnotation)
                 }
             }
         }
@@ -305,9 +354,41 @@ class ActivityMapHome : AppCompatActivity() {
         }
     }
 
+    private fun drawRute(){
+        val routerCallback = object : NavigationRouterCallback {
+
+            val routeLineOptions = MapboxRouteLineOptions
+                .Builder(this@ActivityMapHome)
+                .withVanishingRouteLineEnabled(true)
+                .withRouteLineBelowLayerId("road-label")
+                .build()
 
 
+            val routeProgressObserver = object : RouteProgressObserver {
+                override fun onRouteProgressChanged(routeProgress: RouteProgress) {
+                    val updatedManeuverArrow = routeArrow.addUpcomingManeuverArrow(routeProgress)
+                    routeArrowView.renderManeuverUpdate(binding.mapView.getMapboxMap().getStyle()!!
+                        , updatedManeuverArrow)
+                }
+            }
 
+            override fun onRoutesReady(routes: List<NavigationRoute>, routerOrigin: RouterOrigin) {
+                // note: the first route in the list is considered the primary route
+                routeLineApi.setNavigationRoutes(routes) { value ->
+                    routeLineView.renderRouteDrawData(binding.mapView.getMapboxMap().getStyle()!!
+                        , value)
+                }
+
+            }
+
+            override fun onFailure(reasons: List<RouterFailure>, routeOptions: RouteOptions) {
+            }
+
+            override fun onCanceled(routeOptions: RouteOptions, routerOrigin: RouterOrigin) {
+            }
+
+        }
+    }
 
     //Exit Apk
     @Deprecated("Deprecated in Java")

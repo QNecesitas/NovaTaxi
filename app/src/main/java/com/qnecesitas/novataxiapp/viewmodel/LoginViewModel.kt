@@ -88,7 +88,6 @@ class LoginViewModel : ViewModel() {
     fun sendRecoverPetition(email: String){
         val call = userDataSourceNetwork.sendRecoverPetition(
             Constants.PHP_TOKEN,
-            Constants.APP_VERSION,
             email
         )
         getResponseRecoverPetition(call)

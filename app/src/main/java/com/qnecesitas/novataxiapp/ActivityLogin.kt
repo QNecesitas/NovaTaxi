@@ -4,9 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -87,7 +85,6 @@ class ActivityLogin : AppCompatActivity() {
         }
 
         viewModel.stateVersion.observe(this){
-            Log.i("TEST","OK")
             when(it){
                 LoginViewModel.StateConstants.LOADING -> binding.progress.visibility = View.VISIBLE
                 LoginViewModel.StateConstants.SUCCESS -> {
