@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="?attr/colorSurface"
     tools:context=".ActivityCreateAccount">
 
     <!--Toolbar-->
@@ -18,13 +18,14 @@
 
 
         <androidx.appcompat.widget.Toolbar
+            android:background="?attr/colorPrimary"
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/md_theme_light_primaryContainer"
             android:fitsSystemWindows="true"
+            android:theme="@style/ToolbarIcons"
             app:title="@string/crear_cuenta"
-            app:titleTextColor="@color/md_theme_light_onPrimaryContainer">
+            app:titleTextColor="?attr/colorOnPrimary">
 
             <ProgressBar
                 android:layout_width="wrap_content"
@@ -74,13 +75,13 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="12dp"
                 android:layout_marginEnd="20dp"
-                android:background="@color/white">
+                android:background="?attr/colorSurface">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/TIET_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/white"
+                    android:background="?attr/colorSurface"
                     android:hint="@string/nombre"
                     android:inputType="textPersonName"
                     android:maxLength="250">
@@ -99,14 +100,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:layout_marginEnd="20dp"
-            android:background="@color/white">
+            android:background="?attr/colorSurface">
 
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/TIET_email"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/white"
+                android:background="?attr/colorSurface"
                 android:hint="@string/correo_electronico"
                 android:inputType="textEmailAddress"
                 android:maxLength="250">
@@ -139,14 +140,14 @@
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="20dp"
-                android:background="@color/white">
+                android:background="?attr/colorSurface">
 
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/TIET_phone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/white"
+                    android:background="?attr/colorSurface"
                     android:hint="@string/numero_de_telefono"
                     android:inputType="phone"
                     android:maxLength="8">
@@ -165,14 +166,14 @@
             android:layout_marginStart="12dp"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="20dp"
-            android:background="@color/white">
+            android:background="?attr/colorSurface">
 
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/TIET_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
+                android:background="?attr/colorSurface"
                 android:hint="@string/contraseña"
                 android:inputType="textPassword"
                 android:maxLength="100">
@@ -189,14 +190,14 @@
             android:layout_marginStart="12dp"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="20dp"
-            android:background="@color/white">
+            android:background="?attr/colorSurface">
 
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/TIET_confirm_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
+                android:background="?attr/colorSurface"
                 android:hint="@string/confirmar_contraseña"
                 android:inputType="textPassword"
                 android:maxLength="100">
@@ -208,17 +209,16 @@
 
     <!--Button Cancel-->
     <Button
+        android:backgroundTint="?attr/colorSurface"
+        android:textColor="?attr/colorOnSurface"
         android:id="@+id/cancel_account"
         style="@style/Button_redonded_filled"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
-        android:backgroundTint="@color/white"
         android:text="@string/cancelar"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-    </Button>
+        app:layout_constraintStart_toStartOf="parent" />
 
     <!--Button Accept-->
     <Button
@@ -229,9 +229,17 @@
         android:layout_margin="12dp"
         android:text="@string/aceptar"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    </Button>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:src="@drawable/buildings"
+        android:alpha="0.2"
+        android:importantForAccessibility="no" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

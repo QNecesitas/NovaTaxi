@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.LiveData
@@ -22,6 +23,9 @@ class PutMapViewModel:ViewModel() {
     private val _pointGPS = MutableLiveData<PointAnnotation>()
     val pointGPS: LiveData<PointAnnotation> get() = _pointGPS
 
+    //Variable to setCamera
+    private val _isNecessaryCamera = MutableLiveData<Boolean>()
+    val isNecessaryCamera: LiveData<Boolean> get() = _isNecessaryCamera
 
 
 
@@ -61,6 +65,13 @@ class PutMapViewModel:ViewModel() {
         }
     }
 
+
+
+
+    //Set if is necessary move the camera
+    fun setIsNecessaryCamera(boolean: Boolean){
+        _isNecessaryCamera.value = boolean
+    }
 
 }
 

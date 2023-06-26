@@ -5,23 +5,18 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
-import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.mapbox.geojson.Point
+import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.Style
-import com.mapbox.maps.extension.style.expressions.dsl.generated.get
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
@@ -39,7 +34,6 @@ class ActivityPutMap : AppCompatActivity() {
 
     //Map
     private lateinit var pointAnnotationManager: PointAnnotationManager
-    private var pointSelect: Point? = null
 
     //ViewModel
     private val viewModel: PutMapViewModel by viewModels {
@@ -65,7 +59,13 @@ class ActivityPutMap : AppCompatActivity() {
         //Add Map Event
         val annotationApi = binding.mapView.annotations
         pointAnnotationManager = annotationApi.createPointAnnotationManager()
-        binding.mapView.getMapboxMap().loadStyleUri(Style.MAPBOX_STREETS)
+        binding.mapView.getMapboxMap().loadStyleUri("mapbox://styles/ronnynp/cljbn45qs00u201qp84tqauzq/draft")
+        val camera = CameraOptions.Builder()
+            .center(Point.fromLngLat(-76.2593,20.886953))
+            .zoom(16.0)
+            .pitch(50.0)
+            .build()
+        binding.mapView.getMapboxMap().setCamera(camera)
         binding.mapView.getMapboxMap().addOnMapLongClickListener {
 
             val point = Point.fromLngLat(it.longitude() , it.latitude())
@@ -77,13 +77,19 @@ class ActivityPutMap : AppCompatActivity() {
             addLocation()
         }
         binding.realTimeButton.setOnClickListener{
-            getLocationRealtime()
+
+            val lm = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            if(lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+
+                viewModel.setIsNecessaryCamera(true)
+                getLocationRealtime()
+
+            }else{
+                showAlertDialogNotLocationSettings()
+            }
         }
 
-
-
-        val permissionCheck:Int =ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)
-
+        viewModel.setIsNecessaryCamera(true)
         getLocationRealtime()
 
     }
@@ -97,22 +103,22 @@ class ActivityPutMap : AppCompatActivity() {
             val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
                 .withPoint(point)
                 .withIconImage(it)
-                .withIconSize(2.0)
-            pointAnnotationManager.create(pointAnnotationOptions)
+                .withIconSize(1.3)
+            val pointAnnotation = pointAnnotationManager.create(pointAnnotationOptions)
             if(drawable == R.drawable.marker_map){
                 if(viewModel.pointLocation.value == null){
-                    viewModel.setPointLocation(pointAnnotationManager.annotations.last())
+                    viewModel.setPointLocation(pointAnnotation)
                 }else{
                     pointAnnotationManager.delete(viewModel.pointLocation.value!!)
-                    viewModel.setPointLocation(pointAnnotationManager.annotations.last())
+                    viewModel.setPointLocation(pointAnnotation)
                 }
             }
-            if(drawable == R.drawable.baseline_blur_circular_24) {
+            if(drawable == R.drawable.baseline_directions_walk_24) {
                 if (viewModel.pointGPS.value == null) {
-                    viewModel.setPointGPS(pointAnnotationManager.annotations.last())
+                    viewModel.setPointGPS(pointAnnotation)
                 } else {
                     pointAnnotationManager.delete(viewModel.pointGPS.value!!)
-                    viewModel.setPointGPS(pointAnnotationManager.annotations.last())
+                    viewModel.setPointGPS(pointAnnotation)
                 }
             }
 
@@ -121,14 +127,26 @@ class ActivityPutMap : AppCompatActivity() {
 
     //Add Location
     private fun addLocation(){
-
+        val pointSelect = viewModel.pointLocation.value
+        val gpsSelect = viewModel.pointGPS.value
         if(pointSelect == null){
-            FancyToast.makeText(this,getString(R.string.no_ha_añadido_su_posicion),FancyToast.LENGTH_LONG,FancyToast.WARNING,false).show()
+            if(gpsSelect == null) {
 
+                FancyToast.makeText(
+                    this,
+                    getString(R.string.no_ha_añadido_su_posicion),
+                    FancyToast.LENGTH_LONG,
+                    FancyToast.WARNING,
+                    false
+                ).show()
+
+            }else{
+                showAlertDialogOwnLocation()
+            }
         }else{
             val intent = Intent()
-            intent.putExtra("longitude", pointSelect!!.longitude())
-            intent.putExtra("latitude", pointSelect!!.latitude())
+            intent.putExtra("longitude", pointSelect.point.longitude())
+            intent.putExtra("latitude", pointSelect.point.latitude())
             setResult(Activity.RESULT_OK, intent)
             finish()
         }
@@ -140,9 +158,11 @@ class ActivityPutMap : AppCompatActivity() {
         val locationListener: LocationListener = object : LocationListener {
             override fun onLocationChanged(location: Location) {
                 val point = Point.fromLngLat(location.longitude, location.latitude)
-                addAnnotationToMap(point, R.drawable.baseline_blur_circular_24)
-
-
+                addAnnotationToMap(point, R.drawable.baseline_directions_walk_24)
+                if(viewModel.isNecessaryCamera.value == true) {
+                    viewModel.pointGPS.value?.let { it1 -> viewCameraInPoint(it1.point) }
+                    viewModel.setIsNecessaryCamera(false)
+                }
             }
 
             @Deprecated("Deprecated in Java")
@@ -169,6 +189,51 @@ class ActivityPutMap : AppCompatActivity() {
                 permissionCode
             )
         }
+    }
+
+    private fun viewCameraInPoint(point: Point) {
+        val camera = CameraOptions.Builder()
+            .center(point)
+            .zoom(16.5)
+            .bearing(50.0)
+            .build()
+        binding.mapView.getMapboxMap().setCamera(camera)
+    }
+
+    private fun showAlertDialogOwnLocation() {
+        //init alert dialog
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setCancelable(false)
+        builder.setTitle(R.string.Escoger_ubicacion)
+        builder.setMessage(R.string.Desea_personal_ubicacion)
+        //set listeners for dialog buttons
+        builder.setPositiveButton(R.string.Si) { _, _ ->
+            val intent = Intent()
+            viewModel.pointGPS.value?.point?.let { intent.putExtra("longitude", it.longitude()) }
+            viewModel.pointGPS.value?.point?.let { intent.putExtra("latitude", it.latitude()) }
+            setResult(RESULT_OK, intent)
+            finish()
+        }
+        builder.setNegativeButton(R.string.No) { dialog, _ ->
+            //dialog gone
+            dialog.dismiss()
+        }
+        //create the alert dialog and show it
+        builder.create().show()
+    }
+
+    private fun showAlertDialogNotLocationSettings() {
+        //init alert dialog
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setCancelable(false)
+        builder.setTitle(R.string.Ubicacion_desconocida)
+        builder.setMessage(R.string.Vaya_a_ajustes)
+        //set listeners for dialog buttons
+        builder.setPositiveButton(R.string.Aceptar) { dialog, _ ->
+            dialog.dismiss()
+        }
+        //create the alert dialog and show it
+        builder.create().show()
     }
 
 }

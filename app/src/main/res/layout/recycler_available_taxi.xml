@@ -17,7 +17,7 @@
             android:layout_margin="20dp"
             android:translationZ="4dp"
             app:cardCornerRadius="4dp"
-            app:cardElevation="@dimen/cardview_elevation"
+            app:cardElevation="@dimen/card_my_elevation"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -47,40 +47,74 @@
             app:layout_constraintStart_toEndOf="@id/cv_image"
             app:layout_constraintTop_toTopOf="parent">
 
-            <!--Tv PriceS-->
-            <TextView
-                android:id="@+id/tvPriceS"
+            <!--Phone number-->
+            <LinearLayout
+                android:id="@+id/ll_phone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="12dp"
-                android:text="@string/precioKmS"
-                android:textStyle="bold"
+                android:orientation="horizontal"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
 
-            <!--Tv Price-->
-            <TextView
-                android:id="@+id/tvPrice"
+                <!--Tv PriceS-->
+                <TextView
+                    android:id="@+id/tvPhoneS"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/precioKmS"
+                    android:textStyle="bold" />
+
+                <!--Tv Price-->
+                <TextView
+                    android:id="@+id/tvPhonePrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/precioKm" />
+
+            </LinearLayout>
+
+            <!--Price-->
+            <LinearLayout
+                app:layout_constraintTop_toBottomOf="@id/ll_phone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="12dp"
-                android:text="@string/precioKm"
-                app:layout_constraintStart_toEndOf="@id/tvPriceS"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent">
 
-            <!--Tv KmS-->
-            <TextView
-                android:id="@+id/tvKm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="12dp"
-                android:text="@string/por_KM"
-                android:textStyle="bold"
-                app:layout_constraintStart_toEndOf="@id/tvPrice"
-                app:layout_constraintTop_toTopOf="parent" />
+                <!--Tv PriceS-->
+                <TextView
+                    android:id="@+id/tvPriceS"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/precioKmS"
+                    android:textStyle="bold" />
+
+                <!--Tv Price-->
+                <TextView
+                    android:id="@+id/tvPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/precioKm" />
+
+                <!--Tv KmS-->
+                <TextView
+                    android:id="@+id/tvKm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/por_KM"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
 
             <!--Tv Details-->
             <TextView
@@ -94,12 +128,14 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/vSeparator" />
 
+
+
             <View
                 android:id="@+id/vSeparator"
                 android:layout_width="0.5dp"
                 android:layout_height="0dp"
                 android:layout_marginEnd="20dp"
-                android:background="@color/gray_icon"
+                android:background="?attr/colorSecondary"
                 app:layout_constraintBottom_toBottomOf="@id/tvBuy"
                 app:layout_constraintEnd_toStartOf="@id/tvBuy"
                 app:layout_constraintTop_toTopOf="@id/tvBuy" />

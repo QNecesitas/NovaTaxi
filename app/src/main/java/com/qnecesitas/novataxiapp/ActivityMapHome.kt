@@ -12,7 +12,6 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -21,13 +20,14 @@ import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import com.mapbox.geojson.Point
+import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
-import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.qnecesitas.novataxiapp.adapters.DriverAdapter
+import com.qnecesitas.novataxiapp.auxiliary.ImageTools
 import com.qnecesitas.novataxiapp.auxiliary.NetworkTools
 import com.qnecesitas.novataxiapp.databinding.ActivityMapHomeBinding
 import com.qnecesitas.novataxiapp.viewmodel.MapHomeViewModel
@@ -53,8 +53,6 @@ class ActivityMapHome : AppCompatActivity() {
     private lateinit var resultLauncherUbic: ActivityResultLauncher<Intent>
     private lateinit var resultLauncherDest: ActivityResultLauncher<Intent>
 
-    private val tokenMap = "sk.eyJ1Ijoicm9ubnlucCIsImEiOiJjbGl4N3ZsMTYwNGt6M2d0NTVyaTFoNm56In0.nNuifke9YrTZcfs9xoZ6hg"
-
 
 
     /*
@@ -74,11 +72,11 @@ class ActivityMapHome : AppCompatActivity() {
         //Results launchers
         resultLauncherUbic =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                locationUbicAccept(result)
+                locationLocationAccept(result)
             }
         resultLauncherDest =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                locationDestAccept(result)
+                locationDestinationAccept(result)
             }
 
 
@@ -106,11 +104,17 @@ class ActivityMapHome : AppCompatActivity() {
         }
 
         //Map
-        binding.mapView.getMapboxMap().loadStyleUri(Style.MAPBOX_STREETS)
+        binding.mapView.getMapboxMap().loadStyleUri("mapbox://styles/ronnynp/cljbn45qs00u201qp84tqauzq/draft")
+        val camera = CameraOptions.Builder()
+            .center(Point.fromLngLat(-76.2593,20.886953))
+            .zoom(16.0)
+            .pitch(50.0)
+            .build()
+        binding.mapView.getMapboxMap().setCamera(camera)
 
-        binding.extBtnUbicUser.setOnClickListener{ getUserUbic() }
+        binding.extBtnUbicUser.setOnClickListener{ selectUserUbic() }
 
-        binding.extBtnUbicDest.setOnClickListener{ getUserDest() }
+        binding.extBtnUbicDest.setOnClickListener{ selectUserDest() }
 
         //Add Map Event
         val annotationApi = binding.mapView.annotations
@@ -137,21 +141,19 @@ class ActivityMapHome : AppCompatActivity() {
 
 
     //Get Locations
-    fun getUserUbic(){
+    private fun selectUserUbic(){
         val intent = Intent(this@ActivityMapHome, ActivityPutMap::class.java)
         resultLauncherUbic.launch(intent)
     }
 
-    fun getUserDest(){
+    private fun selectUserDest(){
         val intent = Intent(this@ActivityMapHome, ActivityPutMap::class.java)
         resultLauncherDest.launch(intent)
     }
 
 
-
-
     //Send Locations
-    fun locationUbicAccept(result: ActivityResult) {
+    private fun locationLocationAccept(result: ActivityResult) {
         if (result.resultCode == Activity.RESULT_OK) {
             val data: Intent? = result.data
             val lat = data?.getDoubleExtra("latitude",0.0)
@@ -161,7 +163,6 @@ class ActivityMapHome : AppCompatActivity() {
             lat.let { viewModel.setLatitudeClient(it) }
             long.let { viewModel.setLongitudeClient(it) }
             if (viewModel.latitudeDestiny.value != null && viewModel.longitudeDestiny.value != null) {
-
                 viewModel.getDriverProv(
                     viewModel.latitudeClient.value!!,
                     viewModel.longitudeClient.value!!
@@ -175,9 +176,9 @@ class ActivityMapHome : AppCompatActivity() {
             ).show()
         }
     }
-        //binding.extBtnUbicDest.setOnClickListener{ viewModel.getDriverProv() }
 
-    fun locationDestAccept(result: ActivityResult){
+
+    private fun locationDestinationAccept(result: ActivityResult){
         if (result.resultCode == Activity.RESULT_OK){
             val data: Intent? = result.data
             val lat = data?.extras?.getDouble("latitude",0.0)
@@ -205,7 +206,7 @@ class ActivityMapHome : AppCompatActivity() {
 
 
     //Alert Dialogs
-    fun showAlertDialogNoCar(){
+    private fun showAlertDialogNoCar(){
         val builder = AlertDialog.Builder(this)
         builder.setCancelable(true)
         builder.setTitle(this.getString(R.string.NoCarroEncontrado))
@@ -253,7 +254,7 @@ class ActivityMapHome : AppCompatActivity() {
 
     //Methods Maps
     private fun addAnnotationToMap(point: Point, @DrawableRes drawable: Int) {
-        bitmapFromDrawableRes(
+        ImageTools.bitmapFromDrawableRes(
             this@ActivityMapHome,
             drawable
         )?.let {
@@ -280,31 +281,13 @@ class ActivityMapHome : AppCompatActivity() {
                 }
             }
         }
+        val camera = CameraOptions.Builder()
+            .center(point)
+            .zoom(16.5)
+            .bearing(50.0)
+            .build()
+        binding.mapView.getMapboxMap().setCamera(camera)
     }
-
-    private fun bitmapFromDrawableRes(context: Context, @DrawableRes resourceId: Int) =
-        convertDrawableToBitmap(AppCompatResources.getDrawable(context, resourceId))
-
-    private fun convertDrawableToBitmap(sourceDrawable: Drawable?): Bitmap? {
-        if (sourceDrawable == null) {
-            return null
-        }
-        return if (sourceDrawable is BitmapDrawable) {
-            sourceDrawable.bitmap
-        } else {
-            val constantState = sourceDrawable.constantState ?: return null
-            val drawable = constantState.newDrawable().mutate()
-            val bitmap: Bitmap = Bitmap.createBitmap(
-                drawable.intrinsicWidth, drawable.intrinsicHeight,
-                Bitmap.Config.ARGB_8888
-            )
-            val canvas = Canvas(bitmap)
-            drawable.setBounds(0, 0, canvas.width, canvas.height)
-            drawable.draw(canvas)
-            bitmap
-        }
-    }
-
 
 
 

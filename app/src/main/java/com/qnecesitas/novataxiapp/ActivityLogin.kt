@@ -87,7 +87,6 @@ class ActivityLogin : AppCompatActivity() {
         }
 
         viewModel.stateVersion.observe(this){
-            Log.i("TEST","OK")
             when(it){
                 LoginViewModel.StateConstants.LOADING -> binding.progress.visibility = View.VISIBLE
                 LoginViewModel.StateConstants.SUCCESS -> {

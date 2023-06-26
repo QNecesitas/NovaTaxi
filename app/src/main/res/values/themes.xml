@@ -1,11 +1,11 @@
 
 <resources>
     <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
-        <item name="colorPrimary">@color/md_theme_light_primaryContainer</item>
+        <item name="colorPrimary">@color/md_theme_light_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
         <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</item>
-        <item name="colorSecondary">@color/md_theme_light_secondaryContainer</item>
+        <item name="colorSecondary">@color/md_theme_light_secondary</item>
         <item name="colorOnSecondary">@color/md_theme_light_onSecondary</item>
         <item name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer</item>
         <item name="colorOnSecondaryContainer">@color/md_theme_light_onSecondaryContainer</item>
@@ -31,10 +31,10 @@
 
     <style name="Button_redonded_filled" parent="Widget.MaterialComponents.Button">
         <item name="shapeAppearance">@style/Shape_redonded</item>
-        <item name="strokeColor">@color/white</item>
+        <item name="strokeColor">@color/md_theme_dark_outline</item>
         <item name="strokeWidth">1sp</item>
         <item name="android:textSize">12sp</item>
-        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
     </style>
 
     <style name="Shape_redonded" parent="">
@@ -42,7 +42,7 @@
     </style>
 
     <style name="ToolbarIcons" parent="ThemeOverlay.AppCompat.ActionBar">
-        <item name="colorControlNormal">@android:color/black</item>
+        <item name="colorControlNormal">?attr/colorOnPrimary</item>
     </style>
 
 

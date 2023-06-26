@@ -1,12 +1,10 @@
 package com.qnecesitas.novataxiapp.viewmodel
 
-import android.content.Intent
-import android.util.Log
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.mapbox.geojson.Point
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
 import com.qnecesitas.novataxiapp.auxiliary.Constants
 import com.qnecesitas.novataxiapp.model.Driver
@@ -23,30 +21,36 @@ class MapHomeViewModel: ViewModel() {
     private val _listSmallDriver = MutableLiveData<MutableList<Driver>>()
     val listSmallDriver: LiveData<MutableList<Driver>> get() = _listSmallDriver
 
+
     //Progress state
     enum class StateConstants { LOADING, SUCCESS, ERROR }
-
     private val _state = MutableLiveData<StateConstants>()
     val state: LiveData<StateConstants> get() = _state
 
+
     //Network Data Source
     private var driverDataSourceNetwork: DriverDataSourceNetwork = DriverDataSourceNetwork()
+
 
     //LatitudeClient
     private val _latitudeClient = MutableLiveData<Double>()
     val latitudeClient: LiveData<Double> get() = _latitudeClient
 
+
     //LongitudeClient
     private val _longitudeClient = MutableLiveData<Double>()
     val longitudeClient: LiveData<Double> get() = _longitudeClient
+
 
     //LatitudeDestiny
     private val _latitudeDestiny = MutableLiveData<Double>()
     val latitudeDestiny: LiveData<Double> get() = _latitudeDestiny
 
+
     //LongitudeDestiny
     private val _longitudeDestiny = MutableLiveData<Double>()
     val longitudeDestiny: LiveData<Double> get() = _longitudeDestiny
+
 
     //Points
     private val _pointUbic = MutableLiveData<PointAnnotation>()
@@ -56,10 +60,7 @@ class MapHomeViewModel: ViewModel() {
     val pointDest: LiveData<PointAnnotation> get() = _pointDest
 
 
-    /*
-      Call and enqueue
-       */
-    //Bring InfoDriver
+
     fun getDriverProv(latUser: Double, longUser: Double) {
         _state.value = StateConstants.LOADING
 
@@ -80,7 +81,6 @@ class MapHomeViewModel: ViewModel() {
                 if (response.isSuccessful) {
                     _state.value = StateConstants.SUCCESS
                     filterDriver(response.body()?.toMutableList(),latUser,longUser)
-                    Log.e("XXXXXX", listSmallDriver.value.toString())
                 } else {
                     _state.value = StateConstants.ERROR
                 }
@@ -95,22 +95,16 @@ class MapHomeViewModel: ViewModel() {
 
     private fun filterDriver(alDriver: MutableList<Driver>?,latUser: Double, longUser: Double){
         val alResult = alDriver?.filter {
-            it.maxDist > calDist(latUser ,longUser, it.latitude, it.longitude)
+            it.maxDist > callDist(latUser ,longUser, it.latitude, it.longitude)
         }?.toMutableList()
 
         _listSmallDriver.value = alResult
-        Log.e("lol",_listSmallDriver.value.toString())
     }
 
 
-    //Calculate Distance
-    private fun calDit(latUser: Double, longUser: Double, latCar:Double, longCar:Double): Double{
-        return  sqrt((latCar - latUser).pow(2.0) + (longCar - longUser).pow(2.0))
-    }
+    private fun callDist(latUser: Double, longUser: Double, latCar: Double, longCar: Double): Double {
 
-    private fun calDist(latUser: Double, longUser: Double, latCar: Double, longCar: Double): Double {
-        Log.e("lol",((Math.sqrt((latUser - latCar) * (latUser - latCar) + (longUser - longCar) * (longUser - longCar)) + 0.004) * 100.0).toString())
-           return ((Math.sqrt((latUser - latCar) * (latUser - latCar) + (longUser - longCar) * (longUser - longCar)) + 0.004) * 100.0)
+           return ((sqrt((latUser - latCar) * (latUser - latCar) + (longUser - longCar) * (longUser - longCar)) + 0.004) * 100.0)
     }
 
     //SetLocations

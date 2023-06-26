@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
-        <shape
-            android:shape="rectangle">
+        <shape android:shape="rectangle">
             <gradient
-                android:startColor="?attr/colorPrimary"
-                android:endColor="?attr/colorSecondary"
-                android:angle="135"
-                android:centerColor="?attr/colorPrimary"
-                />
+                android:startColor="@color/md_theme_dark_errorContainer"
+                android:endColor="@color/md_theme_dark_inversePrimary"/>
         </shape>
     </item>
 </selector>

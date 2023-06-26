@@ -14,89 +14,92 @@
         android:fitsSystemWindows="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/AAD_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
             android:fitsSystemWindows="true"
-            android:background="@color/md_theme_light_primaryContainer"
             app:title="@string/sobre_desarrolladores"
-            app:titleTextColor="@color/md_theme_light_onPrimaryContainer">
+            app:titleTextColor="?attr/colorOnPrimary">
 
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
 
-
     <!--Container Scroll-->
     <ScrollView
-        app:layout_constraintTop_toBottomOf="@+id/AAD_AppBar"
-        app:layout_constraintStart_toStartOf="parent"
         android:layout_width="match_parent"
-        android:layout_height="0sp">
+        android:layout_height="0sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/AAD_AppBar">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="?attr/background"
+            android:orientation="vertical">
 
             <!--CV Logo-->
             <androidx.cardview.widget.CardView
                 android:id="@+id/AAD_CV_Logo"
-                android:layout_marginEnd="20sp"
-                android:layout_marginStart="20sp"
-                android:layout_marginTop="20sp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="20sp"
+                android:layout_marginTop="20sp"
+                android:layout_marginEnd="20sp"
                 app:cardCornerRadius="8sp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:background="@color/md_theme_light_primaryContainer"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:background="?attr/colorPrimary">
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/AAU_CV_Logo_picture"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="20sp"
-                        app:layout_constraintTop_toTopOf="parent"
+                        android:elevation="@dimen/card_my_elevation"
+                        android:translationZ="@dimen/card_my_elevation"
+                        app:cardCornerRadius="10sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:cardCornerRadius="10sp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                        app:layout_constraintTop_toTopOf="parent">
 
                         <ImageView
-                            android:src="@drawable/logo_qnecesitas"
                             android:layout_width="70sp"
                             android:layout_height="70sp"
-                            android:importantForAccessibility="no" />
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/logo_qnecesitas" />
 
                     </androidx.cardview.widget.CardView>
 
 
                     <TextView
-                        android:textColor="@color/md_theme_light_onPrimaryContainer"
-                        android:textStyle="bold"
                         android:id="@+id/AAU_nombre_empresa"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="5sp"
                         android:text="@string/qnecesitas"
+                        android:textColor="?attr/colorOnPrimary"
+                        android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/AAU_CV_Logo_picture"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        app:layout_constraintTop_toBottomOf="@id/AAU_CV_Logo_picture" />
 
                     <TextView
-                        android:textColor="@color/md_theme_light_onPrimaryContainer"
-                        android:layout_marginBottom="20sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="2sp"
+                        android:layout_marginBottom="20sp"
                         android:text="@string/productos_informaticos"
+                        android:textColor="?attr/colorOnPrimary"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/AAU_nombre_empresa"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        app:layout_constraintTop_toBottomOf="@id/AAU_nombre_empresa" />
 
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -106,38 +109,40 @@
             <!--CV Info-->
             <androidx.cardview.widget.CardView
                 android:id="@+id/AAD_CV_Info"
-                app:cardCornerRadius="8sp"
-                android:layout_marginEnd="20sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="20sp"
                 android:layout_marginTop="20sp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_marginEnd="20sp"
+                android:elevation="@dimen/card_my_elevation"
+                android:translationZ="@dimen/card_my_elevation"
+                app:cardCornerRadius="8sp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:orientation="vertical"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
                     <!--Phone number-->
                     <LinearLayout
-                        android:layout_marginTop="10sp"
-                        android:layout_marginStart="10sp"
-                        android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10sp"
+                        android:layout_marginTop="10sp"
+                        android:orientation="horizontal"
                         tools:ignore="UseCompoundDrawables">
 
                         <ImageView
                             android:layout_width="24sp"
                             android:layout_height="24sp"
-                            android:src="@drawable/baseline_local_phone_24"
-                            android:importantForAccessibility="no" />
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/baseline_local_phone_24" />
 
                         <TextView
-                            android:layout_marginStart="5sp"
                             android:layout_width="wrap_content"
                             android:layout_height="24sp"
-                            android:text="@string/nuestro_numero"/>
+                            android:layout_marginStart="5sp"
+                            android:text="@string/nuestro_numero" />
 
 
                     </LinearLayout>
@@ -145,51 +150,50 @@
 
                     <!--Email-->
                     <LinearLayout
-                        android:layout_marginTop="8sp"
-                        android:layout_marginStart="10sp"
-                        android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10sp"
+                        android:layout_marginTop="8sp"
+                        android:orientation="horizontal"
                         tools:ignore="UseCompoundDrawables">
 
                         <ImageView
                             android:layout_width="24sp"
                             android:layout_height="24sp"
-                            android:src="@drawable/baseline_email_24"
-                            android:importantForAccessibility="no" />
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/baseline_email_24" />
 
                         <TextView
-                            android:layout_marginStart="5sp"
                             android:layout_width="wrap_content"
                             android:layout_height="24sp"
-                            android:text="@string/ronnynordelo_gmail_com"/>
+                            android:layout_marginStart="5sp"
+                            android:text="@string/ronnynordelo_gmail_com" />
 
 
                     </LinearLayout>
 
                     <!--Location-->
                     <LinearLayout
-                        android:layout_marginBottom="10sp"
-                        android:layout_marginTop="8sp"
-                        android:layout_marginStart="10sp"
-                        android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10sp"
+                        android:layout_marginTop="8sp"
+                        android:layout_marginBottom="10sp"
+                        android:orientation="horizontal"
                         tools:ignore="UseCompoundDrawables">
 
                         <ImageView
                             android:layout_width="24sp"
                             android:layout_height="24sp"
-                            android:src="@drawable/fb_icon"
-                            android:importantForAccessibility="no" />
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/fb_icon" />
 
                         <TextView
-                            android:autoLink="web"
-                            android:layout_marginStart="5sp"
                             android:layout_width="wrap_content"
                             android:layout_height="24sp"
-                            android:text="@string/https_www_facebook_com_qnecesitas_paginaprincipal"/>
-
+                            android:layout_marginStart="5sp"
+                            android:autoLink="web"
+                            android:text="@string/https_www_facebook_com_qnecesitas_paginaprincipal" />
 
 
                     </LinearLayout>
@@ -197,26 +201,26 @@
 
                     <!--web-->
                     <LinearLayout
-                        android:layout_marginBottom="10sp"
-                        android:layout_marginTop="8sp"
-                        android:layout_marginStart="10sp"
-                        android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10sp"
+                        android:layout_marginTop="8sp"
+                        android:layout_marginBottom="10sp"
+                        android:orientation="horizontal"
                         tools:ignore="UseCompoundDrawables">
 
                         <ImageView
                             android:layout_width="24sp"
                             android:layout_height="24sp"
-                            android:src="@drawable/web"
-                            android:importantForAccessibility="no" />
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/web" />
 
                         <TextView
-                            android:autoLink="web"
-                            android:layout_marginStart="5sp"
                             android:layout_width="wrap_content"
                             android:layout_height="24sp"
-                            android:text="@string/qnecesitas_nat_cu"/>
+                            android:layout_marginStart="5sp"
+                            android:autoLink="web"
+                            android:text="@string/qnecesitas_nat_cu" />
 
                     </LinearLayout>
 
@@ -228,14 +232,16 @@
 
             <!--Mision-->
             <androidx.cardview.widget.CardView
-                android:layout_marginBottom="100sp"
-                app:cardCornerRadius="8sp"
                 android:id="@+id/AAD_CV_Mision"
-                android:layout_marginEnd="20sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="20sp"
                 android:layout_marginTop="20sp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_marginEnd="20sp"
+                android:layout_marginBottom="100sp"
+                android:elevation="@dimen/card_my_elevation"
+                android:translationZ="@dimen/card_my_elevation"
+                app:cardCornerRadius="8sp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -243,20 +249,20 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:layout_marginStart="10sp"
-                        android:textStyle="bold"
-                        android:textSize="16sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/misi_n"/>
+                        android:layout_marginStart="10sp"
+                        android:text="@string/misi_n"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
                     <TextView
-                        android:layout_marginStart="10sp"
-                        android:layout_marginTop="4sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/mision_nuestra"
-                        android:layout_marginBottom="10sp"/>
+                        android:layout_marginStart="10sp"
+                        android:layout_marginTop="4sp"
+                        android:layout_marginBottom="10sp"
+                        android:text="@string/mision_nuestra" />
 
                 </LinearLayout>
 
@@ -267,7 +273,6 @@
         </LinearLayout>
 
     </ScrollView>
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

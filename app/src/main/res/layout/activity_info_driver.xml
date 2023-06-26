@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ActivityInfoDriver"
-    android:background="@color/background">
+    tools:context=".ActivityInfoDriver">
 
 
     <!--Toolbar-->
@@ -16,7 +15,7 @@
         android:fitsSystemWindows="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="@color/seed">
+        android:background="?attr/colorPrimary">
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -24,7 +23,7 @@
             android:fitsSystemWindows="true"
             android:theme="@style/ToolbarIcons"
             app:title="@string/sobreConductor"
-            app:titleTextColor="@color/md_theme_light_onPrimaryContainer">
+            app:titleTextColor="?attr/colorOnPrimary">
 
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
@@ -56,11 +55,11 @@
                 android:layout_margin="20dp"
                 android:translationZ="4dp"
                 app:cardCornerRadius="4dp"
-                app:cardElevation="@dimen/cardview_elevation">
+                app:cardElevation="@dimen/card_my_elevation">
 
                 <!--IV Picture Driver-->
                 <ImageView
-                    android:background="?attr/colorSecondary"
+                    android:background="?attr/colorPrimary"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
                     android:src="@drawable/baseline_drive_eta_24"
@@ -88,7 +87,9 @@
                 <LinearLayout
                     android:padding="10dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:background="?attr/colorSurface"
+                    android:translationZ="12dp">
 
                     <!--TV Name Static-->
                     <TextView
@@ -96,10 +97,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/NombreCondS"
+                        android:textColor="?attr/colorOnPrimaryContainer"
                         android:textSize="@dimen/text_h"/>
 
                     <!--TV Name-->
                     <TextView
+                        android:textColor="?attr/colorOnPrimaryContainer"
                         android:id="@+id/tvName"
                         android:layout_marginStart="10dp"
                         android:textSize="16sp"
@@ -128,18 +131,22 @@
               android:orientation="horizontal"
               android:padding="10dp"
               android:layout_width="match_parent"
-              android:layout_height="wrap_content">
+              android:layout_height="wrap_content"
+              android:background="?attr/colorSurface"
+              android:translationZ="12dp">
 
               <!--TV Phone NumberS-->
               <TextView
                   android:textStyle="bold"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
+                  android:textColor="?attr/colorOnPrimaryContainer"
                   android:textSize="@dimen/text_h"
                   android:text="@string/telefonoS"/>
 
               <!--TV Phone Number-->
               <TextView
+                  android:textColor="?attr/colorOnPrimaryContainer"
                   android:id="@+id/tvPhoneDriver"
                   android:layout_marginStart="10dp"
                   android:layout_width="wrap_content"
@@ -167,6 +174,8 @@
 
             <!--LL Container-->
             <LinearLayout
+                android:background="?attr/colorSurface"
+                android:translationZ="12dp"
                 android:orientation="horizontal"
                 android:padding="10dp"
                 android:layout_width="match_parent"
@@ -174,6 +183,7 @@
 
                 <!--TV PriceS-->
                 <TextView
+                    android:textColor="?attr/colorOnPrimaryContainer"
                     android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -182,6 +192,7 @@
 
                 <!--TV Price-->
                 <TextView
+                    android:textColor="?attr/colorOnPrimaryContainer"
                     android:id="@+id/tvPrice"
                     android:layout_marginStart="10dp"
                     android:layout_width="wrap_content"
@@ -191,6 +202,7 @@
 
                 <!--TV KM-->
                 <TextView
+                    android:textColor="?attr/colorOnPrimaryContainer"
                     android:layout_marginStart="10dp"
                     android:textStyle="bold"
                     android:textSize="16sp"
@@ -218,6 +230,8 @@
 
             <!--LL Container-->
             <LinearLayout
+                android:background="?attr/colorSurface"
+                android:translationZ="12dp"
                 android:orientation="horizontal"
                 android:padding="10dp"
                 android:layout_width="match_parent"
@@ -225,6 +239,7 @@
 
                 <!--TV CarTypeS-->
                 <TextView
+                    android:textColor="?attr/colorOnPrimaryContainer"
                     android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -233,6 +248,7 @@
 
                 <!--TV Car Type-->
                 <TextView
+                    android:textColor="?attr/colorOnPrimaryContainer"
                     android:id="@+id/tvCarType"
                     android:layout_marginStart="10dp"
                     android:layout_width="wrap_content"
@@ -259,6 +275,8 @@
 
             <!--LL Container-->
             <LinearLayout
+                android:background="?attr/colorSurface"
+                android:translationZ="12dp"
                 android:orientation="horizontal"
                 android:padding="10dp"
                 android:layout_width="match_parent"
@@ -266,6 +284,7 @@
 
                 <!--TV CantSeat-->
                 <TextView
+                    android:textColor="?attr/colorOnPrimaryContainer"
                     android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -274,6 +293,7 @@
 
                 <!--TV Cant Seats-->
                 <TextView
+                    android:textColor="?attr/colorOnPrimaryContainer"
                     android:id="@+id/tvCantSeat"
                     android:layout_marginStart="10dp"
                     android:layout_width="wrap_content"
@@ -304,6 +324,14 @@
         app:layout_constraintTop_toBottomOf="@id/appBar"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:src="@drawable/buildings"
+        android:alpha="0.2"
+        android:importantForAccessibility="no" />
 
 
 

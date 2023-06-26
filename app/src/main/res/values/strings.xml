@@ -91,4 +91,9 @@
     <string name="seguro_desea_salir">¿Desea salir de la aplicación?</string>
     <string name="mi_ubicaci_n">Mi ubicación</string>
     <string name="foto_del_conductor">Foto del conductor</string>
+    <string name="Escoger_ubicacion">Escoger ubicación</string>
+    <string name="Desea_personal_ubicacion">Desea escoger su ubicación actual</string>
+    <string name="Vaya_a_ajustes">Vaya a los ajustes y encienda la ubicación </string>
+    <string name="Ubicacion_desconocida">Ubicación desactivada</string>
+    <string name="colocar_posici_n">Colocar posición</string>
 </resources>
