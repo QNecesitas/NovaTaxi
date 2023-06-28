@@ -8,7 +8,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -16,7 +15,6 @@ import com.mapbox.api.directions.v5.models.RouteOptions
 import com.mapbox.geojson.Point
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
 import com.mapbox.navigation.base.extensions.applyDefaultNavigationOptions
-import com.mapbox.navigation.base.options.NavigationOptions
 import com.mapbox.navigation.base.route.NavigationRoute
 import com.mapbox.navigation.base.route.NavigationRouterCallback
 import com.mapbox.navigation.base.route.RouterFailure
@@ -41,6 +39,14 @@ class MapHomeViewModel(application: Application): ViewModel() {
     private val _listSmallDriver = MutableLiveData<MutableList<Driver>>()
     val listSmallDriver: LiveData<MutableList<Driver>> get() = _listSmallDriver
 
+    //GPS location
+    private val _pointGPS = MutableLiveData<PointAnnotation>()
+    val pointGPS: LiveData<PointAnnotation> get() = _pointGPS
+
+
+    //Variable to setCamera
+    private val _isNecessaryCamera = MutableLiveData<Boolean>()
+    val isNecessaryCamera: LiveData<Boolean> get() = _isNecessaryCamera
 
 
     //State charging price
@@ -68,14 +74,6 @@ class MapHomeViewModel(application: Application): ViewModel() {
     val longitudeClient: LiveData<Double> get() = _longitudeClient
 
 
-    //LatitudeDestiny
-    private val _latitudeDestiny = MutableLiveData<Double>()
-    val latitudeDestiny: LiveData<Double> get() = _latitudeDestiny
-
-
-    //LongitudeDestiny
-    private val _longitudeDestiny = MutableLiveData<Double>()
-    val longitudeDestiny: LiveData<Double> get() = _longitudeDestiny
 
 
     //Points
@@ -96,19 +94,19 @@ class MapHomeViewModel(application: Application): ViewModel() {
 
     //WorkManger
     private val workManager = WorkManager.getInstance(application)
-    val outputWorkList: LiveData<List<WorkInfo>>
-
+    val outputWorkList: LiveData<List<WorkInfo>> =
+        workManager.getWorkInfosByTagLiveData(Constants.WORKER_DRIVER_CODE)
 
 
     //Recycler information
     fun getDriverProv(latUser: Double, longUser: Double) {
-        _state.value = StateConstants.LOADING
 
         //Call
         val call = driverDataSourceNetwork.getDriver(
             Constants.PHP_TOKEN,
         )
         getResponseInfoDriverProv(call,latUser,longUser)
+
     }
 
     //Get the response about the Driver info
@@ -120,7 +118,6 @@ class MapHomeViewModel(application: Application): ViewModel() {
             ) {
                 if (response.isSuccessful) {
                     filterDriver(response.body()?.toMutableList(),latUser,longUser)
-                    _state.value = StateConstants.SUCCESS
                 } else {
                     _state.value = StateConstants.ERROR
                 }
@@ -134,23 +131,18 @@ class MapHomeViewModel(application: Application): ViewModel() {
 
     private fun filterDriver(alDriver: MutableList<Driver>?,latUser: Double, longUser: Double){
         val alResult = alDriver?.filter {
-            it.maxDist > callDist(latUser ,longUser, it.latitude, it.longitude)
+            it.maxDist > calculateDist(latUser ,longUser, it.latitude, it.longitude)
         }?.toMutableList()
 
         _listSmallDriver.value = alResult
+        _state.value = StateConstants.SUCCESS
     }
 
-    private fun callDist(latUser: Double, longUser: Double, latCar: Double, longCar: Double): Double {
+    private fun calculateDist(latUser: Double, longUser: Double, latCar: Double, longCar: Double): Double {
 
            return ((sqrt((latUser - latCar) * (latUser - latCar) + (longUser - longCar) * (longUser - longCar)) + 0.004) * 100.0)
     }
 
-
-
-
-    init {
-        outputWorkList = workManager.getWorkInfosByTagLiveData(Constants.WORKER_DRIVER_CODE)
-    }
 
 
 
@@ -237,7 +229,6 @@ class MapHomeViewModel(application: Application): ViewModel() {
         val route =
             getRouteToCalculate(originPoint, destinationPoint, carPoint, mapboxNavigation)
         val distance = route?.let { getRouteDistance(it) }
-        Log.e("TEST", distance.toString());
 
         return distance?.times(driverPrice)
     }
@@ -267,6 +258,7 @@ class MapHomeViewModel(application: Application): ViewModel() {
     }
 
 
+
     //SetLocations
     fun setLatitudeClient(lat: Double){
         _latitudeClient.value = lat
@@ -276,14 +268,9 @@ class MapHomeViewModel(application: Application): ViewModel() {
         _longitudeClient.value = long
     }
 
-    fun setLatitudeDestiny(lat: Double){
-        _latitudeDestiny.value = lat
+    fun setIsNecessaryCamera(boolean: Boolean){
+        _isNecessaryCamera.value = boolean
     }
-
-    fun setLongitudeDestiny(long: Double){
-        _longitudeDestiny.value = long
-    }
-
 
 
 

@@ -1,10 +1,16 @@
 package com.qnecesitas.novataxiapp
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -14,6 +20,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
@@ -57,6 +65,7 @@ class ActivityMapHome : AppCompatActivity() {
     //Results launchers
     private lateinit var resultLauncherUbic: ActivityResultLauncher<Intent>
     private lateinit var resultLauncherDest: ActivityResultLauncher<Intent>
+    private val permissionCode = 35
 
 
     //Navigation
@@ -100,33 +109,14 @@ class ActivityMapHome : AppCompatActivity() {
 
         //Observers
         viewModel.listSmallDriver.observe(this) {
-            viewModel.pointUbic.value?.let { it1 ->
-                viewModel.pointDest.value?.let { it2 ->
-                    viewModel.getRouteToDraw(
-                        it1.point,
-                        it2.point,
-                        mapboxNavigation
-                    )
-                }
-            }
-            if(viewModel.listSmallDriver.value?.isNotEmpty() == true){
                 driverAdapter.submitList(viewModel.listSmallDriver.value)
                 updateDriversPositionInMap()
-                binding.clAvailableTaxis.visibility = View.VISIBLE
-            }else{
-                driverAdapter.submitList(viewModel.listSmallDriver.value)
-                driverAdapter.notifyDataSetChanged()
-                binding.clAvailableTaxis.visibility = View.GONE
-                showAlertDialogNoCar()
-            }
         }
 
         viewModel.state.observe(this) {
             when(it){
-                MapHomeViewModel.StateConstants.LOADING -> binding.progress.visibility = View.VISIBLE
-                MapHomeViewModel.StateConstants.SUCCESS -> {
-                    viewModel.updatePricesInList(mapboxNavigation)
-                }
+                MapHomeViewModel.StateConstants.LOADING -> {}
+                MapHomeViewModel.StateConstants.SUCCESS -> {}
                 MapHomeViewModel.StateConstants.ERROR -> {
                     NetworkTools.showAlertDialogNoInternet(this)
                     binding.progress.visibility = View.GONE
@@ -183,6 +173,26 @@ class ActivityMapHome : AppCompatActivity() {
             }
         }
 
+        viewModel.pointDest.observe(this){
+
+            viewModel.pointUbic.value?.let { pointLocation ->
+                viewModel.pointDest.value?.let { pointDest ->
+                    viewModel.getRouteToDraw(
+                        pointLocation.point,
+                        pointDest.point,
+                        mapboxNavigation
+                    )
+                }
+                if(viewModel.listSmallDriver.value?.isEmpty() == true) {
+                    binding.clAvailableTaxis.visibility = View.GONE
+                }else{
+                    binding.clAvailableTaxis.visibility = View.VISIBLE
+                    showAlertDialogNoCar()
+                }
+            }
+        }
+        //TODO Hacer que no se muestre el precio hasta que este calculadp
+
 
 
 
@@ -226,8 +236,10 @@ class ActivityMapHome : AppCompatActivity() {
 
 
         //Start work
+        getLocationRealtime()
         viewModel.startSearchWork()
     }
+
 
 
 
@@ -241,6 +253,7 @@ class ActivityMapHome : AppCompatActivity() {
         val intent = Intent(this@ActivityMapHome, ActivityPutMap::class.java)
         resultLauncherDest.launch(intent)
     }
+
 
 
     //Send Locations
@@ -262,14 +275,11 @@ class ActivityMapHome : AppCompatActivity() {
         }
     }
 
-
     private fun locationDestinationAccept(result: ActivityResult){
         if (result.resultCode == Activity.RESULT_OK){
             val data: Intent? = result.data
             val lat = data?.extras?.getDouble("latitude",0.0)
             val long = data?.extras?.getDouble("longitude",0.0)
-            lat?.let { viewModel.setLatitudeDestiny(it) }
-            long?.let { viewModel.setLongitudeDestiny(it) }
             val point = Point.fromLngLat(long!!, lat!!)
             addAnnotationToMap(point, R.drawable.marker_map)
         }else{
@@ -280,6 +290,7 @@ class ActivityMapHome : AppCompatActivity() {
             ).show()
         }
     }
+
 
 
 
@@ -295,6 +306,7 @@ class ActivityMapHome : AppCompatActivity() {
             }
         }
     }
+
 
 
 
@@ -336,6 +348,7 @@ class ActivityMapHome : AppCompatActivity() {
         //create the alert dialog and show it
         builder.create().show()
     }
+
 
 
 
@@ -395,6 +408,53 @@ class ActivityMapHome : AppCompatActivity() {
         binding.mapView.getMapboxMap().setCamera(camera)
     }
 
+    private fun getLocationRealtime() {
+        val locationManager =
+            this@ActivityMapHome.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val locationListener: LocationListener = object : LocationListener {
+            override fun onLocationChanged(location: Location) {
+                val point = Point.fromLngLat(location.longitude, location.latitude)
+                addAnnotationToMap(point, R.drawable.baseline_directions_walk_24)
+                if(viewModel.isNecessaryCamera.value == true) {
+                    viewModel.pointGPS.value?.let { it1 -> viewCameraInPoint(it1.point) }
+                    viewModel.setIsNecessaryCamera(false)
+                }
+            }
+
+            @Deprecated("Deprecated in Java")
+            override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {
+            }
+
+            override fun onProviderEnabled(provider: String) {}
+            override fun onProviderDisabled(provider: String) {}
+        }
+
+        val permissionCheck: Int =
+            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            locationManager.requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER,
+                0,
+                0f,
+                locationListener
+            )
+        } else {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                permissionCode
+            )
+        }
+    }
+
+    private fun viewCameraInPoint(point: Point) {
+        val camera = CameraOptions.Builder()
+            .center(point)
+            .zoom(16.5)
+            .bearing(50.0)
+            .build()
+        binding.mapView.getMapboxMap().setCamera(camera)
+    }
 
 
     //Navigation
@@ -416,7 +476,9 @@ class ActivityMapHome : AppCompatActivity() {
             binding.mapView.getMapboxMap().getStyle()
                 ?.let { routeLineView.renderRouteDrawData(it, value) }
         }
+        viewModel.updatePricesInList(mapboxNavigation)
     }
+
 
 
 
