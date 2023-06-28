@@ -3,22 +3,17 @@ package com.qnecesitas.novataxiapp
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
-import androidx.appcompat.content.res.AppCompatResources
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
@@ -26,6 +21,14 @@ import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
+import com.mapbox.navigation.base.options.NavigationOptions
+import com.mapbox.navigation.base.route.NavigationRoute
+import com.mapbox.navigation.core.MapboxNavigation
+import com.mapbox.navigation.core.lifecycle.MapboxNavigationApp
+import com.mapbox.navigation.core.lifecycle.requireMapboxNavigation
+import com.mapbox.navigation.ui.maps.route.line.api.MapboxRouteLineApi
+import com.mapbox.navigation.ui.maps.route.line.api.MapboxRouteLineView
+import com.mapbox.navigation.ui.maps.route.line.model.MapboxRouteLineOptions
 import com.qnecesitas.novataxiapp.adapters.DriverAdapter
 import com.qnecesitas.novataxiapp.auxiliary.ImageTools
 import com.qnecesitas.novataxiapp.auxiliary.NetworkTools
@@ -43,10 +46,12 @@ class ActivityMapHome : AppCompatActivity() {
     //Map
     var mapView: MapView? = null
     private lateinit var pointAnnotationManager: PointAnnotationManager
+    private lateinit var pointAnnotationManagerDriver: PointAnnotationManager
+
 
     //ViewModel
     private val viewModel: MapHomeViewModel by viewModels {
-        MapHomeViewModelFactory()
+        MapHomeViewModelFactory(application)
     }
 
     //Results launchers
@@ -54,10 +59,18 @@ class ActivityMapHome : AppCompatActivity() {
     private lateinit var resultLauncherDest: ActivityResultLauncher<Intent>
 
 
+    //Navigation
+    private val mapboxNavigation: MapboxNavigation by requireMapboxNavigation(
+        onInitialize = this::initNavigation
+    )
+
+
+
 
     /*
     On Create
      */
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMapHomeBinding.inflate(layoutInflater)
@@ -69,24 +82,40 @@ class ActivityMapHome : AppCompatActivity() {
         binding.rvTaxis.adapter = driverAdapter
 
 
+
+
         //Results launchers
         resultLauncherUbic =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 locationLocationAccept(result)
             }
+
         resultLauncherDest =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 locationDestinationAccept(result)
             }
 
 
+
+
         //Observers
         viewModel.listSmallDriver.observe(this) {
+            viewModel.pointUbic.value?.let { it1 ->
+                viewModel.pointDest.value?.let { it2 ->
+                    viewModel.getRouteToDraw(
+                        it1.point,
+                        it2.point,
+                        mapboxNavigation
+                    )
+                }
+            }
             if(viewModel.listSmallDriver.value?.isNotEmpty() == true){
                 driverAdapter.submitList(viewModel.listSmallDriver.value)
+                updateDriversPositionInMap()
                 binding.clAvailableTaxis.visibility = View.VISIBLE
             }else{
                 driverAdapter.submitList(viewModel.listSmallDriver.value)
+                driverAdapter.notifyDataSetChanged()
                 binding.clAvailableTaxis.visibility = View.GONE
                 showAlertDialogNoCar()
             }
@@ -95,13 +124,67 @@ class ActivityMapHome : AppCompatActivity() {
         viewModel.state.observe(this) {
             when(it){
                 MapHomeViewModel.StateConstants.LOADING -> binding.progress.visibility = View.VISIBLE
-                MapHomeViewModel.StateConstants.SUCCESS -> binding.progress.visibility = View.GONE
+                MapHomeViewModel.StateConstants.SUCCESS -> {
+                    viewModel.updatePricesInList(mapboxNavigation)
+                }
                 MapHomeViewModel.StateConstants.ERROR -> {
                     NetworkTools.showAlertDialogNoInternet(this)
                     binding.progress.visibility = View.GONE
                 }
             }
         }
+
+        viewModel.stateChargingPrice.observe(this) {
+            when(it){
+                MapHomeViewModel.StateConstants.LOADING -> binding.progress.visibility = View.VISIBLE
+                MapHomeViewModel.StateConstants.SUCCESS -> {
+                    binding.progress.visibility = View.GONE
+                }
+                MapHomeViewModel.StateConstants.ERROR -> {
+                    NetworkTools.showAlertDialogNoInternet(this)
+                    binding.progress.visibility = View.GONE
+                }
+            }
+        }
+
+        viewModel.routeState.observe(this){
+            when(it){
+                MapHomeViewModel.StateConstants.LOADING -> {
+                    binding.progress.visibility = View.VISIBLE
+                }
+                MapHomeViewModel.StateConstants.SUCCESS ->{
+                    binding.progress.visibility = View.GONE
+                    viewModel.route.value?.let { it1 ->
+                        drawRouteLine(it1)
+                    }
+                }
+                MapHomeViewModel.StateConstants.ERROR -> {
+                    binding.progress.visibility = View.GONE
+                    FancyToast.makeText(
+                        this@ActivityMapHome ,
+                        getString(R.string.error_al_obtener_la_ruta) ,
+                        FancyToast.LENGTH_SHORT,FancyToast.ERROR,false
+                    ).show()
+                }
+            }
+        }
+
+        viewModel.outputWorkList.observe(this){
+            if(it.isNullOrEmpty()){
+                return@observe
+            }
+
+            val workInfo = it[0]
+            if(workInfo.state.isFinished){
+                viewModel.latitudeClient.value?.let { it1 ->
+                    viewModel.longitudeClient.value?.let { it2 ->
+                    viewModel.getDriverProv(it1, it2)
+                } }
+            }
+        }
+
+
+
 
         //Map
         binding.mapView.getMapboxMap().loadStyleUri("mapbox://styles/ronnynp/cljbn45qs00u201qp84tqauzq/draft")
@@ -112,13 +195,18 @@ class ActivityMapHome : AppCompatActivity() {
             .build()
         binding.mapView.getMapboxMap().setCamera(camera)
 
-        binding.extBtnUbicUser.setOnClickListener{ selectUserUbic() }
+        binding.extBtnUbicUser.setOnClickListener{ selectUserLocation() }
 
         binding.extBtnUbicDest.setOnClickListener{ selectUserDest() }
+
+
 
         //Add Map Event
         val annotationApi = binding.mapView.annotations
         pointAnnotationManager = annotationApi.createPointAnnotationManager()
+        pointAnnotationManagerDriver = annotationApi.createPointAnnotationManager()
+
+
 
         //Recycler Listeners
         driverAdapter.setClickDetails(object : DriverAdapter.ITouchDetails{
@@ -135,13 +223,16 @@ class ActivityMapHome : AppCompatActivity() {
             }
         })
 
+
+
+        //Start work
+        viewModel.startSearchWork()
     }
 
 
 
-
     //Get Locations
-    private fun selectUserUbic(){
+    private fun selectUserLocation(){
         val intent = Intent(this@ActivityMapHome, ActivityPutMap::class.java)
         resultLauncherUbic.launch(intent)
     }
@@ -162,12 +253,6 @@ class ActivityMapHome : AppCompatActivity() {
             addAnnotationToMap(point, R.drawable.baseline_person_pin_24)
             lat.let { viewModel.setLatitudeClient(it) }
             long.let { viewModel.setLongitudeClient(it) }
-            if (viewModel.latitudeDestiny.value != null && viewModel.longitudeDestiny.value != null) {
-                viewModel.getDriverProv(
-                    viewModel.latitudeClient.value!!,
-                    viewModel.longitudeClient.value!!
-                )
-            }
         }else{
             FancyToast.makeText(
                 this@ActivityMapHome ,
@@ -187,12 +272,6 @@ class ActivityMapHome : AppCompatActivity() {
             long?.let { viewModel.setLongitudeDestiny(it) }
             val point = Point.fromLngLat(long!!, lat!!)
             addAnnotationToMap(point, R.drawable.marker_map)
-            if (viewModel.latitudeClient.value != null && viewModel.longitudeClient.value != null) {
-                viewModel.getDriverProv(
-                    viewModel.latitudeClient.value!!,
-                    viewModel.longitudeClient.value!!
-                )
-            }
         }else{
             FancyToast.makeText(
                 this@ActivityMapHome ,
@@ -202,6 +281,20 @@ class ActivityMapHome : AppCompatActivity() {
         }
     }
 
+
+
+    //Update all drivers position
+    private fun updateDriversPositionInMap(){
+        pointAnnotationManager.deleteAll()
+        if(viewModel.listSmallDriver.value !=null) {
+            for (it in viewModel.listSmallDriver.value!!) {
+                addAnnotationDrivers(
+                    Point.fromLngLat(it.longitude, it.latitude),
+                    R.drawable.dirver_icon
+                )
+            }
+        }
+    }
 
 
 
@@ -234,7 +327,7 @@ class ActivityMapHome : AppCompatActivity() {
                 dialog,_->
             dialog.dismiss()
             FancyToast.makeText(this@ActivityMapHome,
-                "Su taxi esta en camino, por favor espere",
+                getString(R.string.su_taxi_esta_en_camino),
                 FancyToast.LENGTH_LONG,FancyToast.SUCCESS,false).show()
             binding.clAvailableTaxis.visibility = View.GONE
 
@@ -242,12 +335,6 @@ class ActivityMapHome : AppCompatActivity() {
 
         //create the alert dialog and show it
         builder.create().show()
-    }
-
-
-
-    // Calcula la ruta utilizando la API de direcciones de Mapbox
-    fun calRute(){
     }
 
 
@@ -289,6 +376,47 @@ class ActivityMapHome : AppCompatActivity() {
         binding.mapView.getMapboxMap().setCamera(camera)
     }
 
+    private fun addAnnotationDrivers(point: Point, @DrawableRes drawable: Int) {
+        ImageTools.bitmapFromDrawableRes(
+            this@ActivityMapHome,
+            drawable
+        )?.let {
+            val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
+                .withPoint(point)
+                .withIconImage(it)
+                .withIconSize(1.0)
+            val pointAnnotation = pointAnnotationManager.create(pointAnnotationOptions)
+        }
+        val camera = CameraOptions.Builder()
+            .center(point)
+            .zoom(16.5)
+            .bearing(50.0)
+            .build()
+        binding.mapView.getMapboxMap().setCamera(camera)
+    }
+
+
+
+    //Navigation
+    private fun initNavigation() {
+        MapboxNavigationApp.setup(
+            NavigationOptions.Builder(this)
+                .accessToken(getString(R.string.mapbox_access_token))
+                .build()
+        )
+    }
+
+    private fun drawRouteLine(routes: List<NavigationRoute>){
+        val routeLineOptions = MapboxRouteLineOptions.Builder(this).build()
+        val routeLineApi = MapboxRouteLineApi(routeLineOptions)
+        val routeLineView = MapboxRouteLineView(routeLineOptions)
+
+
+        routeLineApi.setNavigationRoutes(routes) { value ->
+            binding.mapView.getMapboxMap().getStyle()
+                ?.let { routeLineView.renderRouteDrawData(it, value) }
+        }
+    }
 
 
 
@@ -323,7 +451,7 @@ class ActivityMapHome : AppCompatActivity() {
 
 
 
-    //Override Methods
+    //Map LifeCycle
     @SuppressLint("Lifecycle")
     override fun onStart() {
         super.onStart()
@@ -347,7 +475,6 @@ class ActivityMapHome : AppCompatActivity() {
         super.onDestroy()
         mapView?.onDestroy()
     }
-
 
 }
 

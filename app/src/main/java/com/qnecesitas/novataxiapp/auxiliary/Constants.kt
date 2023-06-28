@@ -15,6 +15,8 @@ class Constants {
         //Version
         const val APP_VERSION = "1.0"
 
+        //Worker
+        const val WORKER_DRIVER_CODE = "LIST_DRIVER"
     }
 
 }

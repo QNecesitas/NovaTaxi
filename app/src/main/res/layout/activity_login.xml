@@ -24,7 +24,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0sp"
-        android:background="#74000000"
+        android:background="#4A000000"
         android:orientation="vertical"
         android:scaleType="centerCrop"
         app:layout_constraintDimensionRatio="1"
@@ -84,7 +84,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/correo_electronico"
                     android:inputType="text"
-                    android:maxLength="20" />
+                    android:maxLength="250" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -106,7 +106,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/contrasena"
                     android:inputType="textPassword"
-                    android:maxLength="20" />
+                    android:maxLength="250" />
 
             </com.google.android.material.textfield.TextInputLayout>
 

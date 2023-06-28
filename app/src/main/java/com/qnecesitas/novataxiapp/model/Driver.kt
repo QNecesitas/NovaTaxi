@@ -4,7 +4,7 @@ data class Driver(
     val email: String,
     val name: String,
     val phone:String,
-    val price:Double,
+    var price:Double,
     val typeCar:String,
     val cantSeat:Int,
     val maxDist: Int,

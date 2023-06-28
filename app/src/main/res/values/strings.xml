@@ -96,4 +96,6 @@
     <string name="Vaya_a_ajustes">Vaya a los ajustes y encienda la ubicación </string>
     <string name="Ubicacion_desconocida">Ubicación desactivada</string>
     <string name="colocar_posici_n">Colocar posición</string>
+    <string name="su_taxi_esta_en_camino">Su taxi está en camino, por favor espere</string>
+    <string name="error_al_obtener_la_ruta">No encontramos una ruta</string>
 </resources>

@@ -21,11 +21,12 @@ class DriverAdapter(private val context: Context): ListAdapter<Driver, DriverVie
         fun bind(driver: Driver, context: Context,clickDetails:ITouchDetails?,clickAsk:ITouchAsk?) {
 
             //Declare
-            var price = driver.price
-
+            val price = driver.price
+            val cantSeat = driver.cantSeat
 
 
             binding.tvPrice.text = price.toString()
+            binding.tvCantSeat.text = cantSeat.toString()
 
             binding.tvMoreDetails.setOnClickListener{ clickDetails?.onClickDetails(position) }
             binding.tvBuy.setOnClickListener{ clickAsk?.onClickAsk(position) }
@@ -55,7 +56,7 @@ class DriverAdapter(private val context: Context): ListAdapter<Driver, DriverVie
     companion object {
         private val DiffCallback = object : DiffUtil.ItemCallback<Driver>(){
             override fun areItemsTheSame(oldItem: Driver, newItem: Driver): Boolean {
-                return oldItem.name == newItem.name
+                return oldItem == newItem
             }
 
             override fun areContentsTheSame(oldItem: Driver, newItem: Driver): Boolean {
