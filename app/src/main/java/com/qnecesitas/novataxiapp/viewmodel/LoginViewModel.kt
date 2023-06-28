@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.qnecesitas.novataxiapp.auxiliary.Constants
-import com.qnecesitas.novataxiapp.auxiliary.UserAccount
+import com.qnecesitas.novataxiapp.auxiliary.UserAccountShared
 import com.qnecesitas.novataxiapp.model.User
 import com.qnecesitas.novataxiapp.network.AuxiliaryDataSourceNetwork
 import com.qnecesitas.novataxiapp.network.UserDataSourceNetwork
@@ -81,7 +81,7 @@ class LoginViewModel : ViewModel() {
 
     //Save the info
     fun saveUserInfo(user: User?, context: Context){
-        user?.let { UserAccount.setUserInfo(it, context) }
+        user?.let { UserAccountShared.setUserInfo(it, context) }
     }
 
     //Send recover petition

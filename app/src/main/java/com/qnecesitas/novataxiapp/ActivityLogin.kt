@@ -4,9 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -14,7 +12,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.qnecesitas.novataxiapp.auxiliary.NetworkTools
-import com.qnecesitas.novataxiapp.auxiliary.UserAccount
 import com.qnecesitas.novataxiapp.databinding.ActivityLoginBinding
 import com.qnecesitas.novataxiapp.databinding.LiEmailToRecoverBinding
 import com.qnecesitas.novataxiapp.viewmodel.LoginViewModel

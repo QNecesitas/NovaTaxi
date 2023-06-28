@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.mapbox.api.directions.v5.models.RouteOptions
@@ -28,6 +29,7 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import kotlin.math.*
@@ -276,7 +278,10 @@ class MapHomeViewModel(application: Application): ViewModel() {
 
     //Start search drivers
     fun startSearchWork(){
-        val operation = OneTimeWorkRequestBuilder<RequestWorker>()
+        val operation = PeriodicWorkRequestBuilder<RequestWorker>(
+            20, TimeUnit.SECONDS,
+            5,TimeUnit.SECONDS
+        )
             .addTag(Constants.WORKER_DRIVER_CODE)
             .build()
         workManager.enqueue(

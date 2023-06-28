@@ -22,6 +22,7 @@ import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.work.WorkInfo
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
@@ -29,6 +30,8 @@ import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
+import com.mapbox.maps.plugin.compass.compass
+import com.mapbox.maps.plugin.scalebar.scalebar
 import com.mapbox.navigation.base.options.NavigationOptions
 import com.mapbox.navigation.base.route.NavigationRoute
 import com.mapbox.navigation.core.MapboxNavigation
@@ -40,6 +43,7 @@ import com.mapbox.navigation.ui.maps.route.line.model.MapboxRouteLineOptions
 import com.qnecesitas.novataxiapp.adapters.DriverAdapter
 import com.qnecesitas.novataxiapp.auxiliary.ImageTools
 import com.qnecesitas.novataxiapp.auxiliary.NetworkTools
+import com.qnecesitas.novataxiapp.auxiliary.UserAccountShared
 import com.qnecesitas.novataxiapp.databinding.ActivityMapHomeBinding
 import com.qnecesitas.novataxiapp.viewmodel.MapHomeViewModel
 import com.qnecesitas.novataxiapp.viewmodel.MapHomeViewModelFactory
@@ -109,8 +113,9 @@ class ActivityMapHome : AppCompatActivity() {
 
         //Observers
         viewModel.listSmallDriver.observe(this) {
-                driverAdapter.submitList(viewModel.listSmallDriver.value)
-                updateDriversPositionInMap()
+            driverAdapter.submitList(viewModel.listSmallDriver.value)
+            updateDriversPositionInMap()
+
         }
 
         viewModel.state.observe(this) {
@@ -197,13 +202,17 @@ class ActivityMapHome : AppCompatActivity() {
 
 
         //Map
-        binding.mapView.getMapboxMap().loadStyleUri("mapbox://styles/ronnynp/cljbn45qs00u201qp84tqauzq/draft")
+        binding.mapView.getMapboxMap()
+            .loadStyleUri("mapbox://styles/ronnynp/cljbn45qs00u201qp84tqauzq/draft")
+        val lastPointSelected = UserAccountShared.getLastLocation(this)
         val camera = CameraOptions.Builder()
-            .center(Point.fromLngLat(-76.2593,20.886953))
+            .center(Point.fromLngLat(lastPointSelected.longitude(),lastPointSelected.latitude()))
             .zoom(16.0)
             .pitch(50.0)
             .build()
         binding.mapView.getMapboxMap().setCamera(camera)
+        binding.mapView.scalebar.enabled = false
+        binding.mapView.compass.enabled = false
 
         binding.extBtnUbicUser.setOnClickListener{ selectUserLocation() }
 
@@ -218,7 +227,7 @@ class ActivityMapHome : AppCompatActivity() {
 
 
 
-        //Recycler Listeners
+        //Listeners
         driverAdapter.setClickDetails(object : DriverAdapter.ITouchDetails{
             override fun onClickDetails(position: Int) {
                 val intent = Intent(this@ActivityMapHome,ActivityInfoDriver::class.java)
@@ -233,9 +242,22 @@ class ActivityMapHome : AppCompatActivity() {
             }
         })
 
+        binding.realTimeButton.setOnClickListener{
+
+            val lm = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            if(lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+
+                viewModel.setIsNecessaryCamera(true)
+                getLocationRealtime()
+
+            }else{
+                showAlertDialogNotLocationSettings()
+            }
+        }
 
 
         //Start work
+        viewModel.setIsNecessaryCamera(true)
         getLocationRealtime()
         viewModel.startSearchWork()
     }
@@ -349,6 +371,19 @@ class ActivityMapHome : AppCompatActivity() {
         builder.create().show()
     }
 
+    private fun showAlertDialogNotLocationSettings() {
+        //init alert dialog
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setCancelable(false)
+        builder.setTitle(R.string.Ubicacion_desconocida)
+        builder.setMessage(R.string.Vaya_a_ajustes)
+        //set listeners for dialog buttons
+        builder.setPositiveButton(R.string.Aceptar) { dialog, _ ->
+            dialog.dismiss()
+        }
+        //create the alert dialog and show it
+        builder.create().show()
+    }
 
 
 
@@ -381,12 +416,6 @@ class ActivityMapHome : AppCompatActivity() {
                 }
             }
         }
-        val camera = CameraOptions.Builder()
-            .center(point)
-            .zoom(16.5)
-            .bearing(50.0)
-            .build()
-        binding.mapView.getMapboxMap().setCamera(camera)
     }
 
     private fun addAnnotationDrivers(point: Point, @DrawableRes drawable: Int) {
@@ -400,12 +429,6 @@ class ActivityMapHome : AppCompatActivity() {
                 .withIconSize(1.0)
             val pointAnnotation = pointAnnotationManager.create(pointAnnotationOptions)
         }
-        val camera = CameraOptions.Builder()
-            .center(point)
-            .zoom(16.5)
-            .bearing(50.0)
-            .build()
-        binding.mapView.getMapboxMap().setCamera(camera)
     }
 
     private fun getLocationRealtime() {
@@ -413,12 +436,16 @@ class ActivityMapHome : AppCompatActivity() {
             this@ActivityMapHome.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val locationListener: LocationListener = object : LocationListener {
             override fun onLocationChanged(location: Location) {
+                viewModel.setLatitudeClient(location.latitude)
+                viewModel.setLongitudeClient(location.longitude)
                 val point = Point.fromLngLat(location.longitude, location.latitude)
                 addAnnotationToMap(point, R.drawable.baseline_directions_walk_24)
                 if(viewModel.isNecessaryCamera.value == true) {
                     viewModel.pointGPS.value?.let { it1 -> viewCameraInPoint(it1.point) }
                     viewModel.setIsNecessaryCamera(false)
                 }
+
+
             }
 
             @Deprecated("Deprecated in Java")

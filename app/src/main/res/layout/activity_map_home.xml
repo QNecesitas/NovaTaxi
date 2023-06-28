@@ -6,29 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ActivityMapHome">
 
-
-    <!--Toolbar-->
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:fitsSystemWindows="true"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fitsSystemWindows="true"
-            android:theme="@style/ToolbarIcons"
-            app:title="@string/Mapa"
-            app:titleTextColor="?attr/colorOnPrimary">
-
-        </androidx.appcompat.widget.Toolbar>
-    </com.google.android.material.appbar.AppBarLayout>
-
     <!--LL Container-->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/llContainer"
@@ -37,7 +14,7 @@
         android:orientation="vertical"
         android:weightSum="4"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appBar">
+        app:layout_constraintTop_toTopOf="parent">
 
         <!--CL Map container-->
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -129,8 +106,23 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appBar"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <ImageView
+        android:backgroundTint="?attr/colorTertiaryContainer"
+        android:id="@+id/realTimeButton"
+        android:padding="4dp"
+        android:translationZ="12dp"
+        android:background="@drawable/clientimage"
+        android:layout_margin="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/baseline_gps_fixed_24"
+        android:contentDescription="@string/mi_ubicaci_n"
+        app:tint="?attr/colorOnTertiaryContainer" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

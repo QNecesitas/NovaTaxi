@@ -21,7 +21,9 @@ import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
+import com.mapbox.maps.plugin.compass.compass
 import com.mapbox.maps.plugin.gestures.addOnMapLongClickListener
+import com.mapbox.maps.plugin.scalebar.scalebar
 import com.qnecesitas.novataxiapp.databinding.ActivityPutMapBinding
 import com.qnecesitas.novataxiapp.viewmodel.PutMapViewModel
 import com.qnecesitas.novataxiapp.viewmodel.PutMapViewModelFactory
@@ -73,6 +75,12 @@ class ActivityPutMap : AppCompatActivity() {
 
             true
         }
+        binding.mapView.scalebar.enabled = false
+        binding.mapView.compass.enabled = false
+
+
+
+        //Listeners
         binding.addLocation.setOnClickListener{
             addLocation()
         }
@@ -88,6 +96,8 @@ class ActivityPutMap : AppCompatActivity() {
                 showAlertDialogNotLocationSettings()
             }
         }
+
+
 
         viewModel.setIsNecessaryCamera(true)
         getLocationRealtime()
