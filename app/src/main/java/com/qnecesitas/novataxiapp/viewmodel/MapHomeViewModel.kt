@@ -8,10 +8,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
 import com.mapbox.api.directions.v5.models.RouteOptions
 import com.mapbox.geojson.Point
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
@@ -20,11 +16,12 @@ import com.mapbox.navigation.base.route.NavigationRoute
 import com.mapbox.navigation.base.route.NavigationRouterCallback
 import com.mapbox.navigation.base.route.RouterFailure
 import com.mapbox.navigation.base.route.RouterOrigin
+import com.mapbox.navigation.base.route.toDirectionsRoutes
 import com.mapbox.navigation.core.MapboxNavigation
 import com.qnecesitas.novataxiapp.auxiliary.Constants
-import com.qnecesitas.novataxiapp.auxiliary.RequestWorker
 import com.qnecesitas.novataxiapp.model.Driver
 import com.qnecesitas.novataxiapp.network.DriverDataSourceNetwork
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -94,20 +91,23 @@ class MapHomeViewModel(application: Application): ViewModel() {
     val route: LiveData<List<NavigationRoute>> get() = _route
 
 
-    //WorkManger
-    private val workManager = WorkManager.getInstance(application)
-    val outputWorkList: LiveData<List<WorkInfo>> =
-        workManager.getWorkInfosByTagLiveData(Constants.WORKER_DRIVER_CODE)
-
 
     //Recycler information
-    fun getDriverProv(latUser: Double, longUser: Double) {
+    fun getDriverProv() {
+        _latitudeClient.value?.let {
+            _longitudeClient.value?.let { it1 ->
 
-        //Call
-        val call = driverDataSourceNetwork.getDriver(
-            Constants.PHP_TOKEN,
-        )
-        getResponseInfoDriverProv(call,latUser,longUser)
+                //Call
+                val call = driverDataSourceNetwork.getDriver(
+                    Constants.PHP_TOKEN,
+                )
+                getResponseInfoDriverProv(
+                    call,
+                    it,
+                    it1
+                )
+            }
+        }
 
     }
 
@@ -132,9 +132,12 @@ class MapHomeViewModel(application: Application): ViewModel() {
     }
 
     private fun filterDriver(alDriver: MutableList<Driver>?,latUser: Double, longUser: Double){
+
         val alResult = alDriver?.filter {
             it.maxDist > calculateDist(latUser ,longUser, it.latitude, it.longitude)
+                    && it.latitude != 0.0 && it.longitude != 0.0
         }?.toMutableList()
+
 
         _listSmallDriver.value = alResult
         _state.value = StateConstants.SUCCESS
@@ -142,7 +145,15 @@ class MapHomeViewModel(application: Application): ViewModel() {
 
     private fun calculateDist(latUser: Double, longUser: Double, latCar: Double, longCar: Double): Double {
 
-           return ((sqrt((latUser - latCar) * (latUser - latCar) + (longUser - longCar) * (longUser - longCar)) + 0.004) * 100.0)
+        val earthRadius = 6371.0 // Radio de la Tierra en km
+        val dLat = (latCar - latUser) * PI / 180.0
+        val dLon = (longCar - longUser) * PI / 180.0
+        val lat1Rad = latUser * PI / 180.0
+        val lat2Rad = latCar * PI / 180.0
+
+        val a = sin(dLat / 2).pow(2) + sin(dLon / 2).pow(2) * cos(lat1Rad) * cos(lat2Rad)
+        val c = 2 * asin(sqrt(a))
+        return earthRadius * c
     }
 
 
@@ -181,85 +192,6 @@ class MapHomeViewModel(application: Application): ViewModel() {
         )
     }
 
-    private suspend fun getRouteToCalculate(
-        originPoint: Point,
-        destinationPoint: Point,
-        carPoint: Point,
-        mapboxNavigation: MapboxNavigation
-    ): List<NavigationRoute>? = suspendCoroutine{ continuation ->
-
-        mapboxNavigation.requestRoutes(
-            RouteOptions.builder()
-                .applyDefaultNavigationOptions()
-                .coordinatesList(listOf( carPoint, originPoint, destinationPoint ))
-                .build(),
-            object : NavigationRouterCallback {
-                override fun onCanceled(routeOptions: RouteOptions, routerOrigin: RouterOrigin) {
-                    continuation.resume(null)
-                }
-
-                override fun onFailure(reasons: List<RouterFailure>, routeOptions: RouteOptions) {
-                    continuation.resume(null)
-                }
-
-                override fun onRoutesReady(
-                    routes: List<NavigationRoute>,
-                    routerOrigin: RouterOrigin
-                ) {
-                    continuation.resume(routes)
-                }
-
-            }
-        )
-    }
-
-    private fun getRouteDistance(list: List<NavigationRoute>): Double{
-        var sum = 0.0
-        for (it in list) {
-            sum += it.directionsRoute.distance()
-        }
-        return  sum
-    }
-
-    private suspend fun getPriceDistance(
-        driverPrice: Double,
-        originPoint: Point,
-        destinationPoint: Point,
-        carPoint: Point,
-        mapboxNavigation: MapboxNavigation): Double?{
-
-        val route =
-            getRouteToCalculate(originPoint, destinationPoint, carPoint, mapboxNavigation)
-        val distance = route?.let { getRouteDistance(it) }
-
-        return distance?.times(driverPrice)
-    }
-
-    fun updatePricesInList(mapboxNavigation: MapboxNavigation){
-        try {
-            viewModelScope.launch {
-                if (_listSmallDriver.value != null) {
-                    val newList = mutableListOf<Driver>()
-                    for (it in _listSmallDriver.value!!) {
-                        it.price = getPriceDistance(
-                            it.price,
-                            _pointUbic.value!!.point,
-                            _pointDest.value!!.point,
-                            Point.fromLngLat(it.longitude, it.latitude),
-                            mapboxNavigation
-                        )!!
-                        newList.add(it)
-                    }
-                    _listSmallDriver.value = newList
-                    _stateChargingPrice.value = StateConstants.SUCCESS
-                }
-            }
-        }catch (e: Exception){
-            e.printStackTrace()
-        }
-    }
-
-
 
     //SetLocations
     fun setLatitudeClient(lat: Double){
@@ -270,34 +202,38 @@ class MapHomeViewModel(application: Application): ViewModel() {
         _longitudeClient.value = long
     }
 
+
+
+
     fun setIsNecessaryCamera(boolean: Boolean){
         _isNecessaryCamera.value = boolean
     }
 
 
 
-    //Start search drivers
-    fun startSearchWork(){
-        val operation = PeriodicWorkRequestBuilder<RequestWorker>(
-            20, TimeUnit.SECONDS,
-            5,TimeUnit.SECONDS
-        )
-            .addTag(Constants.WORKER_DRIVER_CODE)
-            .build()
-        workManager.enqueue(
-            operation
-        )
+
+    fun startSearchDrivers(){
+        viewModelScope.launch {
+            while (true){
+                Log.d("TEST", "...")
+                getDriverProv()
+                delay(TimeUnit.SECONDS.toMillis(30))
+            }
+        }
     }
 
 
+
     //SetPoints
-    fun setPointUbic(point: PointAnnotation){
+    fun setPointLocation(point: PointAnnotation){
         _pointUbic.value = point
     }
 
     fun setPointDest(point: PointAnnotation){
         _pointDest.value = point
     }
+
+
 
 }
 

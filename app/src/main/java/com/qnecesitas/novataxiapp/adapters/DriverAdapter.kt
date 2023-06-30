@@ -4,12 +4,27 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.mapbox.api.directions.v5.models.RouteOptions
+import com.mapbox.geojson.Point
+import com.mapbox.navigation.base.extensions.applyDefaultNavigationOptions
+import com.mapbox.navigation.base.route.NavigationRoute
+import com.mapbox.navigation.base.route.NavigationRouterCallback
+import com.mapbox.navigation.base.route.RouterFailure
+import com.mapbox.navigation.base.route.RouterOrigin
+import com.mapbox.navigation.base.route.toDirectionsRoutes
+import com.mapbox.navigation.core.MapboxNavigation
 import com.qnecesitas.novataxiapp.adapters.DriverAdapter.*
 import com.qnecesitas.novataxiapp.databinding.RecyclerAvailableTaxiBinding
 import com.qnecesitas.novataxiapp.model.Driver
+import com.qnecesitas.novataxiapp.viewmodel.MapHomeViewModel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class DriverAdapter(private val context: Context): ListAdapter<Driver, DriverViewHolder>(DiffCallback) {
 
@@ -65,6 +80,84 @@ class DriverAdapter(private val context: Context): ListAdapter<Driver, DriverVie
 
         }
     }
+
+
+
+    private suspend fun getRouteToCalculate(
+        originPoint: Point,
+        destinationPoint: Point,
+        carPoint: Point,
+        mapboxNavigation: MapboxNavigation
+    ): List<NavigationRoute>? = suspendCoroutine{ continuation ->
+
+        mapboxNavigation.requestRoutes(
+            RouteOptions.builder()
+                .applyDefaultNavigationOptions()
+                .coordinatesList(listOf( carPoint, originPoint, destinationPoint ))
+                .build(),
+            object : NavigationRouterCallback {
+                override fun onCanceled(routeOptions: RouteOptions, routerOrigin: RouterOrigin) {
+                    continuation.resume(null)
+                }
+
+                override fun onFailure(reasons: List<RouterFailure>, routeOptions: RouteOptions) {
+                    continuation.resume(null)
+                }
+
+                override fun onRoutesReady(
+                    routes: List<NavigationRoute>,
+                    routerOrigin: RouterOrigin
+                ) {
+                    continuation.resume(routes)
+                }
+
+            }
+        )
+    }
+
+    private fun getRouteDistance(list: List<NavigationRoute>): Double{
+        var sum = 0.0
+        for (it in list.toDirectionsRoutes()) {
+
+            sum += it.distance()
+        }
+        return  sum / 1000
+    }
+
+    private suspend fun getPriceDistance(
+        driverPrice: Double,
+        originPoint: Point,
+        destinationPoint: Point,
+        carPoint: Point,
+        mapboxNavigation: MapboxNavigation
+    ): Double?{
+
+        val route =
+            getRouteToCalculate(originPoint, destinationPoint, carPoint, mapboxNavigation)
+        val distance = route?.let { getRouteDistance(it) }
+
+        return distance?.times(driverPrice)
+    }
+
+    suspend fun updatePricesInList(
+        mapboxNavigation: MapboxNavigation,
+        driver: Driver,
+        pointUser: Point,
+        pointDestiny: Point
+    ): Double {
+        return try {
+            getPriceDistance(
+                driver.price,
+                pointUser,
+                pointDestiny,
+                Point.fromLngLat(driver.longitude, driver.latitude),
+                mapboxNavigation
+            )!!
+        }catch (e: Exception){
+            0.0
+        }
+    }
+
 
 
     //Details

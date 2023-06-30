@@ -18,45 +18,21 @@
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
             android:theme="@style/ToolbarIcons"
-            android:background="?attr/colorPrimary"
-            app:title="@string/colocar_posici_n"
-            app:titleTextColor="?attr/colorOnPrimary" />
+            android:background="?attr/colorPrimary">
+
+            <TextView
+                android:id="@+id/text_seleccionar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/mantenga_presionado_en_el_mapa_para_seleccionar_su_ubicaci_n"
+                android:textAlignment="center"
+                android:textSize="@dimen/text_m"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnPrimary"
+                android:layout_gravity="center_horizontal"/>
+
+        </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:id="@+id/ASM_CL_aclarar_mant_pulsado"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorSurface"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/map_appBar">
-
-        <TextView
-            android:id="@+id/text_seleccionar"
-            android:layout_marginStart="20sp"
-            android:layout_marginEnd="20sp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/mantenga_presionado_en_el_mapa_para_seleccionar_su_ubicaci_n"
-            android:textAlignment="center"
-            android:textSize="@dimen/text_m"
-            android:textStyle="bold"
-            android:textColor="?attr/colorOnBackground"
-            android:layout_gravity="center_horizontal"/>
-
-        <View
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:background="?attr/colorTertiary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"/>
-
-    </LinearLayout>
 
 
     <com.mapbox.maps.MapView
@@ -64,7 +40,7 @@
         android:id="@+id/mapView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        mapbox:layout_constraintTop_toBottomOf="@+id/ASM_CL_aclarar_mant_pulsado"
+        mapbox:layout_constraintTop_toBottomOf="@id/map_appBar"
         mapbox:layout_constraintBottom_toBottomOf="parent"
 
 

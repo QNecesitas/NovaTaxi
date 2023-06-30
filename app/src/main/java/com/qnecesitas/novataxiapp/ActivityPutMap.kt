@@ -24,6 +24,8 @@ import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.mapbox.maps.plugin.compass.compass
 import com.mapbox.maps.plugin.gestures.addOnMapLongClickListener
 import com.mapbox.maps.plugin.scalebar.scalebar
+import com.mapbox.navigation.utils.internal.toPoint
+import com.qnecesitas.novataxiapp.auxiliary.UserAccountShared
 import com.qnecesitas.novataxiapp.databinding.ActivityPutMapBinding
 import com.qnecesitas.novataxiapp.viewmodel.PutMapViewModel
 import com.qnecesitas.novataxiapp.viewmodel.PutMapViewModelFactory
@@ -61,9 +63,11 @@ class ActivityPutMap : AppCompatActivity() {
         //Add Map Event
         val annotationApi = binding.mapView.annotations
         pointAnnotationManager = annotationApi.createPointAnnotationManager()
-        binding.mapView.getMapboxMap().loadStyleUri("mapbox://styles/ronnynp/cljbn45qs00u201qp84tqauzq/draft")
+        binding.mapView.getMapboxMap()
+            .loadStyleUri("mapbox://styles/ronnynp/cljbn45qs00u201qp84tqauzq/draft")
+        val lastPointSelected = UserAccountShared.getLastLocation(this)
         val camera = CameraOptions.Builder()
-            .center(Point.fromLngLat(-76.2593,20.886953))
+            .center(Point.fromLngLat(lastPointSelected.longitude(),lastPointSelected.latitude()))
             .zoom(16.0)
             .pitch(50.0)
             .build()
@@ -86,10 +90,10 @@ class ActivityPutMap : AppCompatActivity() {
         }
         binding.realTimeButton.setOnClickListener{
 
+            viewModel.setIsNecessaryCamera(true)
             val lm = getSystemService(Context.LOCATION_SERVICE) as LocationManager
             if(lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 
-                viewModel.setIsNecessaryCamera(true)
                 getLocationRealtime()
 
             }else{
@@ -173,6 +177,11 @@ class ActivityPutMap : AppCompatActivity() {
                     viewModel.pointGPS.value?.let { it1 -> viewCameraInPoint(it1.point) }
                     viewModel.setIsNecessaryCamera(false)
                 }
+
+                UserAccountShared.setLastLocation(
+                    this@ActivityPutMap,
+                    location.toPoint()
+                )
             }
 
             @Deprecated("Deprecated in Java")
