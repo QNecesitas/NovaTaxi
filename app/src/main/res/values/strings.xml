@@ -98,4 +98,5 @@
     <string name="colocar_posici_n">Colocar posición</string>
     <string name="su_taxi_esta_en_camino">Su taxi está en camino, por favor espere</string>
     <string name="error_al_obtener_la_ruta">No encontramos una ruta</string>
+    <string name="cambiar_n_mero_de_tel_fono">Cambiar número de teléfono</string>
 </resources>
