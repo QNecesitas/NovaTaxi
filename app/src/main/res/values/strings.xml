@@ -99,4 +99,7 @@
     <string name="su_taxi_esta_en_camino">Su taxi está en camino, por favor espere</string>
     <string name="error_al_obtener_la_ruta">No encontramos una ruta</string>
     <string name="cambiar_n_mero_de_tel_fono">Cambiar número de teléfono</string>
+    <string name="Actualizando">Actualizando</string>
+    <string name="error_al_encontrar_la_ubicaci_n">Error al encontrar la ubicación</string>
+    <string name="espere_confirmacion">Espere la confirmación del conductor</string>
 </resources>

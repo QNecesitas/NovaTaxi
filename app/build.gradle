@@ -64,6 +64,6 @@ dependencies {
         exclude group: 'group_name', module: 'module_name'
     }
     implementation "com.mapbox.navigation:android:2.14.0"
-    implementation "androidx.work:work-runtime-ktx:2.8.1"
 
+    
 }
