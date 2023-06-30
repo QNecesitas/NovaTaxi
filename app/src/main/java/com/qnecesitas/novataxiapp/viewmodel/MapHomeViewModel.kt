@@ -16,19 +16,20 @@ import com.mapbox.navigation.base.route.NavigationRoute
 import com.mapbox.navigation.base.route.NavigationRouterCallback
 import com.mapbox.navigation.base.route.RouterFailure
 import com.mapbox.navigation.base.route.RouterOrigin
-import com.mapbox.navigation.base.route.toDirectionsRoutes
 import com.mapbox.navigation.core.MapboxNavigation
 import com.qnecesitas.novataxiapp.auxiliary.Constants
 import com.qnecesitas.novataxiapp.model.Driver
 import com.qnecesitas.novataxiapp.network.DriverDataSourceNetwork
+import com.qnecesitas.novataxiapp.network.TripsDataSourceNetwork
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 import java.util.concurrent.TimeUnit
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 import kotlin.math.*
 
 
@@ -48,19 +49,20 @@ class MapHomeViewModel(application: Application): ViewModel() {
     val isNecessaryCamera: LiveData<Boolean> get() = _isNecessaryCamera
 
 
-    //State charging price
-    private val _stateChargingPrice = MutableLiveData<StateConstants>()
-    val stateChargingPrice: LiveData<StateConstants> get() = _stateChargingPrice
-
-
     //Progress state
     enum class StateConstants { LOADING, SUCCESS, ERROR }
     private val _state = MutableLiveData<StateConstants>()
     val state: LiveData<StateConstants> get() = _state
 
 
+    //State Trip accepted
+    private val _stateTrip = MutableLiveData<StateConstants>()
+    val stateTrip: LiveData<StateConstants> get() = _state
+
+
     //Network Data Source
     private var driverDataSourceNetwork: DriverDataSourceNetwork = DriverDataSourceNetwork()
+    private var tripsDataSourceNetwork: TripsDataSourceNetwork = TripsDataSourceNetwork()
 
 
     //LatitudeClient
@@ -234,6 +236,64 @@ class MapHomeViewModel(application: Application): ViewModel() {
     }
 
 
+
+
+    //Trip operation
+    fun addTrip(
+        emailDriver: String,
+        emailUser: String,
+        price: Int,
+        distance: Double,
+        latDest: Double,
+        longDest: Double,
+        latOri: Double,
+        longOri: Double,
+        userPhone: String
+    ) {
+        //Call
+        val call = tripsDataSourceNetwork.addTrip(
+            Constants.PHP_TOKEN,
+            emailDriver,
+            emailUser,
+            price,
+            distance,
+            makeDate(),
+            latDest,
+            longDest,
+            latOri,
+            longOri,
+            userPhone
+        )
+        getTripResponse(
+            call
+        )
+    }
+
+    private fun getTripResponse(call: Call<String>) {
+        call.enqueue(object : Callback<String> {
+            override fun onResponse(
+                call: Call<String>,
+                response: Response<String>
+            ) {
+                if (response.isSuccessful) {
+                    if(response.body() == "Success"){
+                        _stateTrip.value = StateConstants.SUCCESS
+                    }else _stateTrip.value = StateConstants.ERROR
+                } else _stateTrip.value = StateConstants.ERROR
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                _state.value = StateConstants.ERROR
+            }
+        })
+    }
+
+    private fun makeDate(): String {
+        val allDate: String
+        val calendar = Calendar.getInstance()
+        allDate = SimpleDateFormat("dd-MM-yy hh:mm aa", Locale.getDefault()).format(calendar.time)
+        return allDate
+    }
 
 }
 

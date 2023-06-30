@@ -44,6 +44,7 @@ import com.qnecesitas.novataxiapp.auxiliary.ImageTools
 import com.qnecesitas.novataxiapp.auxiliary.NetworkTools
 import com.qnecesitas.novataxiapp.auxiliary.UserAccountShared
 import com.qnecesitas.novataxiapp.databinding.ActivityMapHomeBinding
+import com.qnecesitas.novataxiapp.model.Driver
 import com.qnecesitas.novataxiapp.viewmodel.MapHomeViewModel
 import com.qnecesitas.novataxiapp.viewmodel.MapHomeViewModelFactory
 import com.shashank.sony.fancytoastlib.FancyToast
@@ -88,14 +89,6 @@ class ActivityMapHome : AppCompatActivity() {
         binding = ActivityMapHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
-        //Recycler
-        val driverAdapter = DriverAdapter(this@ActivityMapHome)
-        binding.rvTaxis.adapter = driverAdapter
-
-
-
-
         //Results launchers
         resultLauncherUbic =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -112,23 +105,36 @@ class ActivityMapHome : AppCompatActivity() {
 
         //Observers
         viewModel.listSmallDriver.observe(this) {
-            driverAdapter.submitList(viewModel.listSmallDriver.value)
-            updateDriversPositionInMap()
-            binding.progressRecycler.visibility = View.GONE
-            driverAdapter.notifyDataSetChanged()
-        }
+            viewModel.pointDest.value?.let {
+                viewModel.pointUbic.value?.let { it1 ->
+                    val driverAdapter =
+                        DriverAdapter(
+                            this@ActivityMapHome,
+                            mapboxNavigation,
+                            it1.point,
+                            it.point
+                        )
+                    driverAdapter.setClickDetails(object : DriverAdapter.ITouchDetails{
+                        override fun onClickDetails(position: Int) {
+                            val intent = Intent(this@ActivityMapHome,ActivityInfoDriver::class.java)
+                            intent.putExtra("emailSelected", viewModel.listSmallDriver.value?.get(position)?.email)
+                            startActivity(intent)
+                        }
+                    })
+                    driverAdapter.setClick(object : DriverAdapter.ITouchAsk{
+                        override fun onClickAsk(driver: Driver, price: Int) {
+                            val distance = price / driver.price
+                            showAlertDialogConfirmCar(driver.email, price, distance)
 
-        viewModel.stateChargingPrice.observe(this) {
-            when(it){
-                MapHomeViewModel.StateConstants.LOADING -> binding.progress.visibility = View.VISIBLE
-                MapHomeViewModel.StateConstants.SUCCESS -> {
-                    binding.progress.visibility = View.GONE
-                }
-                MapHomeViewModel.StateConstants.ERROR -> {
-                    NetworkTools.showAlertDialogNoInternet(this)
-                    binding.progress.visibility = View.GONE
+                        }
+                    })
+                    driverAdapter.submitList(viewModel.listSmallDriver.value)
+                    binding.rvTaxis.adapter = driverAdapter
+
                 }
             }
+            updateDriversPositionInMap()
+            binding.progressRecycler.visibility = View.GONE
         }
 
         viewModel.routeState.observe(this){
@@ -195,8 +201,20 @@ class ActivityMapHome : AppCompatActivity() {
                 }
             }
         }
-        //TODO Hacer que no se muestre el precio hasta que este calculadp
 
+        viewModel.stateTrip.observe(this){
+            when(it){
+                MapHomeViewModel.StateConstants.LOADING -> binding.progress.visibility = View.VISIBLE
+                MapHomeViewModel.StateConstants.SUCCESS -> {
+                    binding.progress.visibility = View.VISIBLE
+
+                    FancyToast.makeText(this@ActivityMapHome,
+                        getString(R.string.espere_confirmacion),
+                        FancyToast.LENGTH_LONG,FancyToast.SUCCESS,false).show()
+                }
+                MapHomeViewModel.StateConstants.ERROR -> binding.progress.visibility = View.VISIBLE
+            }
+        }
 
 
 
@@ -228,19 +246,6 @@ class ActivityMapHome : AppCompatActivity() {
 
 
         //Listeners
-        driverAdapter.setClickDetails(object : DriverAdapter.ITouchDetails{
-            override fun onClickDetails(position: Int) {
-                val intent = Intent(this@ActivityMapHome,ActivityInfoDriver::class.java)
-                intent.putExtra("emailSelected", viewModel.listSmallDriver.value?.get(position)?.email)
-                startActivity(intent)
-            }
-        })
-
-        driverAdapter.setClick(object : DriverAdapter.ITouchAsk{
-            override fun onClickAsk(position: Int) {
-                showAlertDialogConfirmCar()
-            }
-        })
 
         binding.realTimeButton.setOnClickListener{
 
@@ -292,7 +297,7 @@ class ActivityMapHome : AppCompatActivity() {
         }else{
             FancyToast.makeText(
                 this@ActivityMapHome ,
-                "Error al encontrar la ubicación" ,
+                getString(R.string.error_al_encontrar_la_ubicaci_n) ,
                 FancyToast.LENGTH_SHORT,FancyToast.ERROR,false
             ).show()
         }
@@ -308,7 +313,7 @@ class ActivityMapHome : AppCompatActivity() {
         }else{
             FancyToast.makeText(
                 this@ActivityMapHome ,
-                "Error al encontrar la ubicación" ,
+                getString(R.string.error_al_encontrar_la_ubicaci_n)  ,
                 FancyToast.LENGTH_SHORT,FancyToast.ERROR,false
             ).show()
         }
@@ -333,6 +338,29 @@ class ActivityMapHome : AppCompatActivity() {
 
 
 
+    //Accept trip
+    private fun acceptedTrip(emailDriver:String, price: Int, distance: Double){
+        UserAccountShared.getUserInfo(this)?.let {
+            viewModel.pointDest.value?.point?.let { it1 ->
+                viewModel.pointUbic.value?.point?.let { it2 ->
+                    viewModel.addTrip(
+                        emailDriver,
+                        it.email,
+                        price,
+                        distance,
+                        it1.latitude(),
+                        it1.longitude(),
+                        it2.latitude(),
+                        it2.longitude(),
+                        it.phone
+                    )
+                }
+            }
+        }
+    }
+
+
+
     //Alert Dialogs
     private fun showAlertDialogNoCar(){
         val builder = AlertDialog.Builder(this)
@@ -347,7 +375,7 @@ class ActivityMapHome : AppCompatActivity() {
         builder.create().show()
     }
 
-    fun showAlertDialogConfirmCar(){
+    private fun showAlertDialogConfirmCar(emailDriver:String, price: Int, distance: Double){
         val builder = AlertDialog.Builder(this)
         builder.setCancelable(true)
         builder.setTitle(this.getString(R.string.ConfirmTaxi))
@@ -361,11 +389,8 @@ class ActivityMapHome : AppCompatActivity() {
         ) {
                 dialog,_->
             dialog.dismiss()
-            FancyToast.makeText(this@ActivityMapHome,
-                getString(R.string.su_taxi_esta_en_camino),
-                FancyToast.LENGTH_LONG,FancyToast.SUCCESS,false).show()
             binding.clAvailableTaxis.visibility = View.GONE
-
+            acceptedTrip(emailDriver, price, distance)
         }
 
         //create the alert dialog and show it

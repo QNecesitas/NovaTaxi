@@ -17,36 +17,156 @@ import com.mapbox.navigation.base.route.RouterFailure
 import com.mapbox.navigation.base.route.RouterOrigin
 import com.mapbox.navigation.base.route.toDirectionsRoutes
 import com.mapbox.navigation.core.MapboxNavigation
+import com.qnecesitas.novataxiapp.R
 import com.qnecesitas.novataxiapp.adapters.DriverAdapter.*
 import com.qnecesitas.novataxiapp.databinding.RecyclerAvailableTaxiBinding
 import com.qnecesitas.novataxiapp.model.Driver
 import com.qnecesitas.novataxiapp.viewmodel.MapHomeViewModel
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class DriverAdapter(private val context: Context): ListAdapter<Driver, DriverViewHolder>(DiffCallback) {
+class DriverAdapter(
+    private val context: Context,
+    private val mapboxNavigation: MapboxNavigation,
+    private val pointUser: Point,
+    private val pointDestiny: Point
+) : ListAdapter<Driver, DriverViewHolder>(DiffCallback) {
 
     private var clickDetails: ITouchDetails? = null
     private var clickAsk: ITouchAsk? = null
 
-    class DriverViewHolder(private var binding: RecyclerAvailableTaxiBinding): RecyclerView.ViewHolder(binding.root){
+    class DriverViewHolder(private var binding: RecyclerAvailableTaxiBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        @OptIn(DelicateCoroutinesApi::class)
         @SuppressLint("SimpleDateFormat")
-        fun bind(driver: Driver, context: Context,clickDetails:ITouchDetails?,clickAsk:ITouchAsk?) {
+        fun bind(
+            driver: Driver,
+            context: Context,
+            clickDetails: ITouchDetails?,
+            clickAsk: ITouchAsk?,
+            mapboxNavigation: MapboxNavigation,
+            pointUser: Point,
+            pointDestiny: Point
+        ) {
 
             //Declare
-            val price = driver.price
+            var price = context.getString(R.string.Actualizando)
             val cantSeat = driver.cantSeat
 
 
-            binding.tvPrice.text = price.toString()
+            binding.tvPrice.text = price
             binding.tvCantSeat.text = cantSeat.toString()
 
-            binding.tvMoreDetails.setOnClickListener{ clickDetails?.onClickDetails(position) }
-            binding.tvBuy.setOnClickListener{ clickAsk?.onClickAsk(position) }
+            binding.tvMoreDetails.setOnClickListener{ clickDetails?.onClickDetails(layoutPosition) }
+            if(price != context.getString(R.string.Actualizando)) {
+                binding.tvBuy.setOnClickListener {
+                    clickAsk?.onClickAsk(
+                        driver,
+                        price.toInt()
+                    )
+                }
+            }
+
+            GlobalScope.launch {
+                price = getCalculatedPrice(
+                    mapboxNavigation,
+                    driver,
+                    pointUser,
+                    pointDestiny
+                ).toInt().toString() + "  CUP"
+
+                withContext(Dispatchers.Main) {
+                    binding.tvPrice.text = price
+                }
+            }
+
 
         }
+
+
+        private suspend fun getRouteToCalculate(
+            originPoint: Point,
+            destinationPoint: Point,
+            carPoint: Point,
+            mapboxNavigation: MapboxNavigation
+        ): List<NavigationRoute>? = suspendCoroutine{ continuation ->
+
+            mapboxNavigation.requestRoutes(
+                RouteOptions.builder()
+                    .applyDefaultNavigationOptions()
+                    .coordinatesList(listOf( carPoint, originPoint, destinationPoint ))
+                    .build(),
+                object : NavigationRouterCallback {
+                    override fun onCanceled(routeOptions: RouteOptions, routerOrigin: RouterOrigin) {
+                        continuation.resume(null)
+                    }
+
+                    override fun onFailure(reasons: List<RouterFailure>, routeOptions: RouteOptions) {
+                        continuation.resume(null)
+                    }
+
+                    override fun onRoutesReady(
+                        routes: List<NavigationRoute>,
+                        routerOrigin: RouterOrigin
+                    ) {
+                        continuation.resume(routes)
+                    }
+
+                }
+            )
+        }
+
+        private fun getRouteDistance(list: List<NavigationRoute>): Double{
+            var sum = 0.0
+            for (it in list.toDirectionsRoutes()) {
+
+                sum += it.distance()
+            }
+            return  sum / 1000
+        }
+
+        private suspend fun getPriceDistance(
+            driverPrice: Double,
+            originPoint: Point,
+            destinationPoint: Point,
+            carPoint: Point,
+            mapboxNavigation: MapboxNavigation
+        ): Double?{
+
+            val route =
+                getRouteToCalculate(originPoint, destinationPoint, carPoint, mapboxNavigation)
+            val distance = route?.let { getRouteDistance(it) }
+
+            return distance?.times(driverPrice)
+        }
+
+        private suspend fun getCalculatedPrice(
+            mapboxNavigation: MapboxNavigation,
+            driver: Driver,
+            pointUser: Point,
+            pointDestiny: Point
+        ): Double {
+            return try {
+                getPriceDistance(
+                    driver.price,
+                    pointUser,
+                    pointDestiny,
+                    Point.fromLngLat(driver.longitude, driver.latitude),
+                    mapboxNavigation
+                )!!
+            }catch (e: Exception){
+                0.0
+            }
+        }
+
+
     }
 
 
@@ -65,7 +185,14 @@ class DriverAdapter(private val context: Context): ListAdapter<Driver, DriverVie
     }
 
     override fun onBindViewHolder(holder: DriverViewHolder, position: Int) {
-        holder.bind(getItem(position), context,clickDetails,clickAsk)
+        holder.bind(
+            getItem(position),
+            context,
+            clickDetails,
+            clickAsk,
+            mapboxNavigation,
+            pointUser,
+            pointDestiny)
     }
 
     companion object {
@@ -83,80 +210,6 @@ class DriverAdapter(private val context: Context): ListAdapter<Driver, DriverVie
 
 
 
-    private suspend fun getRouteToCalculate(
-        originPoint: Point,
-        destinationPoint: Point,
-        carPoint: Point,
-        mapboxNavigation: MapboxNavigation
-    ): List<NavigationRoute>? = suspendCoroutine{ continuation ->
-
-        mapboxNavigation.requestRoutes(
-            RouteOptions.builder()
-                .applyDefaultNavigationOptions()
-                .coordinatesList(listOf( carPoint, originPoint, destinationPoint ))
-                .build(),
-            object : NavigationRouterCallback {
-                override fun onCanceled(routeOptions: RouteOptions, routerOrigin: RouterOrigin) {
-                    continuation.resume(null)
-                }
-
-                override fun onFailure(reasons: List<RouterFailure>, routeOptions: RouteOptions) {
-                    continuation.resume(null)
-                }
-
-                override fun onRoutesReady(
-                    routes: List<NavigationRoute>,
-                    routerOrigin: RouterOrigin
-                ) {
-                    continuation.resume(routes)
-                }
-
-            }
-        )
-    }
-
-    private fun getRouteDistance(list: List<NavigationRoute>): Double{
-        var sum = 0.0
-        for (it in list.toDirectionsRoutes()) {
-
-            sum += it.distance()
-        }
-        return  sum / 1000
-    }
-
-    private suspend fun getPriceDistance(
-        driverPrice: Double,
-        originPoint: Point,
-        destinationPoint: Point,
-        carPoint: Point,
-        mapboxNavigation: MapboxNavigation
-    ): Double?{
-
-        val route =
-            getRouteToCalculate(originPoint, destinationPoint, carPoint, mapboxNavigation)
-        val distance = route?.let { getRouteDistance(it) }
-
-        return distance?.times(driverPrice)
-    }
-
-    suspend fun updatePricesInList(
-        mapboxNavigation: MapboxNavigation,
-        driver: Driver,
-        pointUser: Point,
-        pointDestiny: Point
-    ): Double {
-        return try {
-            getPriceDistance(
-                driver.price,
-                pointUser,
-                pointDestiny,
-                Point.fromLngLat(driver.longitude, driver.latitude),
-                mapboxNavigation
-            )!!
-        }catch (e: Exception){
-            0.0
-        }
-    }
 
 
 
@@ -170,7 +223,7 @@ class DriverAdapter(private val context: Context): ListAdapter<Driver, DriverVie
 
     //Ask
     interface ITouchAsk{
-        fun onClickAsk(position: Int)
+        fun onClickAsk(driver: Driver, price: Int)
     }
     fun setClick(clickAsk: ITouchAsk){
         this.clickAsk = clickAsk
