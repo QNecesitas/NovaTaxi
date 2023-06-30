@@ -1,17 +1,20 @@
 package com.qnecesitas.novataxiapp.viewmodel
 
-
-import android.app.Application
+import android.content.Context
+import android.location.Location
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonParser
+import com.mapbox.api.directions.v5.models.Bearing
 import com.mapbox.api.directions.v5.models.RouteOptions
 import com.mapbox.geojson.Point
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
 import com.mapbox.navigation.base.extensions.applyDefaultNavigationOptions
+import com.mapbox.navigation.base.extensions.applyLanguageAndVoiceUnitOptions
 import com.mapbox.navigation.base.route.NavigationRoute
 import com.mapbox.navigation.base.route.NavigationRouterCallback
 import com.mapbox.navigation.base.route.RouterFailure
@@ -20,62 +23,42 @@ import com.mapbox.navigation.core.MapboxNavigation
 import com.qnecesitas.novataxiapp.auxiliary.Constants
 import com.qnecesitas.novataxiapp.model.Driver
 import com.qnecesitas.novataxiapp.network.DriverDataSourceNetwork
-import com.qnecesitas.novataxiapp.network.TripsDataSourceNetwork
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
-import java.util.concurrent.TimeUnit
 import kotlin.math.*
 
 
-class MapHomeViewModel(application: Application): ViewModel() {
+class MapHomeViewModel: ViewModel() {
 
     //List user
     private val _listSmallDriver = MutableLiveData<MutableList<Driver>>()
     val listSmallDriver: LiveData<MutableList<Driver>> get() = _listSmallDriver
 
-    //GPS location
-    private val _pointGPS = MutableLiveData<PointAnnotation>()
-    val pointGPS: LiveData<PointAnnotation> get() = _pointGPS
-
-
-    //Variable to setCamera
-    private val _isNecessaryCamera = MutableLiveData<Boolean>()
-    val isNecessaryCamera: LiveData<Boolean> get() = _isNecessaryCamera
-
-
     //Progress state
     enum class StateConstants { LOADING, SUCCESS, ERROR }
+
     private val _state = MutableLiveData<StateConstants>()
     val state: LiveData<StateConstants> get() = _state
 
-
-    //State Trip accepted
-    private val _stateTrip = MutableLiveData<StateConstants>()
-    val stateTrip: LiveData<StateConstants> get() = _state
-
-
     //Network Data Source
     private var driverDataSourceNetwork: DriverDataSourceNetwork = DriverDataSourceNetwork()
-    private var tripsDataSourceNetwork: TripsDataSourceNetwork = TripsDataSourceNetwork()
-
 
     //LatitudeClient
     private val _latitudeClient = MutableLiveData<Double>()
     val latitudeClient: LiveData<Double> get() = _latitudeClient
 
-
     //LongitudeClient
     private val _longitudeClient = MutableLiveData<Double>()
     val longitudeClient: LiveData<Double> get() = _longitudeClient
 
+    //LatitudeDestiny
+    private val _latitudeDestiny = MutableLiveData<Double>()
+    val latitudeDestiny: LiveData<Double> get() = _latitudeDestiny
 
-
+    //LongitudeDestiny
+    private val _longitudeDestiny = MutableLiveData<Double>()
+    val longitudeDestiny: LiveData<Double> get() = _longitudeDestiny
 
     //Points
     private val _pointUbic = MutableLiveData<PointAnnotation>()
@@ -85,32 +68,18 @@ class MapHomeViewModel(application: Application): ViewModel() {
     val pointDest: LiveData<PointAnnotation> get() = _pointDest
 
 
-    //Routes
-    private val _routeState = MutableLiveData<StateConstants>()
-    val routeState: LiveData<StateConstants> get() = _routeState
+    /*
+      Call and enqueue
+       */
+    //Bring InfoDriver
+    fun getDriverProv(latUser: Double, longUser: Double) {
+        _state.value = StateConstants.LOADING
 
-    private val _route = MutableLiveData<List<NavigationRoute>>()
-    val route: LiveData<List<NavigationRoute>> get() = _route
-
-
-
-    //Recycler information
-    fun getDriverProv() {
-        _latitudeClient.value?.let {
-            _longitudeClient.value?.let { it1 ->
-
-                //Call
-                val call = driverDataSourceNetwork.getDriver(
-                    Constants.PHP_TOKEN,
-                )
-                getResponseInfoDriverProv(
-                    call,
-                    it,
-                    it1
-                )
-            }
-        }
-
+        //Call
+        val call = driverDataSourceNetwork.getDriver(
+            Constants.PHP_TOKEN,
+        )
+        getResponseInfoDriverProv(call,latUser,longUser)
     }
 
     //Get the response about the Driver info
@@ -121,7 +90,9 @@ class MapHomeViewModel(application: Application): ViewModel() {
                 response: Response<List<Driver>>
             ) {
                 if (response.isSuccessful) {
+                    _state.value = StateConstants.SUCCESS
                     filterDriver(response.body()?.toMutableList(),latUser,longUser)
+                    Log.e("XXXXXX", listSmallDriver.value.toString())
                 } else {
                     _state.value = StateConstants.ERROR
                 }
@@ -133,176 +104,120 @@ class MapHomeViewModel(application: Application): ViewModel() {
         })
     }
 
-    private fun filterDriver(alDriver: MutableList<Driver>?,latUser: Double, longUser: Double){
 
+    private fun filterDriver(alDriver: MutableList<Driver>?,latUser: Double, longUser: Double){
         val alResult = alDriver?.filter {
-            it.maxDist > calculateDist(latUser ,longUser, it.latitude, it.longitude)
-                    && it.latitude != 0.0 && it.longitude != 0.0
+            it.maxDist > calDist(latUser ,longUser, it.latitude, it.longitude)
         }?.toMutableList()
 
-
         _listSmallDriver.value = alResult
-        _state.value = StateConstants.SUCCESS
-    }
-
-    private fun calculateDist(latUser: Double, longUser: Double, latCar: Double, longCar: Double): Double {
-
-        val earthRadius = 6371.0 // Radio de la Tierra en km
-        val dLat = (latCar - latUser) * PI / 180.0
-        val dLon = (longCar - longUser) * PI / 180.0
-        val lat1Rad = latUser * PI / 180.0
-        val lat2Rad = latCar * PI / 180.0
-
-        val a = sin(dLat / 2).pow(2) + sin(dLon / 2).pow(2) * cos(lat1Rad) * cos(lat2Rad)
-        val c = 2 * asin(sqrt(a))
-        return earthRadius * c
+        Log.e("lol",_listSmallDriver.value.toString())
     }
 
 
+    //Calculate Distance
+    private fun calDist(latUser: Double, longUser: Double, latCar: Double, longCar: Double): Double {
+        Log.e("lol",((Math.sqrt((latUser - latCar) * (latUser - latCar) + (longUser - longCar) * (longUser - longCar)) + 0.004) * 100.0).toString())
+           return ((Math.sqrt((latUser - latCar) * (latUser - latCar) + (longUser - longCar) * (longUser - longCar)) + 0.004) * 100.0)
+    }
+
+    //SetLocations
+    fun setLatitudeClient(lat: Double){
+        _latitudeClient.value = lat
+    }
+    fun setLongitudeClient(long: Double){
+        _longitudeClient.value = long
+    }
+    fun setLatitudeDestiny(lat: Double){
+        _latitudeDestiny.value = lat
+    }
+    fun setLongitudeDestiny(long: Double){
+        _longitudeDestiny.value = long
+    }
+
+    //SetPoints
+    fun setPointUbic(point: PointAnnotation){
+        _pointUbic.value = point
+    }
+    fun setPointDest(point: PointAnnotation){
+        _pointDest.value = point
+    }
 
 
-    //Routing
-    fun getRouteToDraw(
-        originPoint: Point,
-        destinationPoint: Point,
-        mapboxNavigation: MapboxNavigation
-    ) {
-        _routeState.value = StateConstants.LOADING
+    fun fetchARoute(context: Context,mapboxNavigation: MapboxNavigation) {
+
+        //Declarations
+        val originPoint = Point.fromLngLat(
+            longitudeClient.value!!,
+            latitudeClient.value!!
+        )
+
+        val destPoint = Point.fromLngLat(
+            longitudeDestiny.value!!,
+            latitudeDestiny.value!!
+        )
+
+        val originLocation = Location("test").apply {
+            longitude = longitudeClient.value!!
+            latitude =  latitudeClient.value!!
+            bearing = 10f
+        }
+
+        val routeOptions = RouteOptions.builder()
+            .applyDefaultNavigationOptions()
+            .applyLanguageAndVoiceUnitOptions(context)
+            .coordinatesList(listOf(originPoint,destPoint))
+            .alternatives(false)
+            .bearingsList(
+                listOf(
+                    Bearing.builder()
+                        .angle(originLocation.bearing.toDouble())
+                        .degrees(45.0)
+                        .build(),
+                    null
+                )
+            )
+            .build()
         mapboxNavigation.requestRoutes(
-            RouteOptions.builder()
-                .applyDefaultNavigationOptions()
-                .coordinatesList(listOf(originPoint, destinationPoint))
-                .build(),
+            routeOptions,
             object : NavigationRouterCallback {
                 override fun onCanceled(routeOptions: RouteOptions, routerOrigin: RouterOrigin) {
-                    _routeState.value = StateConstants.ERROR
+// This particular callback is executed if you invoke
+// mapboxNavigation.cancelRouteRequest()
                 }
 
                 override fun onFailure(reasons: List<RouterFailure>, routeOptions: RouteOptions) {
-                    _routeState.value = StateConstants.ERROR
+
                 }
 
                 override fun onRoutesReady(
                     routes: List<NavigationRoute>,
                     routerOrigin: RouterOrigin
                 ) {
-                    _route.value = routes
-                    _routeState.value = StateConstants.SUCCESS
+// GSON instance used only to print the response prettily
+                    val gson = GsonBuilder().setPrettyPrinting().create()
+                    val json = routes.map {
+                        gson.toJson(
+                            JsonParser.parseString(it.directionsRoute.toJson())
+                        )
+                    }
+                    Log.e("tusae", json.toString())
+
                 }
-
             }
         )
+
     }
 
-
-    //SetLocations
-    fun setLatitudeClient(lat: Double){
-        _latitudeClient.value = lat
-    }
-
-    fun setLongitudeClient(long: Double){
-        _longitudeClient.value = long
-    }
-
-
-
-
-    fun setIsNecessaryCamera(boolean: Boolean){
-        _isNecessaryCamera.value = boolean
-    }
-
-
-
-
-    fun startSearchDrivers(){
-        viewModelScope.launch {
-            while (true){
-                Log.d("TEST", "...")
-                getDriverProv()
-                delay(TimeUnit.SECONDS.toMillis(30))
-            }
-        }
-    }
-
-
-
-    //SetPoints
-    fun setPointLocation(point: PointAnnotation){
-        _pointUbic.value = point
-    }
-
-    fun setPointDest(point: PointAnnotation){
-        _pointDest.value = point
-    }
-
-
-
-
-    //Trip operation
-    fun addTrip(
-        emailDriver: String,
-        emailUser: String,
-        price: Int,
-        distance: Double,
-        latDest: Double,
-        longDest: Double,
-        latOri: Double,
-        longOri: Double,
-        userPhone: String
-    ) {
-        //Call
-        val call = tripsDataSourceNetwork.addTrip(
-            Constants.PHP_TOKEN,
-            emailDriver,
-            emailUser,
-            price,
-            distance,
-            makeDate(),
-            latDest,
-            longDest,
-            latOri,
-            longOri,
-            userPhone
-        )
-        getTripResponse(
-            call
-        )
-    }
-
-    private fun getTripResponse(call: Call<String>) {
-        call.enqueue(object : Callback<String> {
-            override fun onResponse(
-                call: Call<String>,
-                response: Response<String>
-            ) {
-                if (response.isSuccessful) {
-                    if(response.body() == "Success"){
-                        _stateTrip.value = StateConstants.SUCCESS
-                    }else _stateTrip.value = StateConstants.ERROR
-                } else _stateTrip.value = StateConstants.ERROR
-            }
-
-            override fun onFailure(call: Call<String>, t: Throwable) {
-                _state.value = StateConstants.ERROR
-            }
-        })
-    }
-
-    private fun makeDate(): String {
-        val allDate: String
-        val calendar = Calendar.getInstance()
-        allDate = SimpleDateFormat("dd-MM-yy hh:mm aa", Locale.getDefault()).format(calendar.time)
-        return allDate
-    }
 
 }
 
 
-class MapHomeViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
+class MapHomeViewModelFactory() : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MapHomeViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return MapHomeViewModel(application) as T
+            return MapHomeViewModel() as T
         }
         throw IllegalArgumentException("Unknown viewModel class")
     }
