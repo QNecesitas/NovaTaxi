@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -21,13 +20,10 @@ import com.qnecesitas.novataxiapp.R
 import com.qnecesitas.novataxiapp.adapters.DriverAdapter.*
 import com.qnecesitas.novataxiapp.databinding.RecyclerAvailableTaxiBinding
 import com.qnecesitas.novataxiapp.model.Driver
-import com.qnecesitas.novataxiapp.viewmodel.MapHomeViewModel
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine

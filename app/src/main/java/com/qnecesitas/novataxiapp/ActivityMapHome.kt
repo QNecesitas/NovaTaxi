@@ -48,6 +48,7 @@ import com.mapbox.navigation.ui.maps.route.line.model.MapboxRouteLineOptions
 import com.qnecesitas.novataxiapp.adapters.DriverAdapter
 import com.qnecesitas.novataxiapp.auxiliary.NetworkTools
 import com.qnecesitas.novataxiapp.databinding.ActivityMapHomeBinding
+import com.qnecesitas.novataxiapp.model.Driver
 import com.qnecesitas.novataxiapp.viewmodel.MapHomeViewModel
 import com.qnecesitas.novataxiapp.viewmodel.MapHomeViewModelFactory
 import com.shashank.sony.fancytoastlib.FancyToast
@@ -103,7 +104,7 @@ class ActivityMapHome : AppCompatActivity() {
 
 
         //Recycler
-        val driverAdapter = DriverAdapter(this@ActivityMapHome)
+        val driverAdapter = viewModel.pointUbic.value?.let { viewModel.pointDest.value?.let { it1 -> DriverAdapter(this@ActivityMapHome, mapboxNavigation, it.point, it1.point) } }
         binding.rvTaxis.adapter = driverAdapter
 
 
@@ -122,12 +123,12 @@ class ActivityMapHome : AppCompatActivity() {
         //Observers
         viewModel.listSmallDriver.observe(this) {
             if(viewModel.listSmallDriver.value?.isNotEmpty() == true){
-                driverAdapter.submitList(viewModel.listSmallDriver.value)
+                driverAdapter?.submitList(viewModel.listSmallDriver.value)
                 binding.clAvailableTaxis.visibility = View.VISIBLE
                 viewModel.fetchARoute(this,mapboxNavigation)
                 drawRute()
             }else{
-                driverAdapter.submitList(viewModel.listSmallDriver.value)
+                driverAdapter?.submitList(viewModel.listSmallDriver.value)
                 binding.clAvailableTaxis.visibility = View.GONE
                 showAlertDialogNoCar()
             }
@@ -164,7 +165,7 @@ class ActivityMapHome : AppCompatActivity() {
         pointAnnotationManager = annotationApi.createPointAnnotationManager()
 
         //Recycler Listeners
-        driverAdapter.setClickDetails(object : DriverAdapter.ITouchDetails{
+        driverAdapter?.setClickDetails(object : DriverAdapter.ITouchDetails{
             override fun onClickDetails(position: Int) {
                 val intent = Intent(this@ActivityMapHome,ActivityInfoDriver::class.java)
                 intent.putExtra("emailSelected", viewModel.listSmallDriver.value?.get(position)?.email)
@@ -172,8 +173,8 @@ class ActivityMapHome : AppCompatActivity() {
             }
         })
 
-        driverAdapter.setClick(object : DriverAdapter.ITouchAsk{
-            override fun onClickAsk(position: Int) {
+        driverAdapter?.setClick(object : DriverAdapter.ITouchAsk{
+            override fun onClickAsk(driver: Driver, price: Int) {
                 showAlertDialogConfirmCar()
             }
         })
