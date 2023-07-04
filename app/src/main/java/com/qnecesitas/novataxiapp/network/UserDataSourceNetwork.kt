@@ -1,6 +1,7 @@
 package com.qnecesitas.novataxiapp.network
 
 import com.qnecesitas.novataxiapp.auxiliary.Constants
+import com.qnecesitas.novataxiapp.model.Driver
 import com.qnecesitas.novataxiapp.model.User
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -25,6 +26,19 @@ class UserDataSourceNetwork : IRetrofitUsers {
         return productApi.getUserInformation(token, version, email, password)
     }
 
+    override fun getUserInformationAll(token: String , email: String): Call<List<User>> {
+        return productApi.getUserInformationAll(token,email)
+    }
+
+    override fun updateUser(
+        token: String ,
+        email: String ,
+        password: String ,
+        phone: String
+    ): Call<String> {
+        return productApi.updateUser(token, email, password, phone)
+    }
+
     override fun sendRecoverPetition(
         token: String,
         email: String
@@ -41,4 +55,5 @@ class UserDataSourceNetwork : IRetrofitUsers {
     ): Call<String> {
         return productApi.addUserInformation(token,name,email,phone,password)
     }
+
 }
