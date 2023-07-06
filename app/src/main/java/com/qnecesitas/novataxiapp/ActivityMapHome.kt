@@ -19,7 +19,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
-import com.mapbox.api.directions.v5.models.RouteOptions
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapView
 import com.mapbox.maps.Style
@@ -27,24 +26,10 @@ import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
-import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
-import com.mapbox.maps.plugin.locationcomponent.location
 import com.mapbox.navigation.base.options.NavigationOptions
-import com.mapbox.navigation.base.route.NavigationRoute
-import com.mapbox.navigation.base.route.NavigationRouterCallback
-import com.mapbox.navigation.base.route.RouterFailure
-import com.mapbox.navigation.base.route.RouterOrigin
-import com.mapbox.navigation.base.trip.model.RouteProgress
 import com.mapbox.navigation.core.MapboxNavigation
 import com.mapbox.navigation.core.lifecycle.MapboxNavigationApp
 import com.mapbox.navigation.core.lifecycle.requireMapboxNavigation
-import com.mapbox.navigation.core.trip.session.RouteProgressObserver
-import com.mapbox.navigation.ui.maps.route.arrow.api.MapboxRouteArrowApi
-import com.mapbox.navigation.ui.maps.route.arrow.api.MapboxRouteArrowView
-import com.mapbox.navigation.ui.maps.route.arrow.model.RouteArrowOptions
-import com.mapbox.navigation.ui.maps.route.line.api.MapboxRouteLineApi
-import com.mapbox.navigation.ui.maps.route.line.api.MapboxRouteLineView
-import com.mapbox.navigation.ui.maps.route.line.model.MapboxRouteLineOptions
 import com.qnecesitas.novataxiapp.adapters.DriverAdapter
 import com.qnecesitas.novataxiapp.auxiliary.NetworkTools
 import com.qnecesitas.novataxiapp.databinding.ActivityMapHomeBinding
@@ -73,25 +58,12 @@ class ActivityMapHome : AppCompatActivity() {
     private lateinit var resultLauncherDest: ActivityResultLauncher<Intent>
 
 
-    val routeLineOptions = MapboxRouteLineOptions.Builder(this).build()
-    val routeLineView = MapboxRouteLineView(routeLineOptions)
-    val routeLineApi = MapboxRouteLineApi(routeLineOptions)
 
-    val annotationApi = binding.mapView.annotations
-
-    val onPositionChangedListener = OnIndicatorPositionChangedListener { point ->
-        val result = routeLineApi.updateTraveledRouteLine(point)
-        routeLineView.renderRouteLineUpdate(binding.mapView.getMapboxMap().getStyle()!!, result)
-    }
     //MapBox
     private val mapboxNavigation: MapboxNavigation by requireMapboxNavigation(
         onInitialize = this::initNavigation
     )
 
-    //Arrow
-    val routeArrow = MapboxRouteArrowApi()
-    val routeArrowOptions = RouteArrowOptions.Builder(this).build()
-    val routeArrowView = MapboxRouteArrowView(routeArrowOptions)
 
     /*
     On Create
@@ -126,7 +98,6 @@ class ActivityMapHome : AppCompatActivity() {
                 driverAdapter?.submitList(viewModel.listSmallDriver.value)
                 binding.clAvailableTaxis.visibility = View.VISIBLE
                 viewModel.fetchARoute(this,mapboxNavigation)
-                drawRute()
             }else{
                 driverAdapter?.submitList(viewModel.listSmallDriver.value)
                 binding.clAvailableTaxis.visibility = View.GONE
@@ -145,23 +116,15 @@ class ActivityMapHome : AppCompatActivity() {
             }
         }
 
-        val routeProgressObserver = RouteProgressObserver { routeProgress ->
-            routeLineApi.updateWithRouteProgress(routeProgress) { result ->
-                routeLineView.renderRouteLineUpdate(binding.mapView.getMapboxMap()
-                    .getStyle()!!, result)
-            }
-        }
-
-        mapView?.location?.addOnIndicatorPositionChangedListener(onPositionChangedListener)
-
         //Map
         binding.mapView.getMapboxMap().loadStyleUri(Style.MAPBOX_STREETS)
 
-        binding.extBtnUbicUser.setOnClickListener{ getUserUbic() }
+        binding.extBtnUbicUser.setOnClickListener{ getUserOrigin() }
 
-        binding.extBtnUbicDest.setOnClickListener{ getUserDest() }
+        binding.extBtnUbicDest.setOnClickListener{ getUserDestination() }
 
         //Add Map Event
+        val annotationApi = binding.mapView.annotations
         pointAnnotationManager = annotationApi.createPointAnnotationManager()
 
         //Recycler Listeners
@@ -192,12 +155,12 @@ class ActivityMapHome : AppCompatActivity() {
 
 
     //Get Locations
-    fun getUserUbic(){
+    private fun getUserOrigin(){
         val intent = Intent(this@ActivityMapHome, ActivityPutMap::class.java)
         resultLauncherUbic.launch(intent)
     }
 
-    fun getUserDest(){
+    private fun getUserDestination(){
         val intent = Intent(this@ActivityMapHome, ActivityPutMap::class.java)
         resultLauncherDest.launch(intent)
     }
@@ -352,42 +315,6 @@ class ActivityMapHome : AppCompatActivity() {
             drawable.setBounds(0, 0, canvas.width, canvas.height)
             drawable.draw(canvas)
             bitmap
-        }
-    }
-
-    private fun drawRute(){
-        val routerCallback = object : NavigationRouterCallback {
-
-            val routeLineOptions = MapboxRouteLineOptions
-                .Builder(this@ActivityMapHome)
-                .withVanishingRouteLineEnabled(true)
-                .withRouteLineBelowLayerId("road-label")
-                .build()
-
-
-            val routeProgressObserver = object : RouteProgressObserver {
-                override fun onRouteProgressChanged(routeProgress: RouteProgress) {
-                    val updatedManeuverArrow = routeArrow.addUpcomingManeuverArrow(routeProgress)
-                    routeArrowView.renderManeuverUpdate(binding.mapView.getMapboxMap().getStyle()!!
-                        , updatedManeuverArrow)
-                }
-            }
-
-            override fun onRoutesReady(routes: List<NavigationRoute>, routerOrigin: RouterOrigin) {
-                // note: the first route in the list is considered the primary route
-                routeLineApi.setNavigationRoutes(routes) { value ->
-                    routeLineView.renderRouteDrawData(binding.mapView.getMapboxMap().getStyle()!!
-                        , value)
-                }
-
-            }
-
-            override fun onFailure(reasons: List<RouterFailure>, routeOptions: RouteOptions) {
-            }
-
-            override fun onCanceled(routeOptions: RouteOptions, routerOrigin: RouterOrigin) {
-            }
-
         }
     }
 
