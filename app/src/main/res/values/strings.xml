@@ -1,6 +1,6 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Nova Taxi App</string>
-    <string name="mapbox_access_token">pk.eyJ1Ijoicm9ubnlucCIsImEiOiJjbGl4YTg3bDgwNHpwM2RucTlwdWFkOXN1In0.MlTnx-myS4E3LJUeh5CVbw</string>
+    <string name="mapbox_access_token" tools:ignore="Typos">pk.eyJ1Ijoicm9ubnlucCIsImEiOiJjbGl4YTg3bDgwNHpwM2RucTlwdWFkOXN1In0.MlTnx-myS4E3LJUeh5CVbw</string>
     <string name="crear_cuenta">Crear Cuenta</string>
     <string name="nombre">Nombre de Usuario</string>
     <string name="correo_electronico">Correo electrónico</string>
@@ -113,4 +113,5 @@
     <string name="ajustes">Ajustes</string>
     <string name="actualizar_cuenta">Actualizar cuenta</string>
     <string name="est_s_seguro_de_actualizar_los_datos_de_tu_cuenta">¿Estás seguro de actualizar los datos de tu cuenta?</string>
+    <string name="Sobre_nosotros">Sobre nosotros</string>
 </resources>

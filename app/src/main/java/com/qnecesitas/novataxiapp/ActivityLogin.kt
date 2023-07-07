@@ -28,6 +28,8 @@ class ActivityLogin : AppCompatActivity() {
         LoginViewModelFactory()
     }
 
+    //Email to send
+    private var emailToSend = " "
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,14 +49,18 @@ class ActivityLogin : AppCompatActivity() {
         binding.btnLogIn.setOnClickListener{
             clickIntro()
         }
+        binding.aboutUs.setOnClickListener{
+            val intent = Intent(this, ActivityAboutUs::class.java)
+            startActivity(intent)
+        }
+        binding.aboutDev.setOnClickListener{
+            val intent = Intent(this, ActivityAboutDev::class.java)
+            startActivity(intent)
+        }
 
         //Observers
-        viewModel.listUser.observe(this) {
-            if (it?.isEmpty() == true) {
-                binding.tietPassword.error = getString(R.string.usuario_o_contrase_a_incorrectos)
-            } else {
-                checkStateAndGo(it[0].state)
-            }
+        viewModel.existDriver.observe(this) {
+            checkStateAndGo(it)
         }
 
         viewModel.state.observe(this) {
@@ -88,7 +94,7 @@ class ActivityLogin : AppCompatActivity() {
                 LoginViewModel.StateConstants.LOADING -> binding.progress.visibility = View.VISIBLE
                 LoginViewModel.StateConstants.SUCCESS -> {
                     binding.progress.visibility = View.GONE
-                    viewModel.getUserWithPassword(
+                    viewModel.getIsValidAccount(
                         binding.tietUser.text.toString(),
                         binding.tietPassword.text.toString()
                     )
@@ -105,16 +111,64 @@ class ActivityLogin : AppCompatActivity() {
         }
     }
 
+
+
+
     //Click in Start Session
     private fun clickIntro(){
         val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(binding.tietPassword.windowToken , 0)
         if(isInformationGood()){
             if(NetworkTools.isOnline(this, true)) {
+                emailToSend = binding.tietUser.text.toString()
                 viewModel.getAppVersion()
             }
         }
     }
+
+    //Click in create new Account
+    private fun clickNewAccount(){
+        val intent = Intent(this, ActivityCreateAccount::class.java)
+        startActivity(intent)
+    }
+
+    //Click in recover option
+    private fun clickRecover(){
+        liRecoverPassword()
+    }
+
+    private fun liRecoverPassword() {
+        val inflater = LayoutInflater.from(binding.root.context)
+        val liBinding = LiEmailToRecoverBinding.inflate(inflater)
+        val builder = AlertDialog.Builder(binding.root.context)
+        builder.setView(liBinding.root)
+        val alertDialog = builder.create()
+
+
+        liBinding.btnCancel.setOnClickListener{
+            alertDialog.dismiss()
+        }
+
+        liBinding.btnAccept.setOnClickListener {
+            if(liBinding.tiet.text.toString().isNotBlank()){
+                alertDialog.dismiss()
+                showAlertDialogConfirmEmail(liBinding.tiet.text.toString())
+            }else{
+                liBinding.tiet.error = getString(R.string.Este_campo_no_debe)
+            }
+        }
+
+
+        //Finish
+        builder.setCancelable(true)
+        builder.setTitle(R.string.Recuperar_contrasena)
+        alertDialog.window!!.setGravity(Gravity.CENTER)
+        alertDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        alertDialog.show()
+    }
+
+
+
 
     //Check if the information is blank
     private fun isInformationGood(): Boolean{
@@ -140,63 +194,15 @@ class ActivityLogin : AppCompatActivity() {
     //Check the state of the account
     private fun checkStateAndGo(state: String){
         when (state){
-            "await" -> showAlertDialogNotConfirmed()
-            "accepted" -> {
-                viewModel.saveUserInfo(
-                    viewModel.listUser.value?.get(0),
-                    this
-                )
+            "En espera" -> showAlertDialogNotConfirmed()
+            "Aceptado" -> {
+                viewModel.saveUserInfo(emailToSend, this)
                 val intent = Intent(this, ActivityMapHome::class.java)
                 startActivity(intent)
             }
-            "blocked" -> showAlertDialogBlocked()
+            "Bloqueado" -> showAlertDialogBlocked()
+            else -> binding.tietPassword.error = getString(R.string.usuario_o_contrase_a_incorrectos)
         }
-    }
-
-
-
-
-    //Click in create new Account
-    private fun clickNewAccount(){
-        val intent = Intent(this, ActivityCreateAccount::class.java)
-        startActivity(intent)
-    }
-
-
-
-
-    //Click in recover option
-    private fun clickRecover(){
-        liRecoverPassword()
-    }
-
-    private fun liRecoverPassword() {
-        val inflater = LayoutInflater.from(binding.root.context)
-        val liBinding = LiEmailToRecoverBinding.inflate(inflater)
-        val builder = AlertDialog.Builder(binding.root.context)
-        builder.setView(liBinding.root)
-        val alertDialog = builder.create()
-
-
-        liBinding.btnCancel.setOnClickListener{
-            alertDialog.dismiss()
-        }
-
-        liBinding.btnAccept.setOnClickListener {
-            if(liBinding.tiet.text.toString().isNotBlank()){
-                showAlertDialogConfirmEmail(liBinding.tiet.text.toString())
-            }else{
-                liBinding.tiet.error = getString(R.string.Este_campo_no_debe)
-            }
-        }
-
-
-        //Finish
-        builder.setCancelable(true)
-        builder.setTitle(R.string.Recuperar_contrasena)
-        alertDialog.window!!.setGravity(Gravity.CENTER)
-        alertDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        alertDialog.show()
     }
 
 
@@ -293,6 +299,8 @@ class ActivityLogin : AppCompatActivity() {
         //create the alert dialog and show it
         builder.create().show()
     }
+
+
 
 
     @Deprecated("Deprecated in Java")

@@ -1,7 +1,6 @@
 package com.qnecesitas.novataxiapp.network
 
 import com.qnecesitas.novataxiapp.auxiliary.Constants
-import com.qnecesitas.novataxiapp.model.Driver
 import com.qnecesitas.novataxiapp.model.User
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -17,13 +16,12 @@ class UserDataSourceNetwork : IRetrofitUsers {
     private val productApi: IRetrofitUsers = retrofit.create(IRetrofitUsers::class.java)
 
 
-    override fun getUserInformation(
+    override fun getUserExist(
         token: String,
-        version: String,
         email: String,
         password: String
-    ): Call<List<User>> {
-        return productApi.getUserInformation(token, version, email, password)
+    ): Call<String> {
+        return productApi.getUserExist(token, email, password)
     }
 
     override fun getUserInformationAll(token: String , email: String): Call<List<User>> {
