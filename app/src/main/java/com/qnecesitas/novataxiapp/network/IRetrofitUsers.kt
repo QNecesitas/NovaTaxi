@@ -1,6 +1,5 @@
 package com.qnecesitas.novataxiapp.network
 
-import com.qnecesitas.novataxiapp.model.Driver
 import com.qnecesitas.novataxiapp.model.User
 import retrofit2.Call
 import retrofit2.http.Field
@@ -12,13 +11,12 @@ import retrofit2.http.Query
 interface IRetrofitUsers {
 
 
-    @GET("FetchUserInformation.php")
-    fun getUserInformation(
+    @GET("FetchUserExist.php")
+    fun getUserExist(
         @Query("token") token: String,
-        @Query("version") version: String,
         @Query("email") email: String,
         @Query("password") password: String
-    ): Call<List<User>>
+    ): Call<String>
 
     @FormUrlEncoded
     @POST("AddUserInformation.php")
@@ -32,7 +30,7 @@ interface IRetrofitUsers {
 
 
 
-    @GET("SendRecoverPetition.php")
+    @GET("SendRecoverPetitionUser.php")
     fun sendRecoverPetition(
         @Query("token") token: String,
         @Query("email") email: String

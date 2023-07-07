@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.qnecesitas.novataxiapp.auxiliary.Constants
 import com.qnecesitas.novataxiapp.auxiliary.UserAccountShared
-import com.qnecesitas.novataxiapp.model.User
 import com.qnecesitas.novataxiapp.network.AuxiliaryDataSourceNetwork
 import com.qnecesitas.novataxiapp.network.UserDataSourceNetwork
 import retrofit2.Call
@@ -19,9 +18,9 @@ class LoginViewModel : ViewModel() {
 
 
 
-    //List user
-    private val _listUsers = MutableLiveData<MutableList<User>>()
-    val listUser: LiveData<MutableList<User>> get() = _listUsers
+    //Exist driver
+    private val _existDriver = MutableLiveData<String>()
+    val existDriver: LiveData<String> get() = _existDriver
 
     //Progress state
     enum class StateConstants {LOADING, SUCCESS, ERROR}
@@ -47,41 +46,44 @@ class LoginViewModel : ViewModel() {
 
 
     //Send request for userInfo
-    fun getUserWithPassword(email: String, password: String) {
+    fun getIsValidAccount(email: String, password: String) {
         _state.value = StateConstants.LOADING
-        val call = userDataSourceNetwork.getUserInformation(
+        val call = userDataSourceNetwork.getUserExist(
             Constants.PHP_TOKEN,
-            Constants.APP_VERSION,
             email,
             password
         )
-        getResponseUserWithPassword(call)
+        getResponseIsValidAccount(call)
     }
 
     //Get the response about the user info
-    private fun getResponseUserWithPassword(call: Call<List<User>>){
-        call.enqueue(object : Callback<List<User>> {
+    private fun getResponseIsValidAccount(call: Call<String>){
+        call.enqueue(object : Callback<String> {
             override fun onResponse(
-                call: Call<List<User>>,
-                response: Response<List<User>>
+                call: Call<String>,
+                response: Response<String>
             ) {
                 if (response.isSuccessful) {
-                    _state.value = StateConstants.SUCCESS
-                    _listUsers.value = response.body()?.toMutableList()
+                    if(response.body() != null){
+                        _state.value = StateConstants.SUCCESS
+                        _existDriver.value = response.body()
+                    }else{
+                        _state.value = StateConstants.ERROR
+                    }
                 } else {
                     _state.value = StateConstants.ERROR
                 }
             }
 
-            override fun onFailure(call: Call<List<User>>, t: Throwable) {
+            override fun onFailure(call: Call<String>, t: Throwable) {
                 _state.value = StateConstants.ERROR
             }
         })
     }
 
     //Save the info
-    fun saveUserInfo(user: User?, context: Context){
-        user?.let { UserAccountShared.setUserInfo(it, context) }
+    fun saveUserInfo(email: String, context: Context){
+        UserAccountShared.setUserEmail(email, context)
     }
 
     //Send recover petition
@@ -101,7 +103,15 @@ class LoginViewModel : ViewModel() {
                 response: Response<String>
             ) {
                 if (response.isSuccessful) {
-                    _stateRecover.value = StateConstants.SUCCESS
+                    if(response.body() != null){
+                        if(response.body() == "Success"){
+                            _stateRecover.value = StateConstants.SUCCESS
+                        }else{
+                            _stateRecover.value = StateConstants.ERROR
+                        }
+                    }else{
+                        _stateRecover.value = StateConstants.ERROR
+                    }
                 } else {
                     _stateRecover.value = StateConstants.ERROR
                 }
