@@ -300,5 +300,14 @@
 
     </ScrollView>
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:src="@drawable/buildings"
+        android:alpha="0.2"
+        android:importantForAccessibility="no" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
