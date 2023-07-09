@@ -42,8 +42,8 @@ import kotlin.math.*
 class MapHomeViewModel: ViewModel() {
 
     //List user
-    private val _listSmallDriver = MutableLiveData<MutableList<Driver>>()
-    val listDrivers: LiveData<MutableList<Driver>> get() = _listSmallDriver
+    private val _listDrivers = MutableLiveData<MutableList<Driver>>()
+    val listDrivers: LiveData<MutableList<Driver>> get() = _listDrivers
 
     //Progress state
     enum class StateConstants { LOADING, SUCCESS, ERROR }
@@ -55,12 +55,12 @@ class MapHomeViewModel: ViewModel() {
     private var driverDataSourceNetwork: DriverDataSourceNetwork = DriverDataSourceNetwork()
 
     //LatitudeClient
-    private val _latitudeClient = MutableLiveData<Double>()
-    val latitudeClient: LiveData<Double> get() = _latitudeClient
+    private val _latitudeOrigin = MutableLiveData<Double>()
+    val latitudeOrigin: LiveData<Double> get() = _latitudeOrigin
 
     //LongitudeClient
-    private val _longitudeClient = MutableLiveData<Double>()
-    val longitudeClient: LiveData<Double> get() = _longitudeClient
+    private val _longitudeOrigin = MutableLiveData<Double>()
+    val longitudeOrigin: LiveData<Double> get() = _longitudeOrigin
 
     //LatitudeDestiny
     private val _latitudeDestiny = MutableLiveData<Double>()
@@ -71,12 +71,19 @@ class MapHomeViewModel: ViewModel() {
     val longitudeDestiny: LiveData<Double> get() = _longitudeDestiny
 
     //Points
-    private val _pointUbic = MutableLiveData<PointAnnotation>()
-    val pointUbic: LiveData<PointAnnotation> get() = _pointUbic
+    private val _pointOrigin = MutableLiveData<PointAnnotation>()
+    val pointOrigin: LiveData<PointAnnotation> get() = _pointOrigin
 
     private val _pointDest = MutableLiveData<PointAnnotation>()
     val pointDest: LiveData<PointAnnotation> get() = _pointDest
 
+    //LatitudeClient
+    private val _latitudeGPS = MutableLiveData<Double>()
+    val latitudeGPS: LiveData<Double> get() = _latitudeGPS
+
+    //LongitudeClient
+    private val _longitudeGPS = MutableLiveData<Double>()
+    val longitudeGPS: LiveData<Double> get() = _longitudeGPS
 
 
 
@@ -124,8 +131,8 @@ class MapHomeViewModel: ViewModel() {
 
 
 
-    //Bring InfoDriver
-    fun getDriverProv() {
+    //Obtaining the data
+    private fun getDriversAll() {
         _state.value = StateConstants.LOADING
 
         //Call
@@ -144,7 +151,9 @@ class MapHomeViewModel: ViewModel() {
             ) {
                 if (response.isSuccessful) {
                     _state.value = StateConstants.SUCCESS
-                    _listSmallDriver.value = response.body()?.toMutableList()
+                    if(response.body() != null) {
+                        filterDriver(response.body()!!.toMutableList())
+                    }
                 } else {
                     _state.value = StateConstants.ERROR
                 }
@@ -156,16 +165,49 @@ class MapHomeViewModel: ViewModel() {
         })
     }
 
+    private fun filterDriver(alDriver: MutableList<Driver>){
+        if(latitudeGPS.value !=null && longitudeGPS.value!= null) {
+            val alResult = alDriver.filter {
+                it.maxDist > calculateDist(
+                    latitudeGPS.value!!,
+                    longitudeGPS.value!!,
+                    it.latitude,
+                    it.longitude
+                )
+            }.toMutableList()
+            _listDrivers.value = alResult
+        }
+    }
+
+
+    //Calculate Distance
+    private fun calculateDist(
+        latUser: Double,
+        longUser: Double,
+        latCar: Double,
+        longCar: Double
+    ): Double {
+        val radiusEarth = 6371 // Radio de la Tierra en km
+        val lat1Rad = Math.toRadians(latUser)
+        val lon1Rad = Math.toRadians(longUser)
+        val lat2Rad = Math.toRadians(latCar)
+        val lon2Rad = Math.toRadians(longCar)
+        val distanceLat = lat2Rad - lat1Rad
+        val distanceLon = lon2Rad - lon1Rad
+        val a = sin(distanceLat / 2).pow(2) + cos(lat1Rad) * cos(lat2Rad) * sin(distanceLon / 2).pow(2)
+        val c = 2 * asin(sqrt(a))
+        return radiusEarth * c
+    }
 
 
 
     //Setters
     fun setLatitudeClient(lat: Double){
-        _latitudeClient.value = lat
+        _latitudeOrigin.value = lat
     }
 
     fun setLongitudeClient(long: Double){
-        _longitudeClient.value = long
+        _longitudeOrigin.value = long
     }
 
     fun setLatitudeDestiny(lat: Double){
@@ -184,8 +226,8 @@ class MapHomeViewModel: ViewModel() {
         _pointGPS.value = point
     }
 
-    fun setPointUbic(point: PointAnnotation){
-        _pointUbic.value = point
+    fun setPointOrigin(point: PointAnnotation){
+        _pointOrigin.value = point
     }
 
     fun setPointDest(point: PointAnnotation){
@@ -196,6 +238,13 @@ class MapHomeViewModel: ViewModel() {
         _isNecessaryCamera.value = boolean
     }
 
+    fun setLatitudeGPS(latitude: Double){
+        _latitudeGPS.value = latitude
+    }
+
+    fun setLongitudeGPS(longitude: Double){
+        _longitudeGPS.value = longitude
+    }
 
 
 
@@ -204,8 +253,8 @@ class MapHomeViewModel: ViewModel() {
 
         //Declarations
         val originPoint = Point.fromLngLat(
-            longitudeClient.value!!,
-            latitudeClient.value!!
+            longitudeOrigin.value!!,
+            latitudeOrigin.value!!
         )
 
         val destPoint = Point.fromLngLat(
@@ -214,8 +263,8 @@ class MapHomeViewModel: ViewModel() {
         )
 
         val originLocation = Location("test").apply {
-            longitude = longitudeClient.value!!
-            latitude =  latitudeClient.value!!
+            longitude = longitudeOrigin.value!!
+            latitude =  latitudeOrigin.value!!
             bearing = 10f
         }
 
@@ -250,14 +299,12 @@ class MapHomeViewModel: ViewModel() {
                     routes: List<NavigationRoute>,
                     routerOrigin: RouterOrigin
                 ) {
-// GSON instance used only to print the response prettily
                     val gson = GsonBuilder().setPrettyPrinting().create()
                     val json = routes.map {
                         gson.toJson(
                             JsonParser.parseString(it.directionsRoute.toJson())
                         )
                     }
-                    Log.e("tusae", json.toString())
 
                 }
             }
@@ -272,7 +319,7 @@ class MapHomeViewModel: ViewModel() {
     fun startMainCoroutine(){
         viewModelScope.launch {
             while (true){
-                getDriverProv()
+                getDriversAll()
                 delay(TimeUnit.SECONDS.toMillis(20))
             }
         }

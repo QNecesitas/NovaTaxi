@@ -2,6 +2,7 @@ package com.qnecesitas.novataxiapp
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -11,7 +12,9 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
@@ -36,8 +39,8 @@ import com.qnecesitas.novataxiapp.auxiliary.UserAccountShared
 import com.qnecesitas.novataxiapp.databinding.ActivityMapHomeBinding
 import com.qnecesitas.novataxiapp.viewmodel.MapHomeViewModel
 import com.qnecesitas.novataxiapp.viewmodel.MapHomeViewModelFactory
+import com.shashank.sony.fancytoastlib.FancyToast
 
-@Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
 class ActivityMapHome : AppCompatActivity() {
 
     //Binding
@@ -98,7 +101,7 @@ class ActivityMapHome : AppCompatActivity() {
 
 
         //Recycler
-        val driverAdapter = viewModel.pointUbic.value?.let {
+        val driverAdapter = viewModel.pointOrigin.value?.let {
             viewModel.pointDest.value?.let { it1 ->
                 DriverAdapter(
                     this@ActivityMapHome,
@@ -113,17 +116,17 @@ class ActivityMapHome : AppCompatActivity() {
 
 
 
-        /*--
         //Results launchers
         resultLauncherUbic =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                locationUbicAccept(result)
+                locationOriginAccept(result)
             }
         resultLauncherDest =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 locationDestAccept(result)
             }
-         ----*/
+
+
 
 
 
@@ -158,6 +161,10 @@ class ActivityMapHome : AppCompatActivity() {
                 showAlertDialogNotLocationSettings()
             }
         }
+
+        binding.extBtnUbicUser.setOnClickListener{ getUserOrigin() }
+
+        binding.extBtnUbicDest.setOnClickListener{ getUserDestination() }
         /*----
         driverAdapter?.setClickDetails(object : DriverAdapter.ITouchDetails{
             override fun onClickDetails(position: Int) {
@@ -172,10 +179,6 @@ class ActivityMapHome : AppCompatActivity() {
                 showAlertDialogConfirmCar()
             }
         })
-
-        binding.extBtnUbicUser.setOnClickListener{ getUserOrigin() }
-
-        binding.extBtnUbicDest.setOnClickListener{ getUserDestination() }
          ----*/
 
 
@@ -205,10 +208,11 @@ class ActivityMapHome : AppCompatActivity() {
             this@ActivityMapHome.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val locationListener: LocationListener = object : LocationListener {
             override fun onLocationChanged(location: Location) {
-
                 //Draw an icon with the position
                 val point = Point.fromLngLat(location.longitude, location.latitude)
                 addAnnotationGPSToMap(point, R.drawable.user_icon)
+                viewModel.setLatitudeGPS(location.latitude)
+                viewModel.setLongitudeGPS(location.longitude)
 
                 //Put camera in GPS position if is necessary
                 if(viewModel.isNecessaryCamera.value == true) {
@@ -251,11 +255,6 @@ class ActivityMapHome : AppCompatActivity() {
         }
     }
 
-
-
-
-    /*----
-    //Get Locations
     private fun getUserOrigin(){
         val intent = Intent(this@ActivityMapHome, ActivityPutMap::class.java)
         resultLauncherUbic.launch(intent)
@@ -265,34 +264,32 @@ class ActivityMapHome : AppCompatActivity() {
         val intent = Intent(this@ActivityMapHome, ActivityPutMap::class.java)
         resultLauncherDest.launch(intent)
     }
-     ----*/
 
 
 
 
-    /*---
+
     //Send Locations
-    private fun locationUbicAccept(result: ActivityResult) {
+    private fun locationOriginAccept(result: ActivityResult) {
         if (result.resultCode == Activity.RESULT_OK) {
             val data: Intent? = result.data
             val lat = data?.getDoubleExtra("latitude",0.0)
             val long = data?.getDoubleExtra("longitude",0.0)
             val point = Point.fromLngLat(long!!, lat!!)
-            addAnnotationToMap(point, R.drawable.baseline_person_pin_24)
+            addAnnotationsTripToMap(point, R.drawable.start_route)
             lat.let { viewModel.setLatitudeClient(it) }
             long.let { viewModel.setLongitudeClient(it) }
             if (viewModel.latitudeDestiny.value != null && viewModel.longitudeDestiny.value != null) {
-                viewModel.getDriverProv()
+
             }
         }else{
             FancyToast.makeText(
                 this@ActivityMapHome ,
-                "Error al encontrar la ubicación" ,
+                getString(R.string.error_al_encontrar_la_ubicaci_n) ,
                 FancyToast.LENGTH_SHORT,FancyToast.ERROR,false
             ).show()
         }
     }
-        //binding.extBtnUbicDest.setOnClickListener{ viewModel.getDriverProv() }
 
     private fun locationDestAccept(result: ActivityResult){
         if (result.resultCode == Activity.RESULT_OK){
@@ -302,19 +299,18 @@ class ActivityMapHome : AppCompatActivity() {
             lat?.let { viewModel.setLatitudeDestiny(it) }
             long?.let { viewModel.setLongitudeDestiny(it) }
             val point = Point.fromLngLat(long!!, lat!!)
-            addAnnotationToMap(point, R.drawable.marker_map)
-            if (viewModel.latitudeClient.value != null && viewModel.longitudeClient.value != null) {
-                viewModel.getDriverProv()
+            addAnnotationsTripToMap(point, R.drawable.end_route)
+            if (viewModel.latitudeOrigin.value != null && viewModel.longitudeOrigin.value != null) {
+                viewModel.fetchARoute(this,mapboxNavigation)
             }
         }else{
             FancyToast.makeText(
                 this@ActivityMapHome ,
-                "Error al encontrar la ubicación" ,
+                getString(R.string.error_al_encontrar_la_ubicaci_n) ,
                 FancyToast.LENGTH_SHORT,FancyToast.ERROR,false
             ).show()
         }
     }
-     ----*/
 
 
 
@@ -333,7 +329,7 @@ class ActivityMapHome : AppCompatActivity() {
         //create the alert dialog and show it
         builder.create().show()
     }
-    /*----s
+    /*----
     private fun showAlertDialogNoCar(){
         val builder = AlertDialog.Builder(this)
         builder.setCancelable(true)
@@ -427,9 +423,7 @@ class ActivityMapHome : AppCompatActivity() {
         }
     }
 
-
-    /*----
-    private fun addAnnotationGPSToMap(point: Point, @DrawableRes drawable: Int) {
+    private fun addAnnotationsTripToMap(point: Point, @DrawableRes drawable: Int) {
         viewModel.bitmapFromDrawableRes(
             this@ActivityMapHome,
             drawable
@@ -439,26 +433,25 @@ class ActivityMapHome : AppCompatActivity() {
                 .withIconImage(it)
                 .withIconSize(0.8)
             pointAnnotationManagerPositions.create(pointAnnotationOptions)
-            if(drawable == R.drawable.marker_map){
-                if(viewModel.pointLocation.value == null){
-                    viewModel.setPointLocation(pointAnnotationManagerPositions.annotations.last())
+            if(drawable == R.drawable.start_route){
+                if(viewModel.pointOrigin.value == null){
+                    viewModel.setPointOrigin(pointAnnotationManagerPositions.annotations.last())
                 }else{
                     pointAnnotationManagerPositions.delete(viewModel.pointLocation.value!!)
-                    viewModel.setPointLocation(pointAnnotationManagerPositions.annotations.last())
+                    viewModel.setPointOrigin(pointAnnotationManagerPositions.annotations.last())
                 }
             }
-            if(drawable ==  R.drawable.dirver_icon_mine) {
-                if (viewModel.pointGPS.value == null) {
-                    viewModel.setPointGPS(pointAnnotationManagerPositions.annotations.last())
+            if(drawable ==  R.drawable.end_route) {
+                if (viewModel.pointDest.value == null) {
+                    viewModel.setPointDest(pointAnnotationManagerPositions.annotations.last())
                 } else {
                     pointAnnotationManagerPositions.delete(viewModel.pointGPS.value!!)
-                    viewModel.setPointGPS(pointAnnotationManagerPositions.annotations.last())
+                    viewModel.setPointDest(pointAnnotationManagerPositions.annotations.last())
                 }
             }
 
         }
     }
-     ----*/
 
 
 
