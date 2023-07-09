@@ -104,11 +104,7 @@ class LoginViewModel : ViewModel() {
             ) {
                 if (response.isSuccessful) {
                     if(response.body() != null){
-                        if(response.body() == "Success"){
                             _stateRecover.value = StateConstants.SUCCESS
-                        }else{
-                            _stateRecover.value = StateConstants.ERROR
-                        }
                     }else{
                         _stateRecover.value = StateConstants.ERROR
                     }
