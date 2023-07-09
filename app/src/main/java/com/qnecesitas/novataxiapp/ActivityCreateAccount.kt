@@ -56,6 +56,24 @@ class ActivityCreateAccount : AppCompatActivity() {
                     NetworkTools.showAlertDialogNoInternet(this)
                     binding.loadingAccount.visibility = View.GONE
                 }
+                CreateAccountViewModel.StateConstants.DUPLICATED ->{
+                    binding.loadingAccount.visibility = View.GONE
+                    //init alert dialog
+                    val builder = AlertDialog.Builder(this)
+                    builder.setCancelable(true)
+                    builder.setTitle(getString(R.string.el_correo_ya_existe))
+                    builder.setMessage(getString(R.string.ya_existe_una_cuenta_creada_con_ese_correo))
+                    //set listeners for dialog buttons
+                    builder.setPositiveButton(
+                        R.string.Aceptar
+                    ) { dialog , _ ->
+                        dialog.dismiss()
+                    }
+
+                    //create the alert dialog and show it
+                    builder.create().show()
+
+                }
             }
         }
 
@@ -163,7 +181,7 @@ class ActivityCreateAccount : AppCompatActivity() {
         //init alert dialog
         val builder = AlertDialog.Builder(this)
         builder.setCancelable(true)
-        builder.setTitle(getString(R.string.Se_ha_producido_un_error))
+        builder.setTitle(getString(R.string.confirmar_cuenta))
         builder.setMessage(getString(R.string.hemos_enviado_correo,email))
         //set listeners for dialog buttons
         builder.setPositiveButton(

@@ -163,59 +163,7 @@
 
 
 
-        <!--CV Price-->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/Price"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
 
-            <!--LL Container-->
-            <LinearLayout
-                android:background="?attr/colorSurface"
-                android:translationZ="12dp"
-                android:orientation="horizontal"
-                android:padding="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <!--TV PriceS-->
-                <TextView
-                    android:textColor="?attr/colorOnPrimaryContainer"
-                    android:textStyle="bold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/text_h"
-                    android:text="@string/precioKmS"/>
-
-                <!--TV Price-->
-                <TextView
-                    android:textColor="?attr/colorOnPrimaryContainer"
-                    android:id="@+id/tvPrice"
-                    android:layout_marginStart="10dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/precioKm"
-                    android:textSize="16sp"/>
-
-                <!--TV KM-->
-                <TextView
-                    android:textColor="?attr/colorOnPrimaryContainer"
-                    android:layout_marginStart="10dp"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/por_KM"/>
-
-            </LinearLayout>
-
-
-
-
-        </androidx.cardview.widget.CardView>
 
 
 

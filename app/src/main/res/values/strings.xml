@@ -114,4 +114,7 @@
     <string name="actualizar_cuenta">Actualizar cuenta</string>
     <string name="est_s_seguro_de_actualizar_los_datos_de_tu_cuenta">¿Estás seguro de actualizar los datos de tu cuenta?</string>
     <string name="Sobre_nosotros">Sobre nosotros</string>
+    <string name="confirmar_cuenta">Confirmar cuenta</string>
+    <string name="el_correo_ya_existe">El correo ya existe</string>
+    <string name="ya_existe_una_cuenta_creada_con_ese_correo">Ya existe una cuenta creada con ese correo</string>
 </resources>

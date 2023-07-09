@@ -23,7 +23,8 @@
             android:background="?attr/colorPrimary"
             android:fitsSystemWindows="true"
             app:title="@string/ajustes"
-            app:titleTextColor="?attr/colorOnPrimary">
+            app:titleTextColor="?attr/colorOnPrimary"
+            android:theme="@style/ToolbarIcons">
 
             <!--Progress Bar-->
 

@@ -149,9 +149,10 @@ class DriverAdapter(
             pointUser: Point,
             pointDestiny: Point
         ): Double {
+            // TODO Aqui en vez de driver.price puse driver.longitude
             return try {
                 getPriceDistance(
-                    driver.price,
+                    driver.longitude,
                     pointUser,
                     pointDestiny,
                     Point.fromLngLat(driver.longitude, driver.latitude),

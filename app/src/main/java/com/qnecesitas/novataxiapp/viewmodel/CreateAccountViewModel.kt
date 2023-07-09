@@ -1,14 +1,9 @@
 package com.qnecesitas.novataxiapp.viewmodel
 
-import android.app.AlertDialog
-import android.content.Context
-import android.content.DialogInterface
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.qnecesitas.novataxiapp.R
 import com.qnecesitas.novataxiapp.auxiliary.Constants
 import com.qnecesitas.novataxiapp.network.UserDataSourceNetwork
 import retrofit2.Call
@@ -21,7 +16,7 @@ class CreateAccountViewModel : ViewModel() {
     private var userDataSourceNetwork: UserDataSourceNetwork = UserDataSourceNetwork()
 
     //Progress state
-    enum class StateConstants {LOADING, SUCCESS, ERROR}
+    enum class StateConstants {LOADING, SUCCESS, ERROR,DUPLICATED}
     private val _state = MutableLiveData<StateConstants>()
     val state: LiveData<StateConstants> get() = _state
 
@@ -53,25 +48,32 @@ class CreateAccountViewModel : ViewModel() {
                 response: Response<String>
             ) {
                 if (response.isSuccessful) {
-                    _state.value = StateConstants.SUCCESS
+                    when (response.body()) {
+                        "Exist" -> {
+                            _state.value = StateConstants.DUPLICATED
+                        }
+                        "Success" -> {
+                            _state.value = StateConstants.SUCCESS
+                        }
+                        else -> {
+                            _state.value = StateConstants.ERROR
+                        }
+                    }
                 } else {
                     _state.value = StateConstants.ERROR
+
                 }
             }
 
             override fun onFailure(call: Call<String> , t: Throwable) {
                 _state.value = StateConstants.ERROR
             }
-        })
-    }
-
-
-
+        })  }
 
 }
 
 
-class CreateAccountViewModelFactory() : ViewModelProvider.Factory {
+class CreateAccountViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(CreateAccountViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

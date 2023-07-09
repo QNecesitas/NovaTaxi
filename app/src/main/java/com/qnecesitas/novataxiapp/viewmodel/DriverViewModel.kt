@@ -1,15 +1,12 @@
 package com.qnecesitas.novataxiapp.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.qnecesitas.novataxiapp.auxiliary.Constants
 import com.qnecesitas.novataxiapp.model.Driver
-import com.qnecesitas.novataxiapp.model.User
 import com.qnecesitas.novataxiapp.network.DriverDataSourceNetwork
-import com.qnecesitas.novataxiapp.network.UserDataSourceNetwork
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -35,7 +32,7 @@ class DriverViewModel : ViewModel() {
      */
     //Send InfoDriver
     fun getDriver(email: String) {
-        _state.value = DriverViewModel.StateConstants.LOADING
+        _state.value = StateConstants.LOADING
         val call = driverDataSourceNetwork.getDriverInformation(
             Constants.PHP_TOKEN,
             email
@@ -72,7 +69,7 @@ class DriverViewModel : ViewModel() {
 
 }
 
-class DriverViewModelFactory() : ViewModelProvider.Factory {
+class DriverViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(DriverViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

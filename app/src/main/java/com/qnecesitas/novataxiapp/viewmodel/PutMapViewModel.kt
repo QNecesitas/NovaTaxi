@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.LiveData
@@ -75,7 +74,7 @@ class PutMapViewModel:ViewModel() {
 
 }
 
-class PutMapViewModelFactory() : ViewModelProvider.Factory {
+class PutMapViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(PutMapViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

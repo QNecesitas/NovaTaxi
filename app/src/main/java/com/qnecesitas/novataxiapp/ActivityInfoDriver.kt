@@ -43,7 +43,6 @@ class ActivityInfoDriver : AppCompatActivity() {
         viewModel.listDriver.observe(this) {
                 binding.tvName.text = viewModel.listDriver.value?.get(0)?.name
                 binding.tvPhoneDriver.text = viewModel.listDriver.value?.get(0)?.phone
-                binding.tvPrice.text = viewModel.listDriver.value?.get(0)?.price.toString()
                 binding.tvCarType.text = viewModel.listDriver.value?.get(0)?.typeCar
                 binding.tvCantSeat.text = viewModel.listDriver.value?.get(0)?.cantSeat.toString()
         }
