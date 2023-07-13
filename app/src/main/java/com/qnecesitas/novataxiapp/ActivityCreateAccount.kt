@@ -30,7 +30,7 @@ class ActivityCreateAccount : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(true)
-        binding.toolbar.setNavigationOnClickListener { finish() }
+        binding.toolbar.setNavigationOnClickListener { showAlertCancel() }
 
 
         binding.acceptAccount.setOnClickListener {
@@ -196,6 +196,10 @@ class ActivityCreateAccount : AppCompatActivity() {
     }
 
 
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        showAlertCancel()
+    }
 
 
 

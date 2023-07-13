@@ -1,5 +1,6 @@
 package com.qnecesitas.novataxiapp.network
 
+import android.util.Log
 import com.qnecesitas.novataxiapp.auxiliary.Constants
 import com.qnecesitas.novataxiapp.model.Driver
 import retrofit2.Call
@@ -27,7 +28,8 @@ class TripsDataSourceNetwork: IRetrofitTrips {
         longDest: Double,
         latOri: Double,
         longOri: Double,
-        userPhone: String
+        userPhone: String,
+        typeCar: String
     ): Call<String> {
         return productApi.addTrip(
             token,
@@ -40,8 +42,17 @@ class TripsDataSourceNetwork: IRetrofitTrips {
             longDest,
             latOri,
             longOri,
-            userPhone
+            userPhone,
+            typeCar
         )
+    }
+
+    override fun deleteTrip(token: String, fk_user: String): Call<String> {
+        return productApi.deleteTrip(token, fk_user)
+    }
+
+    override fun fetchStateTrip(token: String, fk_user: String): Call<String> {
+        return productApi.fetchStateTrip(token, fk_user)
     }
 
 

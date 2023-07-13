@@ -12,5 +12,7 @@ data class Driver(
     val password: String ,
     var state: String ,
     val statePhoto: Int,
-    val balance: Double
+    val balance: Double,
+    var price:Double,
+    val rating: Int
 )

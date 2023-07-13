@@ -2,12 +2,15 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:elevation="@dimen/card_my_elevation"
+    android:translationZ="@dimen/card_my_elevation">
 
     <!--Cl Container-->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <!--cv_image-->
         <androidx.cardview.widget.CardView
@@ -24,10 +27,12 @@
 
             <!--IV Picture Car-->
             <ImageView
+                android:id="@+id/image"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:background="?attr/colorSecondary"
-                android:src="@drawable/baseline_drive_eta_24" />
+                android:src="@drawable/vector_familiar"
+                android:importantForAccessibility="no" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="wrap_content"
@@ -42,64 +47,51 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clContainer"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/cv_image"
             app:layout_constraintTop_toTopOf="parent">
 
+            <!--Information-->
             <LinearLayout
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/tvMoreDetails"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <!--Price-->
+                <!--Type car-->
                 <LinearLayout
-                    android:id="@+id/ll_phone"
+                    android:id="@+id/ll_typeCar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    android:orientation="horizontal">
 
                     <!--Tv PriceS-->
                     <TextView
-                        android:id="@+id/tvPrecioS"
+                        android:id="@+id/tvTypeCar"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="12dp"
-                        android:text="@string/precioKmS"
+                        android:text="@string/cargando"
                         android:textStyle="bold" />
-
-                    <!--Tv Price-->
-                    <TextView
-                        android:id="@+id/tvPrice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="12dp"
-                        android:text="@string/precioKm" />
 
                 </LinearLayout>
 
-                <!--Number seats-->
+                <!--Seats-->
                 <LinearLayout
-                    app:layout_constraintTop_toBottomOf="@id/ll_phone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    app:layout_constraintStart_toStartOf="parent">
+                    android:orientation="horizontal">
 
-                    <!--Tv PriceS-->
+                    <!--Tv SeatsS-->
                     <TextView
                         android:id="@+id/tvCantSeatS"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:layout_marginTop="12dp"
                         android:textStyle="bold"
                         android:text="@string/cantSeatS"/>
 
@@ -109,8 +101,33 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:layout_marginTop="12dp"
-                        android:text="@string/cantSeat" />
+                        android:text="@string/cargando" />
+
+
+                </LinearLayout>
+
+                <!--Price-->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <!--Tv PriceS-->
+                    <TextView
+                        android:id="@+id/tvCantPriceS"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:textStyle="bold"
+                        android:text="@string/precioKmS"/>
+
+                    <!--Tv Price-->
+                    <TextView
+                        android:id="@+id/tvCantPrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="@string/cargando" />
 
 
                 </LinearLayout>

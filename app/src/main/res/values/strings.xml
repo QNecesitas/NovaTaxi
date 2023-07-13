@@ -78,7 +78,7 @@
     <string name="NoCarro">No encontramos algún taxi disponible.</string>
     <string name="no">No</string>
     <string name="ConfirmTaxi">Confirmar</string>
-    <string name="SeguroPedirTaxi">¿Usted está seguro de pedir este taxi?</string>
+    <string name="SeguroPedirTaxi">¿Está seguro de pedir este taxi?</string>
     <string name="Cancelar">Cancelar</string>
     <string name="Version_desactualizada">Versión desactualizada</string>
     <string name="Correo_no_confirmado">Correo no confirmado</string>
@@ -114,6 +114,15 @@
     <string name="actualizar_cuenta">Actualizar cuenta</string>
     <string name="est_s_seguro_de_actualizar_los_datos_de_tu_cuenta">¿Estás seguro de actualizar los datos de tu cuenta?</string>
     <string name="Sobre_nosotros">Sobre nosotros</string>
+    <string name="error_al_encontrar_la_ruta">Error al encontrar la ruta</string>
+    <string name="cargando">Cargando</string>
+    <string name="detalles">Detalles</string>
+    <string name="espere_mientras_alg_n_auto_escoge">Espere mientras algún auto escoge dar su viaje. Durante 10 minutos su viaje será visible para los autos cercanos</string>
+    <string name="valorado_con_exito">Valorado con éxito</string>
+    <string name="error_al_valorar">Error al valorar</string>
+    <string name="valore_su_ltimo_viaje">Valore su último viaje</string>
+    <string name="valorar">Valorar</string>
+    <string name="descargar">Descargar</string>
     <string name="confirmar_cuenta">Confirmar cuenta</string>
     <string name="el_correo_ya_existe">El correo ya existe</string>
     <string name="ya_existe_una_cuenta_creada_con_ese_correo">Ya existe una cuenta creada con ese correo</string>
