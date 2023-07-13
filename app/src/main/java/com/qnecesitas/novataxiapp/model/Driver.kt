@@ -9,5 +9,6 @@ data class Driver(
     val cantSeat:Int,
     val maxDist: Int,
     val latitude: Double,
-    val longitude: Double
+    val longitude: Double,
+    val rating: Int
 )

@@ -8,10 +8,17 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,6 +27,9 @@ import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import com.mapbox.api.directions.v5.models.Bearing
+import com.mapbox.api.directions.v5.models.RouteOptions
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.plugin.annotation.annotations
@@ -28,19 +38,41 @@ import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.mapbox.maps.plugin.compass.compass
 import com.mapbox.maps.plugin.scalebar.scalebar
+import com.mapbox.navigation.base.extensions.applyDefaultNavigationOptions
+import com.mapbox.navigation.base.extensions.applyLanguageAndVoiceUnitOptions
 import com.mapbox.navigation.base.options.NavigationOptions
+import com.mapbox.navigation.base.route.NavigationRoute
+import com.mapbox.navigation.base.route.NavigationRouterCallback
+import com.mapbox.navigation.base.route.RouterFailure
+import com.mapbox.navigation.base.route.RouterOrigin
 import com.mapbox.navigation.core.MapboxNavigation
 import com.mapbox.navigation.core.lifecycle.MapboxNavigationApp
 import com.mapbox.navigation.core.lifecycle.requireMapboxNavigation
+import com.mapbox.navigation.ui.maps.route.arrow.api.MapboxRouteArrowApi
+import com.mapbox.navigation.ui.maps.route.arrow.api.MapboxRouteArrowView
+import com.mapbox.navigation.ui.maps.route.arrow.model.RouteArrowOptions
+import com.mapbox.navigation.ui.maps.route.line.api.MapboxRouteLineApi
+import com.mapbox.navigation.ui.maps.route.line.api.MapboxRouteLineView
+import com.mapbox.navigation.ui.maps.route.line.model.MapboxRouteLineOptions
 import com.mapbox.navigation.utils.internal.toPoint
-import com.qnecesitas.novataxiapp.adapters.DriverAdapter
+import com.qnecesitas.novataxiapp.adapters.TypeTaxiAdapter
 import com.qnecesitas.novataxiapp.auxiliary.ImageTools
+import com.qnecesitas.novataxiapp.auxiliary.NetworkTools
 import com.qnecesitas.novataxiapp.auxiliary.UserAccountShared
 import com.qnecesitas.novataxiapp.databinding.ActivityMapHomeBinding
+import com.qnecesitas.novataxiapp.databinding.LiRateDriverBinding
+import com.qnecesitas.novataxiapp.model.Driver
+import com.qnecesitas.novataxiapp.model.Vehicle
+import com.qnecesitas.novataxiapp.viewmodel.LoginViewModel
 import com.qnecesitas.novataxiapp.viewmodel.MapHomeViewModel
 import com.qnecesitas.novataxiapp.viewmodel.MapHomeViewModelFactory
 import com.shashank.sony.fancytoastlib.FancyToast
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.util.Calendar
+import java.util.concurrent.TimeUnit
 
+@Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
 class ActivityMapHome : AppCompatActivity() {
 
     //Binding
@@ -49,6 +81,7 @@ class ActivityMapHome : AppCompatActivity() {
     //Map elements
     private lateinit var pointAnnotationManagerPositions: PointAnnotationManager
     private lateinit var pointAnnotationManagerDrivers: PointAnnotationManager
+    private lateinit var pointAnnotationManagerTrip: PointAnnotationManager
 
     //Permissions
     private val permissionCode = 34
@@ -59,15 +92,21 @@ class ActivityMapHome : AppCompatActivity() {
     }
 
     //Results launchers
-    private lateinit var resultLauncherUbic: ActivityResultLauncher<Intent>
+    private lateinit var resultLauncherLocation: ActivityResultLauncher<Intent>
     private lateinit var resultLauncherDest: ActivityResultLauncher<Intent>
-
-
 
     //MapBox
     private val mapboxNavigation: MapboxNavigation by requireMapboxNavigation(
         onInitialize = this::initNavigation
     )
+
+    //Route
+    private lateinit var routeLineOptions: MapboxRouteLineOptions
+    private lateinit var routeLineView: MapboxRouteLineView
+    private lateinit var routeLineApi: MapboxRouteLineApi
+    private lateinit var routeArrow: MapboxRouteArrowApi
+    private lateinit var routeArrowOptions: RouteArrowOptions
+    private lateinit var routeArrowView: MapboxRouteArrowView
 
 
     /*
@@ -96,28 +135,22 @@ class ActivityMapHome : AppCompatActivity() {
         val annotationApi = binding.mapView.annotations
         pointAnnotationManagerPositions = annotationApi.createPointAnnotationManager()
         pointAnnotationManagerDrivers = annotationApi.createPointAnnotationManager()
+        pointAnnotationManagerTrip = annotationApi.createPointAnnotationManager()
 
 
 
 
-        //Recycler
-        val driverAdapter = viewModel.pointOrigin.value?.let {
-            viewModel.pointDest.value?.let { it1 ->
-                DriverAdapter(
-                    this@ActivityMapHome,
-                    mapboxNavigation,
-                    it.point,
-                    it1.point
-                )
-            }
-        }
-        binding.rvTaxis.adapter = driverAdapter
-
-
+        //Route
+        routeLineOptions = MapboxRouteLineOptions.Builder(this).build()
+        routeLineView = MapboxRouteLineView(routeLineOptions)
+        routeLineApi = MapboxRouteLineApi(routeLineOptions)
+        routeArrow = MapboxRouteArrowApi()
+        routeArrowOptions = RouteArrowOptions.Builder(this).build()
+        routeArrowView = MapboxRouteArrowView(routeArrowOptions)
 
 
         //Results launchers
-        resultLauncherUbic =
+        resultLauncherLocation =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 locationOriginAccept(result)
             }
@@ -129,28 +162,133 @@ class ActivityMapHome : AppCompatActivity() {
 
 
 
+        //Recycler
+        val adapterType = TypeTaxiAdapter(this)
+        adapterType.setClickDetails(object: TypeTaxiAdapter.ITouchDetails{
+            override fun onClickDetails(vehicle: Vehicle) {
+                showAlertDialogCarDetails(vehicle.details)
+            }
+        })
+        adapterType.setClick(object: TypeTaxiAdapter.ITouchAsk{
+            override fun onClickAsk(vehicle: Vehicle) {
+                showAlertDialogConfirmCar(vehicle)
+            }
+        })
+        binding.rvTaxis.adapter = adapterType
+        binding.rvTaxis.setHasFixedSize(true)
+
+
 
         //Observers
         viewModel.listDrivers.observe(this) {
             updateDriversPositionInMap()
         }
-        /*----
-        viewModel.state.observe(this) {
+
+        viewModel.statePrices.observe(this){
             when(it){
-                MapHomeViewModel.StateConstants.LOADING -> binding.progress.visibility = View.VISIBLE
-                MapHomeViewModel.StateConstants.SUCCESS -> binding.progress.visibility = View.GONE
+                MapHomeViewModel.StateConstants.LOADING ->
+                    binding.progressRecycler.visibility = View.VISIBLE
+                MapHomeViewModel.StateConstants.SUCCESS ->{
+                    binding.progressRecycler.visibility = View.GONE
+                }
                 MapHomeViewModel.StateConstants.ERROR -> {
+                    NetworkTools.showAlertDialogNoInternet(this)
+                    binding.progressRecycler.visibility = View.GONE
+                }
+            }
+        }
+
+        viewModel.listVehicle.observe(this){
+            adapterType.submitList(it)
+        }
+
+        viewModel.stateAddTrip.observe(this){
+            when(it){
+                MapHomeViewModel.StateConstants.LOADING -> {
+                    binding.progressRecycler.visibility = View.VISIBLE
+                    binding.rvTaxis.visibility = View.GONE
+                }
+                MapHomeViewModel.StateConstants.SUCCESS ->{
+                    showAlertLLAwaitSelect(TimeUnit.MINUTES.toMillis(10))
+                }
+                MapHomeViewModel.StateConstants.ERROR -> {
+                    NetworkTools.showAlertDialogNoInternet(this)
+                    binding.progressRecycler.visibility = View.GONE
+                }
+            }
+        }
+
+        viewModel.stateCancelTrip.observe(this){
+            when(it){
+                MapHomeViewModel.StateConstants.LOADING -> {
+                    binding.progressCancelAwait.visibility = View.VISIBLE
+                }
+                MapHomeViewModel.StateConstants.SUCCESS ->{
+                    UserAccountShared.setLastPetition(this, 0)
+                    binding.progressCancelAwait.visibility = View.GONE
+                    binding.llAwaitCarSelect.visibility = View.GONE
+                    binding.extBtnUbicUser.visibility = View.VISIBLE
+                    binding.extBtnUbicDest.visibility = View.VISIBLE
+                }
+                MapHomeViewModel.StateConstants.ERROR -> {
+                    NetworkTools.showAlertDialogNoInternet(this)
+                    binding.progressCancelAwait.visibility = View.GONE
+                }
+            }
+        }
+
+        viewModel.stateRate.observe(this){
+            when(it){
+                MapHomeViewModel.StateConstants.LOADING -> {
+
+                }
+                MapHomeViewModel.StateConstants.SUCCESS ->{
+                    FancyToast.makeText(
+                        this@ActivityMapHome ,
+                        getString(R.string.valorado_con_exito) ,
+                        FancyToast.LENGTH_SHORT,FancyToast.SUCCESS,false
+                    ).show()
+                }
+                MapHomeViewModel.StateConstants.ERROR -> {
+                    FancyToast.makeText(
+                        this@ActivityMapHome ,
+                        getString(R.string.error_al_valorar) ,
+                        FancyToast.LENGTH_SHORT,FancyToast.ERROR,false
+                    ).show()
+                }
+            }
+        }
+
+        viewModel.tripState.observe(this){
+            if(it == "Aceptado"){
+                val intent = Intent(this, ActivityNavigation::class.java)
+                startActivity(intent)
+            }
+        }
+
+        viewModel.stateVersion.observe(this){
+            when(it){
+                LoginViewModel.StateConstants.LOADING -> binding.progress.visibility = View.VISIBLE
+                LoginViewModel.StateConstants.SUCCESS -> {
+                    getUserDestination()
+                }
+                LoginViewModel.StateConstants.ERROR ->{
                     NetworkTools.showAlertDialogNoInternet(this)
                     binding.progress.visibility = View.GONE
                 }
             }
         }
-         ----*/
+
+        viewModel.versionResponse.observe(this){
+            showAlertDialogNotVersion(it)
+        }
 
 
         //Listeners
         binding.realTimeButton.setOnClickListener{
 
+            UserAccountShared.setIsRatingInAwait(this,true)
+            UserAccountShared.setLastDriver(this,"chofer")
             val lm = getSystemService(Context.LOCATION_SERVICE) as LocationManager
             if(lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 
@@ -164,29 +302,16 @@ class ActivityMapHome : AppCompatActivity() {
 
         binding.extBtnUbicUser.setOnClickListener{ getUserOrigin() }
 
-        binding.extBtnUbicDest.setOnClickListener{ getUserDestination() }
-        /*----
-        driverAdapter?.setClickDetails(object : DriverAdapter.ITouchDetails{
-            override fun onClickDetails(position: Int) {
-                val intent = Intent(this@ActivityMapHome,ActivityInfoDriver::class.java)
-                intent.putExtra("emailSelected", viewModel.listSmallDriver.value?.get(position)?.email)
-                startActivity(intent)
-            }
-        })
+        binding.extBtnUbicDest.setOnClickListener{ viewModel.getAppVersion() }
 
-        driverAdapter?.setClick(object : DriverAdapter.ITouchAsk{
-            override fun onClickAsk(driver: Driver, price: Int) {
-                showAlertDialogConfirmCar()
-            }
-        })
-         ----*/
 
 
 
         //Start Search
         viewModel.setIsNecessaryCamera(true)
         getLocationRealtime()
-        viewModel.startMainCoroutine()
+        viewModel.startMainCoroutine(this)
+        checkInitialSharedInformation()
     }
 
 
@@ -197,6 +322,52 @@ class ActivityMapHome : AppCompatActivity() {
                 .accessToken(getString(R.string.mapbox_access_token))
                 .build()
         )
+    }
+
+    private fun checkInitialSharedInformation(){
+        if(UserAccountShared.getIsRatingInAwait(this)){
+            rateTheDriver()
+            UserAccountShared.setIsRatingInAwait(this,false)
+        }
+
+        val lastTimeInMills = UserAccountShared.getLastPetition(this)
+        val actualTimeInMills = Calendar.getInstance().timeInMillis
+
+        if(lastTimeInMills > 0) {
+            if ((actualTimeInMills - lastTimeInMills) < 600000) {
+                showAlertLLAwaitSelect(600000  - (actualTimeInMills - lastTimeInMills))
+            }
+        }
+
+    }
+
+    private fun rateTheDriver(){
+        liRateDriver()
+    }
+
+    private fun showAlertDialogNotVersion(url: String) {
+        //init alert dialog
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setCancelable(true)
+        builder.setTitle(R.string.Version_desactualizada)
+        builder.setMessage(getString(R.string.version_incorrecta, url))
+        //set listeners for dialog buttons
+        builder.setPositiveButton(
+            R.string.Aceptar
+        ) { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        builder.setNegativeButton(getString(R.string.descargar)){
+            dialog, _ ->
+            dialog.dismiss()
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse(url)
+            startActivity(intent)
+        }
+
+        //create the alert dialog and show it
+        builder.create().show()
     }
 
 
@@ -257,7 +428,7 @@ class ActivityMapHome : AppCompatActivity() {
 
     private fun getUserOrigin(){
         val intent = Intent(this@ActivityMapHome, ActivityPutMap::class.java)
-        resultLauncherUbic.launch(intent)
+        resultLauncherLocation.launch(intent)
     }
 
     private fun getUserDestination(){
@@ -280,7 +451,7 @@ class ActivityMapHome : AppCompatActivity() {
             lat.let { viewModel.setLatitudeClient(it) }
             long.let { viewModel.setLongitudeClient(it) }
             if (viewModel.latitudeDestiny.value != null && viewModel.longitudeDestiny.value != null) {
-
+                fetchARoute()
             }
         }else{
             FancyToast.makeText(
@@ -301,7 +472,7 @@ class ActivityMapHome : AppCompatActivity() {
             val point = Point.fromLngLat(long!!, lat!!)
             addAnnotationsTripToMap(point, R.drawable.end_route)
             if (viewModel.latitudeOrigin.value != null && viewModel.longitudeOrigin.value != null) {
-                viewModel.fetchARoute(this,mapboxNavigation)
+                fetchARoute()
             }
         }else{
             FancyToast.makeText(
@@ -329,21 +500,22 @@ class ActivityMapHome : AppCompatActivity() {
         //create the alert dialog and show it
         builder.create().show()
     }
-    /*----
-    private fun showAlertDialogNoCar(){
-        val builder = AlertDialog.Builder(this)
-        builder.setCancelable(true)
-        builder.setTitle(this.getString(R.string.NoCarroEncontrado))
-        builder.setMessage(R.string.NoCarro)
-        builder.setPositiveButton(
-            R.string.Aceptar
-        ) { dialog, _ -> dialog.dismiss() }
 
+    private fun showAlertDialogCarDetails(details: String) {
+        //init alert dialog
+        val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+        builder.setCancelable(false)
+        builder.setTitle(getString(R.string.detalles))
+        builder.setMessage(details)
+        //set listeners for dialog buttons
+        builder.setPositiveButton(R.string.Aceptar) { dialog, _ ->
+            dialog.dismiss()
+        }
         //create the alert dialog and show it
         builder.create().show()
     }
 
-    fun showAlertDialogConfirmCar(){
+    fun showAlertDialogConfirmCar(vehicle: Vehicle){
         val builder = AlertDialog.Builder(this)
         builder.setCancelable(true)
         builder.setTitle(this.getString(R.string.ConfirmTaxi))
@@ -357,17 +529,18 @@ class ActivityMapHome : AppCompatActivity() {
         ) {
                 dialog,_->
             dialog.dismiss()
-            FancyToast.makeText(this@ActivityMapHome,
-                "Su taxi esta en camino, por favor espere",
-                FancyToast.LENGTH_LONG,FancyToast.SUCCESS,false).show()
-            binding.clAvailableTaxis.visibility = View.GONE
-
+            viewModel.addTrip(
+                this@ActivityMapHome,
+                vehicle.price.toDouble(),
+                0.0,
+                "no",
+                vehicle.type
+            )
         }
 
         //create the alert dialog and show it
         builder.create().show()
     }
-     ----*/
 
 
 
@@ -416,10 +589,22 @@ class ActivityMapHome : AppCompatActivity() {
                 if (it.longitude != 0.0 && it.latitude != 0.0) {
                     addAnnotationDrivers(
                         Point.fromLngLat(it.longitude, it.latitude),
-                        R.drawable.dirver_icon
+                        getDriverIcon(it)
                     )
                 }
             }
+        }
+    }
+
+    private fun getDriverIcon(driver: Driver): Int{
+        return when(driver.typeCar){
+            "Auto simple" -> R.drawable.dirver_icon_simple
+            "Auto de confort" -> R.drawable.dirver_icon_confort
+            "Auto familiar" -> R.drawable.dirver_icon_familiar
+            "Triciclo" -> R.drawable.dirver_icon_triciclo
+            "Motor" -> R.drawable.dirver_icon_motor
+            else -> R.drawable.dirver_icon_simple
+
         }
     }
 
@@ -432,21 +617,21 @@ class ActivityMapHome : AppCompatActivity() {
                 .withPoint(point)
                 .withIconImage(it)
                 .withIconSize(0.8)
-            pointAnnotationManagerPositions.create(pointAnnotationOptions)
+            pointAnnotationManagerTrip.create(pointAnnotationOptions)
             if(drawable == R.drawable.start_route){
                 if(viewModel.pointOrigin.value == null){
-                    viewModel.setPointOrigin(pointAnnotationManagerPositions.annotations.last())
+                    viewModel.setPointOrigin(pointAnnotationManagerTrip.annotations.last())
                 }else{
-                    pointAnnotationManagerPositions.delete(viewModel.pointLocation.value!!)
-                    viewModel.setPointOrigin(pointAnnotationManagerPositions.annotations.last())
+                    pointAnnotationManagerTrip.delete(viewModel.pointOrigin.value!!)
+                    viewModel.setPointOrigin(pointAnnotationManagerTrip.annotations.last())
                 }
             }
             if(drawable ==  R.drawable.end_route) {
                 if (viewModel.pointDest.value == null) {
-                    viewModel.setPointDest(pointAnnotationManagerPositions.annotations.last())
+                    viewModel.setPointDest(pointAnnotationManagerTrip.annotations.last())
                 } else {
-                    pointAnnotationManagerPositions.delete(viewModel.pointGPS.value!!)
-                    viewModel.setPointDest(pointAnnotationManagerPositions.annotations.last())
+                    pointAnnotationManagerTrip.delete(viewModel.pointDest.value!!)
+                    viewModel.setPointDest(pointAnnotationManagerTrip.annotations.last())
                 }
             }
 
@@ -454,6 +639,138 @@ class ActivityMapHome : AppCompatActivity() {
     }
 
 
+
+
+
+    //Route
+    private fun fetchARoute() {
+        //Declarations
+        binding.clAvailableTaxis.visibility = View.VISIBLE
+        binding.progressRecycler.visibility = View.VISIBLE
+        val originPoint = Point.fromLngLat(
+            viewModel.longitudeOrigin.value!!,
+            viewModel.latitudeOrigin.value!!
+        )
+
+        val destPoint = Point.fromLngLat(
+            viewModel.longitudeDestiny.value!!,
+            viewModel.latitudeDestiny.value!!
+        )
+
+        val originLocation = Location("test").apply {
+            longitude = viewModel.longitudeOrigin.value!!
+            latitude =  viewModel.latitudeOrigin.value!!
+            bearing = 10f
+        }
+
+        val routeOptions = RouteOptions.builder()
+            .applyDefaultNavigationOptions()
+            .applyLanguageAndVoiceUnitOptions(this@ActivityMapHome)
+            .coordinatesList(listOf(originPoint,destPoint))
+            .alternatives(false)
+            .bearingsList(
+                listOf(
+                    Bearing.builder()
+                        .angle(originLocation.bearing.toDouble())
+                        .degrees(45.0)
+                        .build(),
+                    null
+                )
+            )
+            .build()
+
+        mapboxNavigation.requestRoutes(
+            routeOptions,
+            object : NavigationRouterCallback {
+                override fun onCanceled(routeOptions: RouteOptions, routerOrigin: RouterOrigin) {
+                }
+
+                override fun onFailure(reasons: List<RouterFailure>, routeOptions: RouteOptions) {
+                    binding.clAvailableTaxis.visibility = View.GONE
+                    binding.progressRecycler.visibility = View.GONE
+                    FancyToast.makeText(
+                        this@ActivityMapHome ,
+                        getString(R.string.error_al_encontrar_la_ruta) ,
+                        FancyToast.LENGTH_SHORT,FancyToast.ERROR,false
+                    ).show()
+                    Log.e("TEST", reasons.toString())
+                }
+
+                override fun onRoutesReady(
+                    routes: List<NavigationRoute>,
+                    routerOrigin: RouterOrigin
+                ) {
+                    drawRouteLine(routes)
+                    viewModel.getPrices(viewModel.getRouteDistance(routes))
+                }
+            }
+        )
+
+    }
+
+    private fun drawRouteLine(routes: List<NavigationRoute>){
+        val routeLineOptions = MapboxRouteLineOptions.Builder(this).build()
+        val routeLineApi = MapboxRouteLineApi(routeLineOptions)
+        val routeLineView = MapboxRouteLineView(routeLineOptions)
+
+
+        routeLineApi.setNavigationRoutes(routes) { value ->
+            binding.mapView.getMapboxMap().getStyle()
+                ?.let { routeLineView.renderRouteDrawData(it, value) }
+        }
+    }
+
+
+
+
+    //Await car
+    private fun showAlertLLAwaitSelect(timeInMills: Long){
+        lifecycleScope.launch {
+            UserAccountShared.setLastPetition(this@ActivityMapHome,Calendar.getInstance().timeInMillis)
+            binding.llAwaitCarSelect.visibility = View.VISIBLE
+            binding.extBtnUbicUser.visibility = View.GONE
+            binding.extBtnUbicDest.visibility = View.GONE
+            binding.clAvailableTaxis.visibility = View.GONE
+            binding.llCancelAwait.setOnClickListener{
+                viewModel.cancelTaxiAwait(this@ActivityMapHome)
+            }
+            delay(timeInMills)
+            UserAccountShared.setLastPetition(this@ActivityMapHome,0)
+            binding.llAwaitCarSelect.visibility = View.GONE
+            binding.extBtnUbicUser.visibility = View.VISIBLE
+            binding.extBtnUbicDest.visibility = View.VISIBLE
+        }
+    }
+
+    private fun liRateDriver(){
+        val inflater = LayoutInflater.from(binding.root.context)
+        val liBinding = LiRateDriverBinding.inflate(inflater)
+        val builder = androidx.appcompat.app.AlertDialog.Builder(binding.root.context)
+        builder.setView(liBinding.root)
+        val alertDialog = builder.create()
+
+
+        liBinding.btnCancel.setOnClickListener {
+            alertDialog.dismiss()
+        }
+
+        liBinding.btnRate.setOnClickListener {
+            alertDialog.dismiss()
+            viewModel.rateTaxi(
+                this,
+                liBinding.rating.rating.toInt()
+            )
+        }
+
+
+
+        //Finish
+        builder.setCancelable(true)
+        builder.setTitle(R.string.Recuperar_contrasena)
+        alertDialog.window!!.setGravity(Gravity.CENTER)
+        alertDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        alertDialog.show()
+    }
 
 
 

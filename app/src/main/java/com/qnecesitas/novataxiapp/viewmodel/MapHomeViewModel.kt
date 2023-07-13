@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.location.Location
 import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
@@ -14,27 +13,26 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonParser
-import com.mapbox.api.directions.v5.models.Bearing
-import com.mapbox.api.directions.v5.models.RouteOptions
-import com.mapbox.geojson.Point
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
-import com.mapbox.navigation.base.extensions.applyDefaultNavigationOptions
-import com.mapbox.navigation.base.extensions.applyLanguageAndVoiceUnitOptions
 import com.mapbox.navigation.base.route.NavigationRoute
-import com.mapbox.navigation.base.route.NavigationRouterCallback
-import com.mapbox.navigation.base.route.RouterFailure
-import com.mapbox.navigation.base.route.RouterOrigin
-import com.mapbox.navigation.core.MapboxNavigation
+import com.mapbox.navigation.base.route.toDirectionsRoutes
 import com.qnecesitas.novataxiapp.auxiliary.Constants
+import com.qnecesitas.novataxiapp.auxiliary.UserAccountShared
 import com.qnecesitas.novataxiapp.model.Driver
+import com.qnecesitas.novataxiapp.model.Vehicle
+import com.qnecesitas.novataxiapp.network.AuxiliaryDataSourceNetwork
 import com.qnecesitas.novataxiapp.network.DriverDataSourceNetwork
+import com.qnecesitas.novataxiapp.network.PricesDataSourceNetwork
+import com.qnecesitas.novataxiapp.network.TripsDataSourceNetwork
+import com.qnecesitas.novataxidriver.model.Prices
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.*
 
@@ -45,14 +43,44 @@ class MapHomeViewModel: ViewModel() {
     private val _listDrivers = MutableLiveData<MutableList<Driver>>()
     val listDrivers: LiveData<MutableList<Driver>> get() = _listDrivers
 
+    private val _listVehicles = MutableLiveData<MutableList<Vehicle>>()
+    val listVehicle: LiveData<MutableList<Vehicle>> get() = _listVehicles
+
     //Progress state
     enum class StateConstants { LOADING, SUCCESS, ERROR }
 
     private val _state = MutableLiveData<StateConstants>()
     val state: LiveData<StateConstants> get() = _state
 
+    private val _statePrices = MutableLiveData<StateConstants>()
+    val statePrices: LiveData<StateConstants> get() = _statePrices
+
+    private val _stateAddTrip = MutableLiveData<StateConstants>()
+    val stateAddTrip: LiveData<StateConstants> get() = _stateAddTrip
+
+    private val _stateCancelTrip = MutableLiveData<StateConstants>()
+    val stateCancelTrip: LiveData<StateConstants> get() = _stateCancelTrip
+
+    private val _stateRate = MutableLiveData<StateConstants>()
+    val stateRate: LiveData<StateConstants> get() = _stateRate
+
+    private val _tripState = MutableLiveData<String>()
+    val tripState: LiveData<String> get() = _tripState
+
+    //Progress state version
+    private val _stateVersion = MutableLiveData<LoginViewModel.StateConstants>()
+    val stateVersion: LiveData<LoginViewModel.StateConstants> get() = _stateVersion
+
+    //Version response
+    private val _versionResponse = MutableLiveData<String>()
+    val versionResponse: LiveData<String> get() = _versionResponse
+
+
     //Network Data Source
+    private var auxiliaryDataSourceNetwork: AuxiliaryDataSourceNetwork = AuxiliaryDataSourceNetwork()
     private var driverDataSourceNetwork: DriverDataSourceNetwork = DriverDataSourceNetwork()
+    private var pricesDataSourceNetwork: PricesDataSourceNetwork = PricesDataSourceNetwork()
+    private var tripsDataSourceNetwork: TripsDataSourceNetwork = TripsDataSourceNetwork()
 
     //LatitudeClient
     private val _latitudeOrigin = MutableLiveData<Double>()
@@ -79,27 +107,17 @@ class MapHomeViewModel: ViewModel() {
 
     //LatitudeClient
     private val _latitudeGPS = MutableLiveData<Double>()
-    val latitudeGPS: LiveData<Double> get() = _latitudeGPS
+    private val latitudeGPS: LiveData<Double> get() = _latitudeGPS
 
     //LongitudeClient
     private val _longitudeGPS = MutableLiveData<Double>()
-    val longitudeGPS: LiveData<Double> get() = _longitudeGPS
+    private val longitudeGPS: LiveData<Double> get() = _longitudeGPS
 
 
 
     //Variable to setCamera
     private val _isNecessaryCamera = MutableLiveData<Boolean>()
     val isNecessaryCamera: LiveData<Boolean> get() = _isNecessaryCamera
-
-
-
-
-    //Points
-    private val _pointLocation = MutableLiveData<PointAnnotation>()
-    val pointLocation: LiveData<PointAnnotation> get() = _pointLocation
-
-    private val _pointGPS = MutableLiveData<PointAnnotation>()
-    val pointGPS: LiveData<PointAnnotation> get() = _pointGPS
 
 
 
@@ -218,14 +236,6 @@ class MapHomeViewModel: ViewModel() {
         _longitudeDestiny.value = long
     }
 
-    fun setPointLocation(point: PointAnnotation){
-        _pointLocation.value = point
-    }
-
-    fun setPointGPS(point: PointAnnotation){
-        _pointGPS.value = point
-    }
-
     fun setPointOrigin(point: PointAnnotation){
         _pointOrigin.value = point
     }
@@ -248,87 +258,311 @@ class MapHomeViewModel: ViewModel() {
 
 
 
-    //Route
-    fun fetchARoute(context: Context,mapboxNavigation: MapboxNavigation) {
-
-        //Declarations
-        val originPoint = Point.fromLngLat(
-            longitudeOrigin.value!!,
-            latitudeOrigin.value!!
-        )
-
-        val destPoint = Point.fromLngLat(
-            longitudeDestiny.value!!,
-            latitudeDestiny.value!!
-        )
-
-        val originLocation = Location("test").apply {
-            longitude = longitudeOrigin.value!!
-            latitude =  latitudeOrigin.value!!
-            bearing = 10f
-        }
-
-        val routeOptions = RouteOptions.builder()
-            .applyDefaultNavigationOptions()
-            .applyLanguageAndVoiceUnitOptions(context)
-            .coordinatesList(listOf(originPoint,destPoint))
-            .alternatives(false)
-            .bearingsList(
-                listOf(
-                    Bearing.builder()
-                        .angle(originLocation.bearing.toDouble())
-                        .degrees(45.0)
-                        .build(),
-                    null
-                )
-            )
-            .build()
-        mapboxNavigation.requestRoutes(
-            routeOptions,
-            object : NavigationRouterCallback {
-                override fun onCanceled(routeOptions: RouteOptions, routerOrigin: RouterOrigin) {
-// This particular callback is executed if you invoke
-// mapboxNavigation.cancelRouteRequest()
-                }
-
-                override fun onFailure(reasons: List<RouterFailure>, routeOptions: RouteOptions) {
-
-                }
-
-                override fun onRoutesReady(
-                    routes: List<NavigationRoute>,
-                    routerOrigin: RouterOrigin
-                ) {
-                    val gson = GsonBuilder().setPrettyPrinting().create()
-                    val json = routes.map {
-                        gson.toJson(
-                            JsonParser.parseString(it.directionsRoute.toJson())
-                        )
-                    }
-
-                }
-            }
-        )
-
-    }
 
 
-
-
-    //Corutina
-    fun startMainCoroutine(){
+    //Coroutine
+    fun startMainCoroutine(context: Context){
         viewModelScope.launch {
             while (true){
                 getDriversAll()
-                delay(TimeUnit.SECONDS.toMillis(20))
+                delay(TimeUnit.SECONDS.toMillis(30))
+                getTripState(context)
             }
         }
     }
 
+
+
+
+    //Choice car
+    fun getPrices(distance: Double) {
+        _statePrices.value = StateConstants.LOADING
+
+        //Call
+        val call = pricesDataSourceNetwork.getPricesInformation(
+            Constants.PHP_TOKEN,
+            1
+        )
+        getResponsePrices(call, distance)
+    }
+
+    //Get the response about the prices
+    private fun getResponsePrices(call: Call<List<Prices>>, distance: Double) {
+        call.enqueue(object : Callback<List<Prices>> {
+            override fun onResponse(
+                call: Call<List<Prices>>,
+                response: Response<List<Prices>>
+            ) {
+                if (response.isSuccessful) {
+                    _statePrices.value = StateConstants.SUCCESS
+                    if(response.body() != null) {
+                        makeVehiclesList(response.body()!![0], distance)
+                    }
+                } else {
+                    _statePrices.value = StateConstants.ERROR
+                }
+            }
+
+            override fun onFailure(call: Call<List<Prices>>, t: Throwable) {
+                _statePrices.value = StateConstants.ERROR
+            }
+        })
+    }
+
+    private fun makeVehiclesList(prices: Prices, distance: Double){
+        //Simple car
+        _listVehicles.value = listOf<Vehicle>().toMutableList()
+        _listVehicles.value?.add(
+            Vehicle(
+                "Auto simple",
+                (prices.priceNormalCar * distance).toInt(),
+                4,
+                "Vehículo sencillo con alrededor de 4 capacidades, ideal para obtener mejores precios"
+            )
+        )
+
+        //Comfort
+        _listVehicles.value?.add(
+            Vehicle(
+                "Auto de confort",
+                (prices.priceComfortCar * distance).toInt(),
+                4,
+                "Vehículo muy cómodo con alrededor de 4 capacidades y aire acondicionado"
+            )
+        )
+
+        //Familiar
+        _listVehicles.value?.add(
+            Vehicle(
+                "Auto familiar",
+                (prices.priceFamiliarCar * distance).toInt(),
+                8,
+                "Vehículo cómodo con alrededor de 8 capacidades, ideal para el viaje en familia"
+            )
+        )
+
+        //Tricycle
+        _listVehicles.value?.add(
+            Vehicle(
+                "Triciclo",
+                (prices.priceTricycle * distance).toInt(),
+                2,
+                "Vehículo triciclo con alrededor de 2 asientos, ideal para viajes cortos"
+            )
+        )
+
+
+        _listVehicles.value?.add(
+            Vehicle(
+                "Motor",
+                (prices.priceMotorcycle * distance).toInt(),
+                1,
+                "Vehículo con solo 1 asiento, ideal para viajes rápidos y sin mucho equipaje"
+            )
+        )
+
+    }
+
+    fun getRouteDistance(list: List<NavigationRoute>): Double{
+        var sum = 0.0
+        for (it in list.toDirectionsRoutes()) {
+
+            sum += it.distance()
+        }
+        return  sum / 1000
+    }
+
+
+
+
+    //Ask for a taxi
+    fun addTrip(context: Context, prices: Double, distance: Double, phone: String, typeCar: String){
+        try {
+            val call = tripsDataSourceNetwork.addTrip(
+                Constants.PHP_TOKEN,
+                "no",
+                UserAccountShared.getUserEmail(context).toString(),
+                prices.toInt(),
+                distance,
+                makeDate()!!,
+                _latitudeDestiny.value!!,
+                _longitudeDestiny.value!!,
+                _latitudeOrigin.value!!,
+                _longitudeDestiny.value!!,
+                phone,
+                typeCar
+            )
+            getResponseOperation(call)
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
+    }
+
+    private fun getResponseOperation(call: Call<String>) {
+        call.enqueue(object : Callback<String> {
+            override fun onResponse(
+                call: Call<String>,
+                response: Response<String>
+            ) {
+                if (response.isSuccessful) {
+                    if(response.body() == "Success") {
+                        _stateAddTrip.value = StateConstants.SUCCESS
+                    }else{
+                        _stateAddTrip.value = StateConstants.ERROR
+                    }
+                } else {
+                    _stateAddTrip.value = StateConstants.ERROR
+                }
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                _stateAddTrip.value = StateConstants.ERROR
+            }
+        })
+    }
+
+    private fun makeDate(): String? {
+        val allDate: String
+        val calendar = Calendar.getInstance()
+        allDate = SimpleDateFormat("dd-MM-yy hh:mm aa", Locale.getDefault()).format(calendar.time)
+        return allDate
+    }
+
+    fun cancelTaxiAwait(context: Context){
+        val call = UserAccountShared.getUserEmail(context)?.let {
+            tripsDataSourceNetwork.deleteTrip(
+                Constants.PHP_TOKEN,
+                it
+            )
+        }
+        if (call != null) {
+            getResponseCancelTaxiAwait(call)
+        }
+    }
+
+    private fun getResponseCancelTaxiAwait(call: Call<String>) {
+        call.enqueue(object : Callback<String> {
+            override fun onResponse(
+                call: Call<String>,
+                response: Response<String>
+            ) {
+                if (response.isSuccessful) {
+                    if(response.body() == "Success") {
+                        _stateCancelTrip.value = StateConstants.SUCCESS
+                    }else{
+                        _stateCancelTrip.value = StateConstants.ERROR
+                    }
+                } else {
+                    _stateCancelTrip.value = StateConstants.ERROR
+                }
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                _stateCancelTrip.value = StateConstants.ERROR
+            }
+        })
+    }
+
+    fun rateTaxi(context: Context, rate: Int){
+        val call = driverDataSourceNetwork.rateDriver(
+            Constants.PHP_TOKEN,
+            rate,
+            UserAccountShared.getLastDriver(context)
+        )
+        getResponseRateTaxi(call)
+    }
+
+    private fun getResponseRateTaxi(call: Call<String>) {
+        call.enqueue(object : Callback<String> {
+            override fun onResponse(
+                call: Call<String>,
+                response: Response<String>
+            ) {
+                if (response.isSuccessful) {
+                    if(response.body() == "Success") {
+                        _stateRate.value = StateConstants.SUCCESS
+                    }else{
+                        _stateRate.value = StateConstants.ERROR
+                    }
+                } else {
+                    _stateRate.value = StateConstants.ERROR
+                }
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                _stateRate.value = StateConstants.ERROR
+            }
+        })
+    }
+
+
+
+
+    //Await for accepted
+    private fun getTripState(context: Context){
+        val call = tripsDataSourceNetwork.fetchStateTrip(
+            Constants.PHP_TOKEN,
+            UserAccountShared.getUserEmail(context)!!
+        )
+        getResponseTripState(call)
+    }
+
+    private fun getResponseTripState(call: Call<String>) {
+        call.enqueue(object : Callback<String> {
+            override fun onResponse(
+                call: Call<String>,
+                response: Response<String>
+            ) {
+                if (response.isSuccessful) {
+                    _tripState.value = response.body()
+                }
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+
+            }
+        })
+    }
+
+
+
+
+    //Fetch APP_Version
+    fun getAppVersion(){
+        val call = auxiliaryDataSourceNetwork.fetchVersion(
+            Constants.APP_VERSION
+        )
+        getResponseVersion(call)
+    }
+
+    //Get the response is version ok
+    private fun getResponseVersion(call: Call<String>){
+        call.enqueue(object : Callback<String> {
+            override fun onResponse(
+                call: Call<String>,
+                response: Response<String>
+            ) {
+                if (response.isSuccessful) {
+                    val result = response.body()
+                    if(result == "Success") {
+                        _stateVersion.value = LoginViewModel.StateConstants.SUCCESS
+                    }else{
+                        _versionResponse.value = result
+                    }
+                } else {
+                    _stateVersion.value = LoginViewModel.StateConstants.ERROR
+                }
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                _stateVersion.value = LoginViewModel.StateConstants.ERROR
+            }
+        })
+    }
 }
 
 
-class MapHomeViewModelFactory() : ViewModelProvider.Factory {
+class MapHomeViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MapHomeViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

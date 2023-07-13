@@ -3,6 +3,7 @@ package com.qnecesitas.novataxiapp.auxiliary
 import android.content.Context
 import android.content.SharedPreferences
 import com.mapbox.geojson.Point
+import com.qnecesitas.novataxiapp.model.Driver
 
 class UserAccountShared {
     companion object{
@@ -58,6 +59,71 @@ class UserAccountShared {
             )
         }
 
+
+
+
+        //Last petition for if is closed the app in await
+        fun setLastPetition(context: Context, petitionTimeInMills: Long){
+            if(sharedPreferences == null) {
+                sharedPreferences = context.getSharedPreferences("NovaTaxiAppUser", 0)
+            }
+            if(sharedEditor == null){
+                sharedEditor = sharedPreferences?.edit()
+            }
+            sharedEditor?.putLong("petitionInMills", petitionTimeInMills)
+            sharedEditor?.apply()
+        }
+
+        fun getLastPetition(context: Context): Long {
+            if(sharedPreferences == null) {
+                sharedPreferences = context.getSharedPreferences("NovaTaxiAppUser", 0)
+            }
+            return sharedPreferences?.getLong("petitionInMills", 0)!!
+        }
+
+
+
+
+        //Last petition for if is closed the app without ranking
+        fun setIsRatingInAwait(context: Context, isRankingAwait: Boolean){
+            if(sharedPreferences == null) {
+                sharedPreferences = context.getSharedPreferences("NovaTaxiAppUser", 0)
+            }
+            if(sharedEditor == null){
+                sharedEditor = sharedPreferences?.edit()
+            }
+            sharedEditor?.putBoolean("isRankingAwait", isRankingAwait)
+            sharedEditor?.apply()
+        }
+
+        fun getIsRatingInAwait(context: Context): Boolean {
+            if(sharedPreferences == null) {
+                sharedPreferences = context.getSharedPreferences("NovaTaxiAppUser", 0)
+            }
+            return sharedPreferences?.getBoolean("isRankingAwait", false)!!
+        }
+
+
+
+
+        //Last driver petition
+        fun setLastDriver(context: Context, driver: String){
+            if(sharedPreferences == null) {
+                sharedPreferences = context.getSharedPreferences("NovaTaxiAppUser", 0)
+            }
+            if(sharedEditor == null){
+                sharedEditor = sharedPreferences?.edit()
+            }
+            sharedEditor?.putString("lastDriver", driver)
+            sharedEditor?.apply()
+        }
+
+        fun getLastDriver(context: Context): String {
+            if(sharedPreferences == null) {
+                sharedPreferences = context.getSharedPreferences("NovaTaxiAppUser", 0)
+            }
+            return sharedPreferences?.getString("lastDriver", "no")!!
+        }
 
     }
 }

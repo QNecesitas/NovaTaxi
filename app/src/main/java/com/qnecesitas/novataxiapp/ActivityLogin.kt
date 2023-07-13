@@ -3,6 +3,7 @@ package com.qnecesitas.novataxiapp
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -260,6 +261,14 @@ class ActivityLogin : AppCompatActivity() {
             R.string.Aceptar
         ) { dialog, _ ->
             dialog.dismiss()
+        }
+
+        builder.setNegativeButton(getString(R.string.descargar)){
+                dialog, _ ->
+            dialog.dismiss()
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse(url)
+            startActivity(intent)
         }
 
         //create the alert dialog and show it

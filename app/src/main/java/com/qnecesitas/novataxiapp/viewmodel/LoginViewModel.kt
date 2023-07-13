@@ -138,7 +138,6 @@ class LoginViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     val result = response.body()
                     if(result == "Success") {
-                        Log.i("TEST", "OK")
                         _stateVersion.value = StateConstants.SUCCESS
                     }else{
                         _versionResponse.value = result
@@ -149,7 +148,7 @@ class LoginViewModel : ViewModel() {
             }
 
             override fun onFailure(call: Call<String>, t: Throwable) {
-                _stateRecover.value = StateConstants.ERROR
+                _stateVersion.value = StateConstants.ERROR
             }
         })
     }

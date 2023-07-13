@@ -1,5 +1,6 @@
 package com.qnecesitas.novataxiapp.network
 
+import android.util.Log
 import com.qnecesitas.novataxiapp.auxiliary.Constants
 import com.qnecesitas.novataxiapp.model.Driver
 import retrofit2.Call
@@ -27,6 +28,10 @@ class DriverDataSourceNetwork: IRetrofitDriver {
         token: String,
     ): Call<List<Driver>> {
         return productApi.getDriver(token)
+    }
+
+    override fun rateDriver(token: String, rate: Int, driver: String): Call<String> {
+        return productApi.rateDriver(token, rate, driver)
     }
 
 }
