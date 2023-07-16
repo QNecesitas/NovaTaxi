@@ -51,4 +51,11 @@ interface IRetrofitUsers {
         @Field("phone") phone: String
     ):Call<String>
 
+    @FormUrlEncoded
+    @POST("DeleteUsers.php")
+    fun deleteUser(
+        @Field("token") token: String,
+        @Field("email") email: String
+    ):Call<String>
+
 }

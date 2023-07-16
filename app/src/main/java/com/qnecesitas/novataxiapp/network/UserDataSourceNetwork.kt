@@ -37,6 +37,10 @@ class UserDataSourceNetwork : IRetrofitUsers {
         return productApi.updateUser(token, email, password, phone)
     }
 
+    override fun deleteUser(token: String , email: String): Call<String> {
+        return productApi.deleteUser(token, email)
+    }
+
     override fun sendRecoverPetition(
         token: String,
         email: String

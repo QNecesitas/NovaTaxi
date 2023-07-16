@@ -294,6 +294,122 @@
 
             </androidx.cardview.widget.CardView>
 
+        <!--CardView-->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/CV_SettingAccount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:background="?attr/colorSurface"
+            android:translationZ="4dp"
+            app:cardCornerRadius="12dp"
+            app:layout_constraintTop_toBottomOf="@id/CV_Info">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <!--TV Information-->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="4dp"
+                    android:text="@string/configuraci_n_de_cuenta"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
+                    android:textStyle="bold">
+
+                </TextView>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:id="@+id/cl_SignOf"
+                    android:layout_height="match_parent">
+                    <!--TV Sign Of-->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="12dp"
+                        android:text="@string/cerrar_sesi_n"
+                        android:textColor="?attr/colorOnSurface"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:id="@+id/tvSignOf">
+
+                    </TextView>
+                     <!--IV Sign Of-->
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="12dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/baseline_arrow_forward_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:id="@+id/ivSignOf">
+
+                    </ImageView>
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="?attr/colorOnSurface">
+
+                </View>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/cl_DeleteAccount"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <!--TV Delete Account-->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginBottom="20dp"
+                        android:text="@string/eliminar_cuenta"
+                        android:textColor="?attr/colorOnSurface"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:id="@+id/tvDeleteAccount">
+
+                    </TextView>
+                     <!--IV Delete Account-->
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:layout_marginBottom="20dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/baseline_arrow_forward_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:id="@+id/ivDeleteAccount">
+
+                    </ImageView>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            </LinearLayout>
+
+
+        </androidx.cardview.widget.CardView>
+
 
 
 
