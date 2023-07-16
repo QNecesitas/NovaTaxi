@@ -30,4 +30,10 @@ interface IRetrofitDriver {
     ): Call<String>
 
 
+    @GET("FetchDriver.php")
+    fun getDriverForNavigation(
+        @Query("token") token: String,
+        @Query("email") email: String,
+    ): Call<Driver>
+
 }

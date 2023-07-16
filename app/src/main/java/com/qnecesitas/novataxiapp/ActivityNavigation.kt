@@ -1,16 +1,31 @@
 package com.qnecesitas.novataxiapp
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import androidx.activity.viewModels
+import androidx.annotation.DrawableRes
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.mapbox.api.directions.v5.models.Bearing
 import com.mapbox.api.directions.v5.models.RouteOptions
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
+import com.mapbox.maps.plugin.annotation.annotations
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
+import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.mapbox.maps.plugin.compass.compass
 import com.mapbox.maps.plugin.scalebar.scalebar
 import com.mapbox.navigation.base.extensions.applyDefaultNavigationOptions
@@ -26,27 +41,51 @@ import com.mapbox.navigation.core.lifecycle.requireMapboxNavigation
 import com.mapbox.navigation.ui.maps.route.line.api.MapboxRouteLineApi
 import com.mapbox.navigation.ui.maps.route.line.api.MapboxRouteLineView
 import com.mapbox.navigation.ui.maps.route.line.model.MapboxRouteLineOptions
+import com.qnecesitas.novataxiapp.auxiliary.ImageTools
+import com.qnecesitas.novataxiapp.auxiliary.NetworkTools
+import com.qnecesitas.novataxiapp.auxiliary.RoutesTools
 import com.qnecesitas.novataxiapp.auxiliary.UserAccountShared
 import com.qnecesitas.novataxiapp.databinding.ActivityNavigationBinding
+import com.qnecesitas.novataxiapp.model.Driver
+import com.qnecesitas.novataxiapp.model.Trip
+import com.qnecesitas.novataxiapp.viewmodel.NavigationViewModel
+import com.qnecesitas.novataxiapp.viewmodel.NavigationViewModelFactory
 import com.shashank.sony.fancytoastlib.FancyToast
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 class ActivityNavigation : AppCompatActivity() {
-
 
     //Binding
     private lateinit var binding: ActivityNavigationBinding
 
+    //Map elements
+    private lateinit var pointAnnotationManagerPositions: PointAnnotationManager
+    private lateinit var pointAnnotationManagerDrivers: PointAnnotationManager
+    private lateinit var pointAnnotationManagerTrip: PointAnnotationManager
 
-    //Navigation
+    //Permissions
+    private val permissionCode = 34
+
+    //ViewModel
+    private val viewModel: NavigationViewModel by viewModels {
+        NavigationViewModelFactory()
+    }
+
+    //MapBox
     private val mapboxNavigation: MapboxNavigation by requireMapboxNavigation(
         onInitialize = this::initNavigation
     )
+
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNavigationBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
 
 
         //Map
@@ -61,49 +100,269 @@ class ActivityNavigation : AppCompatActivity() {
         binding.mapView.getMapboxMap().setCamera(camera)
         binding.mapView.scalebar.enabled = false
         binding.mapView.compass.enabled = false
+        val annotationApi = binding.mapView.annotations
+        pointAnnotationManagerPositions = annotationApi.createPointAnnotationManager()
+        pointAnnotationManagerDrivers = annotationApi.createPointAnnotationManager()
+        pointAnnotationManagerTrip = annotationApi.createPointAnnotationManager()
 
 
-        //Start routing
-        //startRouting()
-        showAlertDialogExit()
 
+
+        //Listeners
+        binding.realTimeButton.setOnClickListener {
+            getLocationRealtime()
+        }
+
+
+
+
+        //Observers
+        viewModel.driver.observe(this){
+            viewModel.setLatitudeDriver(it.latitude)
+            viewModel.setLongitudeDriver(it.longitude)
+            addAnnotationDrivers(
+                Point.fromLngLat(it.longitude, it.latitude),
+                getDriverIcon(it)
+            )
+            RoutesTools.navigationTrip?.let { fetchARoute(it) }
+        }
+
+
+
+        //Start Search
+        addRoutePoints()//Start-end points
+        RoutesTools.navigationTrip?.let {
+            viewCameraInPoint(
+                Point.fromLngLat(it.longOri,it.latOri)
+            )
+        }//Camera
+        getLocationRealtime()//User location
+        startMainRoutine()//Main thread
+    }
+
+    //init
+    private fun initNavigation() {
+        MapboxNavigationApp.setup(
+            NavigationOptions.Builder(this)
+                .accessToken(getString(R.string.mapbox_access_token))
+                .build()
+        )
+        RoutesTools.navigationTrip?.let { fetchARoute(it) }
+    }
+
+    private fun addRoutePoints(){
+        val pointOrigin = RoutesTools.navigationTrip?.let {
+            Point.fromLngLat(it.longOri, it.latOri)
+        }
+        if (pointOrigin != null) {
+            addAnnotationsTripToMap(pointOrigin, R.drawable.start_route)
+        }
+        val pointDestination = RoutesTools.navigationTrip?.let {
+            Point.fromLngLat(it.longDest, it.latDest)
+        }
+        if (pointDestination != null) {
+            addAnnotationsTripToMap(pointDestination, R.drawable.end_route)
+        }
+    }
+
+    private fun startMainRoutine(){
+        lifecycleScope.launch {
+            while (true){
+                if(NetworkTools.isOnline(this@ActivityNavigation, true)) {
+                    RoutesTools.navigationTrip?.let { viewModel.getDriverPosition(it.fk_driver)}
+                    RoutesTools.navigationTrip?.let { fetchARoute(it) }
+                }
+                delay(TimeUnit.SECONDS.toMillis(30))
+            }
+        }
     }
 
 
-    private fun fetchARoute(
-        latitudeOrigin: Double,
-        longitudeOrigin: Double,
-        latitudeDestiny: Double,
-        longitudeDestiny: Double,
-        latitudeDriver: Double,
-        longitudeDriver: Double
-    ) {
-        //Declarations
+
+
+    //Location
+    private fun getLocationRealtime() {
+        var isNecessaryCamera = true
+
+        val locationManager =
+            this@ActivityNavigation.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+
+            val locationListener: LocationListener = object : LocationListener {
+                override fun onLocationChanged(location: Location) {
+                    //Draw an icon with the position
+                    val point = Point.fromLngLat(location.longitude, location.latitude)
+                    addAnnotationGPSToMap(point, R.drawable.user_icon)
+                    if(isNecessaryCamera){
+                        viewCameraInPoint(point)
+                        isNecessaryCamera = false
+                    }
+
+                    //Last location is saved for when open the map, it open here
+                    UserAccountShared.setLastLocation(
+                        this@ActivityNavigation,
+                        Point.fromLngLat(location.longitude, location.latitude)
+                    )
+                }
+
+
+                @Deprecated("Deprecated in Java")
+                override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {
+                }
+
+                override fun onProviderEnabled(provider: String) {}
+                override fun onProviderDisabled(provider: String) {}
+
+            }
+
+            val permissionCheck: Int =
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+                locationManager.requestLocationUpdates(
+                    LocationManager.NETWORK_PROVIDER,
+                    0,
+                    0f,
+                    locationListener
+                )
+            } else {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    permissionCode
+                )
+            }
+
+        }else{
+            showAlertDialogNotLocationSettings()
+        }
+    }
+
+
+
+
+    //Alert Dialogs
+    private fun showAlertDialogNotLocationSettings() {
+        //init alert dialog
+        val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+        builder.setCancelable(false)
+        builder.setTitle(R.string.Ubicacion_desconocida)
+        builder.setMessage(R.string.Vaya_a_ajustes)
+        //set listeners for dialog buttons
+        builder.setPositiveButton(R.string.Aceptar) { dialog, _ ->
+            dialog.dismiss()
+        }
+        //create the alert dialog and show it
+        builder.create().show()
+    }
+
+
+    //Methods Maps
+    private fun addAnnotationGPSToMap(point: Point, @DrawableRes drawable: Int) {
+        pointAnnotationManagerPositions.deleteAll()
+        viewModel.bitmapFromDrawableRes(
+            this@ActivityNavigation,
+            drawable
+        )?.let {
+            val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
+                .withPoint(point)
+                .withIconImage(it)
+                .withIconSize(0.8)
+            pointAnnotationManagerPositions.create(pointAnnotationOptions)
+
+        }
+    }
+
+    private fun addAnnotationDrivers(point: Point, @DrawableRes drawable: Int) {
+        ImageTools.bitmapFromDrawableRes(
+            this@ActivityNavigation,
+            drawable
+        )?.let {
+            val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
+                .withPoint(point)
+                .withIconImage(it)
+                .withIconSize(0.8)
+            pointAnnotationManagerDrivers.create(pointAnnotationOptions)
+        }
+    }
+
+    private fun viewCameraInPoint(point: Point) {
+        val camera = CameraOptions.Builder()
+            .center(point)
+            .zoom(16.5)
+            .bearing(50.0)
+            .build()
+        binding.mapView.getMapboxMap().setCamera(camera)
+    }
+
+    private fun getDriverIcon(driver: Driver): Int{
+        return when(driver.typeCar){
+            "Auto simple" -> R.drawable.dirver_icon_simple
+            "Auto de confort" -> R.drawable.dirver_icon_confort
+            "Auto familiar" -> R.drawable.dirver_icon_familiar
+            "Triciclo" -> R.drawable.dirver_icon_triciclo
+            "Motor" -> R.drawable.dirver_icon_motor
+            else -> R.drawable.dirver_icon_simple
+
+        }
+    }
+
+    private fun addAnnotationsTripToMap(point: Point, @DrawableRes drawable: Int) {
+        viewModel.bitmapFromDrawableRes(
+            this@ActivityNavigation,
+            drawable
+        )?.let {
+            val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
+                .withPoint(point)
+                .withIconImage(it)
+                .withIconSize(0.8)
+            pointAnnotationManagerTrip.create(pointAnnotationOptions)
+        }
+    }
+
+
+
+
+
+    //Route
+    private fun fetchARoute(navigationTrip: Trip){
+
         val originPoint = Point.fromLngLat(
-            longitudeOrigin,
-            latitudeOrigin
+            navigationTrip.longOri,
+            navigationTrip.latOri,
         )
 
         val destPoint = Point.fromLngLat(
-            longitudeDestiny,
-            latitudeDestiny
+            navigationTrip.longDest,
+            navigationTrip.latDest,
         )
 
-        val driverPoint = Point.fromLngLat(
-            longitudeDriver,
-            latitudeDriver
-        )
+        val driverPoint = viewModel.longitudeDriver.value?.let {
+            viewModel.latitudeDriver.value?.let { it1 ->
+                Point.fromLngLat(
+                    it,
+                    it1
+                )
+            }
+        }
 
+
+        if (driverPoint != null) {
+            setRouteOptions(originPoint, destPoint, driverPoint)
+        }
+    }
+
+    private fun setRouteOptions(originP: Point, destP: Point, driverP: Point) {
         val originLocation = Location("test").apply {
-            longitude = longitudeOrigin
-            latitude = latitudeOrigin
+            longitude = driverP.longitude()
+            latitude =  driverP.latitude()
             bearing = 10f
         }
+
 
         val routeOptions = RouteOptions.builder()
             .applyDefaultNavigationOptions()
             .applyLanguageAndVoiceUnitOptions(this@ActivityNavigation)
-            .coordinatesList(listOf(driverPoint, originPoint, destPoint))
+            .coordinatesList(listOf(driverP, originP, destP))
             .alternatives(false)
             .bearingsList(
                 listOf(
@@ -112,6 +371,7 @@ class ActivityNavigation : AppCompatActivity() {
                         .degrees(45.0)
                         .build(),
                     null,
+                    null
                 )
             )
             .build()
@@ -126,8 +386,9 @@ class ActivityNavigation : AppCompatActivity() {
                     FancyToast.makeText(
                         this@ActivityNavigation ,
                         getString(R.string.error_al_encontrar_la_ruta) ,
-                        FancyToast.LENGTH_SHORT, FancyToast.ERROR,false
+                        FancyToast.LENGTH_SHORT,FancyToast.ERROR,false
                     ).show()
+                    Log.e("TEST",reasons.toString())
                 }
 
                 override fun onRoutesReady(
@@ -155,17 +416,30 @@ class ActivityNavigation : AppCompatActivity() {
 
 
 
-    //ShowAlertDialogs
+
+    //Exit Apk
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        showAlertDialogExit()
+    }
+
     private fun showAlertDialogExit() {
         //init alert dialog
         val builder = AlertDialog.Builder(this)
         builder.setCancelable(false)
-        builder.setTitle(R.string.Danada)
-        builder.setMessage(getString(R.string.esta_pantalla_parece_contener_un_error))
+        builder.setTitle(R.string.salir)
+        builder.setMessage(R.string.seguro_desea_salir)
         //set listeners for dialog buttons
-        builder.setPositiveButton(R.string.salir) { _: DialogInterface?, _: Int ->
+        builder.setPositiveButton(R.string.Si) { _: DialogInterface?, _: Int ->
             //finish the activity
-            finish()
+            val intent = Intent(Intent.ACTION_MAIN)
+            intent.addCategory(Intent.CATEGORY_HOME)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+        }
+        builder.setNegativeButton(R.string.no) { dialog: DialogInterface, _: Int ->
+            //dialog gone
+            dialog.dismiss()
         }
         //create the alert dialog and show it
         builder.create().show()
@@ -173,42 +447,31 @@ class ActivityNavigation : AppCompatActivity() {
 
 
 
-    //Map LifeCycle
+
+    //Override Methods
     @SuppressLint("Lifecycle")
     override fun onStart() {
         super.onStart()
-        binding.mapView?.onStart()
-    }
-
-    @SuppressLint("Lifecycle")
-    override fun onPause() {
-        super.onPause()
+        binding.mapView.onStart()
     }
 
     @SuppressLint("Lifecycle")
     override fun onStop() {
         super.onStop()
-        binding.mapView?.onStop()
+        binding.mapView.onStop()
     }
 
     @SuppressLint("Lifecycle")
     override fun onLowMemory() {
         super.onLowMemory()
-        binding.mapView?.onLowMemory()
+        binding.mapView.onLowMemory()
     }
 
     @SuppressLint("Lifecycle")
     override fun onDestroy() {
         super.onDestroy()
-        binding.mapView?.onDestroy()
+        binding.mapView.onDestroy()
     }
 
-    private fun initNavigation() {
-        MapboxNavigationApp.setup(
-            NavigationOptions.Builder(this)
-                .accessToken(getString(R.string.mapbox_access_token))
-                .build()
-        )
-    }
 
 }

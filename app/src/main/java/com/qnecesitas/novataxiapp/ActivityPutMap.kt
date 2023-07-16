@@ -118,7 +118,7 @@ class ActivityPutMap : AppCompatActivity() {
             val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
                 .withPoint(point)
                 .withIconImage(it)
-                .withIconSize(1.3)
+                .withIconSize(0.8)
             val pointAnnotation = pointAnnotationManager.create(pointAnnotationOptions)
             if(drawable == R.drawable.marker_map){
                 if(viewModel.pointLocation.value == null){

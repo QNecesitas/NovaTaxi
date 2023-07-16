@@ -3,6 +3,7 @@ package com.qnecesitas.novataxiapp.network
 import android.util.Log
 import com.qnecesitas.novataxiapp.auxiliary.Constants
 import com.qnecesitas.novataxiapp.model.Driver
+import com.qnecesitas.novataxiapp.model.Trip
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -51,7 +52,7 @@ class TripsDataSourceNetwork: IRetrofitTrips {
         return productApi.deleteTrip(token, fk_user)
     }
 
-    override fun fetchStateTrip(token: String, fk_user: String): Call<String> {
+    override fun fetchStateTrip(token: String, fk_user: String): Call<Trip> {
         return productApi.fetchStateTrip(token, fk_user)
     }
 

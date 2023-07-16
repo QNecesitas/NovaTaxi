@@ -57,6 +57,7 @@ import com.mapbox.navigation.utils.internal.toPoint
 import com.qnecesitas.novataxiapp.adapters.TypeTaxiAdapter
 import com.qnecesitas.novataxiapp.auxiliary.ImageTools
 import com.qnecesitas.novataxiapp.auxiliary.NetworkTools
+import com.qnecesitas.novataxiapp.auxiliary.RoutesTools
 import com.qnecesitas.novataxiapp.auxiliary.UserAccountShared
 import com.qnecesitas.novataxiapp.databinding.ActivityMapHomeBinding
 import com.qnecesitas.novataxiapp.databinding.LiRateDriverBinding
@@ -259,7 +260,8 @@ class ActivityMapHome : AppCompatActivity() {
         }
 
         viewModel.tripState.observe(this){
-            if(it == "Aceptado"){
+            if(it.state == "Aceptado"){
+                RoutesTools.navigationTrip = it
                 val intent = Intent(this, ActivityNavigation::class.java)
                 startActivity(intent)
             }

@@ -19,6 +19,7 @@ import com.mapbox.navigation.base.route.toDirectionsRoutes
 import com.qnecesitas.novataxiapp.auxiliary.Constants
 import com.qnecesitas.novataxiapp.auxiliary.UserAccountShared
 import com.qnecesitas.novataxiapp.model.Driver
+import com.qnecesitas.novataxiapp.model.Trip
 import com.qnecesitas.novataxiapp.model.Vehicle
 import com.qnecesitas.novataxiapp.network.AuxiliaryDataSourceNetwork
 import com.qnecesitas.novataxiapp.network.DriverDataSourceNetwork
@@ -64,8 +65,8 @@ class MapHomeViewModel: ViewModel() {
     private val _stateRate = MutableLiveData<StateConstants>()
     val stateRate: LiveData<StateConstants> get() = _stateRate
 
-    private val _tripState = MutableLiveData<String>()
-    val tripState: LiveData<String> get() = _tripState
+    private val _tripState = MutableLiveData<Trip>()
+    val tripState: LiveData<Trip> get() = _tripState
 
     //Progress state version
     private val _stateVersion = MutableLiveData<LoginViewModel.StateConstants>()
@@ -511,18 +512,18 @@ class MapHomeViewModel: ViewModel() {
         getResponseTripState(call)
     }
 
-    private fun getResponseTripState(call: Call<String>) {
-        call.enqueue(object : Callback<String> {
+    private fun getResponseTripState(call: Call<Trip>) {
+        call.enqueue(object : Callback<Trip> {
             override fun onResponse(
-                call: Call<String>,
-                response: Response<String>
+                call: Call<Trip>,
+                response: Response<Trip>
             ) {
                 if (response.isSuccessful) {
                     _tripState.value = response.body()
                 }
             }
 
-            override fun onFailure(call: Call<String>, t: Throwable) {
+            override fun onFailure(call: Call<Trip>, t: Throwable) {
 
             }
         })

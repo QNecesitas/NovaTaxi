@@ -34,4 +34,8 @@ class DriverDataSourceNetwork: IRetrofitDriver {
         return productApi.rateDriver(token, rate, driver)
     }
 
+    override fun getDriverForNavigation(token: String, email: String): Call<Driver> {
+        return productApi.getDriverForNavigation(token, email)
+    }
+
 }

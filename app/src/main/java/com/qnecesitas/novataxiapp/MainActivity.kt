@@ -8,7 +8,9 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
+import com.qnecesitas.novataxiapp.auxiliary.RoutesTools
 import com.qnecesitas.novataxiapp.auxiliary.UserAccountShared
+import com.qnecesitas.novataxiapp.model.Trip
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -47,6 +49,25 @@ class MainActivity : AppCompatActivity() {
             delay(delayTime)
             if(logged){
                 val intent = Intent(this@MainActivity, ActivityMapHome::class.java)
+                /*
+                RoutesTools.navigationTrip = Trip(
+                    "chofer",
+                    "usuario",
+                    200.0,
+                    4.300,
+                    "10/10/2023",
+                    21.359560163262543,
+                    -77.93554676386799,
+                    21.391481886830675,
+                    -77.96554676386799,
+                    "Aceptado",
+                    0,
+                    0.0,
+                    "Auto familiar"
+                )
+                RoutesTools.latitudeDriver = 21.361461886830675
+                RoutesTools.longitudeDriver = -77.935246763868
+                 */
                 startActivity(intent)
             }else{
                 val intent = Intent(this@MainActivity, ActivityLogin::class.java)

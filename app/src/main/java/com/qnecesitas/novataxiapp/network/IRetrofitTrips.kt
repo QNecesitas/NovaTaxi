@@ -1,5 +1,6 @@
 package com.qnecesitas.novataxiapp.network
 
+import com.qnecesitas.novataxiapp.model.Trip
 import retrofit2.Call
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -40,7 +41,7 @@ interface IRetrofitTrips {
     fun fetchStateTrip(
         @Query("token") token: String,
         @Query("fk_user") fk_user: String,
-    ): Call<String>
+    ): Call<Trip>
 
 
 }
