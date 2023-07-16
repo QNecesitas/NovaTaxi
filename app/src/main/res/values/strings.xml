@@ -114,4 +114,12 @@
     <string name="ya_existe_una_cuenta_creada_con_ese_correo">Ya existe una cuenta creada con ese correo</string>
     <string name="Danada">Pantalla dañada</string>
     <string name="esta_pantalla_parece_contener_un_error">Esta pantalla parece contener un error</string>
+    <string name="configuraci_n_de_cuenta">Configuración de cuenta</string>
+    <string name="cerrar_sesi_n">Cerrar sesión</string>
+    <string name="eliminar_cuenta">Eliminar cuenta</string>
+    <string name="operacion_realizada_con_exito">Operación realizada con éxito</string>
+    <string name="cerrar_sesi_n_">Cerrar sesión</string>
+    <string name="est_s_seguro_de_cerrar_su_sesi_n">¿Estás seguro de cerrar su sesión?</string>
+    <string name="eliminar_cuenta1">Eliminar cuenta</string>
+    <string name="est_s_seguro_de_eliminar_la_cuenta_">¿Estás seguro de eliminar la cuenta?</string>
 </resources>

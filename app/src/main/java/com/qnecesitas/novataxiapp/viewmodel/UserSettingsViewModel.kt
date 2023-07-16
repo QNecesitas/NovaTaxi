@@ -23,6 +23,9 @@ class UserSettingsViewModel:ViewModel() {
     private val _state = MutableLiveData<StateConstants>()
     val state: LiveData<StateConstants> get() = _state
 
+    private val _stateOperation = MutableLiveData<StateConstants>()
+    val stateOperation: LiveData<StateConstants> get() = _stateOperation
+
     //Network Data Source
     private var userDataSourceNetwork: UserDataSourceNetwork = UserDataSourceNetwork()
 
@@ -58,7 +61,7 @@ class UserSettingsViewModel:ViewModel() {
     }
 
     fun updateUser(email:String,phone:String,password:String){
-        _state.value = StateConstants.LOADING
+        _stateOperation.value = StateConstants.LOADING
         val call = userDataSourceNetwork.updateUser(Constants.PHP_TOKEN,email,password,phone)
         getResponseUpdateUser(call)
     }
@@ -70,14 +73,39 @@ class UserSettingsViewModel:ViewModel() {
                 response: Response<String>
             ) {
                 if (response.isSuccessful) {
-                    _state.value = StateConstants.SUCCESS
+                    _stateOperation.value = StateConstants.SUCCESS
                 } else {
-                    _state.value = StateConstants.ERROR
+                    _stateOperation.value = StateConstants.ERROR
                 }
             }
 
             override fun onFailure(call: Call<String> , t: Throwable) {
-                _state.value = StateConstants.ERROR
+                _stateOperation.value = StateConstants.ERROR
+            }
+        })
+    }
+
+    fun deleteUsers(email:String){
+        _stateOperation.value = StateConstants.LOADING
+        val call = userDataSourceNetwork.deleteUser(Constants.PHP_TOKEN,email)
+        getResponseDeleteUsers(call)
+    }
+
+    private fun getResponseDeleteUsers(call: Call<String>) {
+        call.enqueue(object : Callback<String> {
+            override fun onResponse(
+                call: Call<String> ,
+                response: Response<String>
+            ) {
+                if (response.isSuccessful) {
+                    _stateOperation.value = StateConstants.SUCCESS
+                } else {
+                    _stateOperation.value = StateConstants.ERROR
+                }
+            }
+
+            override fun onFailure(call: Call<String> , t: Throwable) {
+                _stateOperation.value = StateConstants.ERROR
             }
         })
     }

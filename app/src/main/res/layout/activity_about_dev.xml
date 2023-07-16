@@ -22,7 +22,8 @@
             android:background="?attr/colorPrimary"
             android:fitsSystemWindows="true"
             app:title="@string/sobre_desarrolladores"
-            app:titleTextColor="?attr/colorOnPrimary">
+            app:titleTextColor="?attr/colorOnPrimary"
+            android:theme="@style/ToolbarIcons">
 
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
