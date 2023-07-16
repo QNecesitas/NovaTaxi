@@ -3,8 +3,6 @@
     <dimen name="text_s">12sp</dimen>
     <dimen name="text_m">16sp</dimen>
     <dimen name="text_h">20sp</dimen>
-    <dimen name="text_xh">28sp</dimen>
 
     <dimen name="card_my_elevation">8dp</dimen>
-    <dimen name="cardview_icon">20dp</dimen>
 </resources>

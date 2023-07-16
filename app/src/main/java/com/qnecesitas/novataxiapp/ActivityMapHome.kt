@@ -15,7 +15,6 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -171,7 +170,7 @@ class ActivityMapHome : AppCompatActivity() {
         })
         adapterType.setClick(object: TypeTaxiAdapter.ITouchAsk{
             override fun onClickAsk(vehicle: Vehicle) {
-                showAlertDialogConfirmCar(vehicle)
+                 showAlertDialogConfirmCar(vehicle)
             }
         })
         binding.rvTaxis.adapter = adapterType
@@ -287,8 +286,9 @@ class ActivityMapHome : AppCompatActivity() {
         //Listeners
         binding.realTimeButton.setOnClickListener{
 
-            UserAccountShared.setIsRatingInAwait(this,true)
-            UserAccountShared.setLastDriver(this,"chofer")
+            //UserAccountShared.setIsRatingInAwait(this,true)
+            //UserAccountShared.setLastDriver(this,"chofer")
+
             val lm = getSystemService(Context.LOCATION_SERVICE) as LocationManager
             if(lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 
@@ -304,6 +304,10 @@ class ActivityMapHome : AppCompatActivity() {
 
         binding.extBtnUbicDest.setOnClickListener{ viewModel.getAppVersion() }
 
+        binding.settingsButton.setOnClickListener {
+            val intent = Intent(this, ActivityUserSettings::class.java)
+            startActivity(intent)
+        }
 
 
 
@@ -532,7 +536,6 @@ class ActivityMapHome : AppCompatActivity() {
             viewModel.addTrip(
                 this@ActivityMapHome,
                 vehicle.price.toDouble(),
-                0.0,
                 "no",
                 vehicle.type
             )
@@ -663,6 +666,7 @@ class ActivityMapHome : AppCompatActivity() {
             bearing = 10f
         }
 
+
         val routeOptions = RouteOptions.builder()
             .applyDefaultNavigationOptions()
             .applyLanguageAndVoiceUnitOptions(this@ActivityMapHome)
@@ -693,13 +697,13 @@ class ActivityMapHome : AppCompatActivity() {
                         getString(R.string.error_al_encontrar_la_ruta) ,
                         FancyToast.LENGTH_SHORT,FancyToast.ERROR,false
                     ).show()
-                    Log.e("TEST", reasons.toString())
                 }
 
                 override fun onRoutesReady(
                     routes: List<NavigationRoute>,
                     routerOrigin: RouterOrigin
                 ) {
+                    viewCameraInPoint(destPoint)
                     drawRouteLine(routes)
                     viewModel.getPrices(viewModel.getRouteDistance(routes))
                 }

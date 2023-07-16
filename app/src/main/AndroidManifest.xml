@@ -23,7 +23,7 @@
             android:name=".ActivityNavigation"
             android:exported="false" />
         <activity
-            android:name=".Activity_UserSettings"
+            android:name=".ActivityUserSettings"
             android:exported="false" />
         <activity
             android:name=".ActivityAboutDev"

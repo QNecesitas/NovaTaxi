@@ -34,10 +34,9 @@
         android:layout_marginTop="10dp"
         android:id="@+id/llContainer"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/appBar"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:orientation="vertical">
 
         <!--LL Image and Driver's Name-->
         <LinearLayout
@@ -59,6 +58,7 @@
 
                 <!--IV Picture Driver-->
                 <ImageView
+                    android:id="@+id/image"
                     android:background="?attr/colorPrimary"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
@@ -98,14 +98,14 @@
                         android:layout_height="wrap_content"
                         android:text="@string/NombreCondS"
                         android:textColor="?attr/colorOnPrimaryContainer"
-                        android:textSize="@dimen/text_h"/>
+                        android:textSize="@dimen/text_m"/>
 
                     <!--TV Name-->
                     <TextView
                         android:textColor="?attr/colorOnPrimaryContainer"
                         android:id="@+id/tvName"
                         android:layout_marginStart="10dp"
-                        android:textSize="16sp"
+                        android:textSize="@dimen/text_m"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/Nombre"/>
@@ -119,7 +119,7 @@
         </LinearLayout>
 
         <!--CV Phone Number-->
-      <androidx.cardview.widget.CardView
+        <androidx.cardview.widget.CardView
           android:id="@+id/cvPhoneNumber"
           android:layout_marginEnd="10dp"
           android:layout_marginStart="10dp"
@@ -141,7 +141,7 @@
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:textColor="?attr/colorOnPrimaryContainer"
-                  android:textSize="@dimen/text_h"
+                  android:textSize="@dimen/text_m"
                   android:text="@string/telefonoS"/>
 
               <!--TV Phone Number-->
@@ -152,7 +152,7 @@
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:text="@string/telefono"
-                  android:textSize="16sp"/>
+                  android:textSize="@dimen/text_m"/>
 
           </LinearLayout>
 
@@ -160,11 +160,6 @@
 
 
       </androidx.cardview.widget.CardView>
-
-
-
-
-
 
 
         <!--CV Car Type-->
@@ -191,7 +186,7 @@
                     android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/text_h"
+                    android:textSize="@dimen/text_m"
                     android:text="@string/tipoCarS"/>
 
                 <!--TV Car Type-->
@@ -202,7 +197,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/tipoCar"
-                    android:textSize="16sp"/>
+                    android:textSize="@dimen/text_m"/>
 
             </LinearLayout>
 
@@ -236,7 +231,7 @@
                     android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/text_h"
+                    android:textSize="@dimen/text_m"
                     android:text="@string/cantSeatS"/>
 
                 <!--TV Cant Seats-->
@@ -247,7 +242,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/cantSeat"
-                    android:textSize="16sp"/>
+                    android:textSize="@dimen/text_m"/>
 
             </LinearLayout>
 

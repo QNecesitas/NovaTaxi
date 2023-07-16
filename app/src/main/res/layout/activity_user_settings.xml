@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity_UserSettings">
+    tools:context=".ActivityUserSettings">
 
     <!--Toolbar-->
     <com.google.android.material.appbar.AppBarLayout
@@ -211,6 +211,7 @@
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
+                        android:id="@+id/cl_about_us"
                         android:layout_height="match_parent">
                         <!--TV About Us-->
                         <TextView
@@ -252,6 +253,7 @@
                     </View>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/cl_about_developers"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
                         <!--TV About Dev-->

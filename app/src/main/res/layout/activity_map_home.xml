@@ -136,11 +136,29 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:tint="?attr/colorOnTertiaryContainer" />
 
+            <!--Settings-->
+            <ImageView
+                android:id="@+id/settingsButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_margin="20dp"
+                android:background="@drawable/clientimage"
+                android:backgroundTint="?attr/colorTertiaryContainer"
+                android:contentDescription="@string/mi_ubicaci_n"
+                android:padding="4dp"
+                android:src="@drawable/baseline_settings_24"
+                android:translationZ="12dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/realTimeButton"
+                app:tint="?attr/colorOnTertiaryContainer" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         <!--CL Taxis Available container-->
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:translationZ="@dimen/card_my_elevation"
+            android:elevation="@dimen/card_my_elevation"
             android:id="@+id/clAvailableTaxis"
             android:layout_width="match_parent"
             android:layout_height="0dp"

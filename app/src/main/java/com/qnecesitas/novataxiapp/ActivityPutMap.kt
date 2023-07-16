@@ -65,7 +65,7 @@ class ActivityPutMap : AppCompatActivity() {
         val annotationApi = binding.mapView.annotations
         pointAnnotationManager = annotationApi.createPointAnnotationManager()
         binding.mapView.getMapboxMap()
-            .loadStyleUri("mapbox://styles/ronnynp/cljbn45qs00u201qp84tqauzq/draft")
+            .loadStyleUri("mapbox://styles/ronnynp/cljbmkjqs00gt01qrb2y3bgxj")
         val lastPointSelected = UserAccountShared.getLastLocation(this)
         val camera = CameraOptions.Builder()
             .center(Point.fromLngLat(lastPointSelected.longitude(),lastPointSelected.latitude()))
@@ -128,7 +128,7 @@ class ActivityPutMap : AppCompatActivity() {
                     viewModel.setPointLocation(pointAnnotation)
                 }
             }
-            if(drawable == R.drawable.baseline_directions_walk_24) {
+            if(drawable == R.drawable.user_icon) {
                 if (viewModel.pointGPS.value == null) {
                     viewModel.setPointGPS(pointAnnotation)
                 } else {
@@ -173,7 +173,7 @@ class ActivityPutMap : AppCompatActivity() {
         val locationListener: LocationListener = object : LocationListener {
             override fun onLocationChanged(location: Location) {
                 val point = Point.fromLngLat(location.longitude, location.latitude)
-                addAnnotationToMap(point, R.drawable.baseline_directions_walk_24)
+                addAnnotationToMap(point, R.drawable.user_icon)
                 if(viewModel.isNecessaryCamera.value == true) {
                     viewModel.pointGPS.value?.let { it1 -> viewCameraInPoint(it1.point) }
                     viewModel.setIsNecessaryCamera(false)

@@ -195,7 +195,6 @@ class ActivityCreateAccount : AppCompatActivity() {
         builder.create().show()
     }
 
-
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         showAlertCancel()

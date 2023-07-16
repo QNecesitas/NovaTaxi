@@ -75,6 +75,9 @@ class MapHomeViewModel: ViewModel() {
     private val _versionResponse = MutableLiveData<String>()
     val versionResponse: LiveData<String> get() = _versionResponse
 
+    //Distance
+    private var lastDistance = 0.0
+
 
     //Network Data Source
     private var auxiliaryDataSourceNetwork: AuxiliaryDataSourceNetwork = AuxiliaryDataSourceNetwork()
@@ -369,6 +372,7 @@ class MapHomeViewModel: ViewModel() {
 
             sum += it.distance()
         }
+        lastDistance = sum / 1000
         return  sum / 1000
     }
 
@@ -376,19 +380,19 @@ class MapHomeViewModel: ViewModel() {
 
 
     //Ask for a taxi
-    fun addTrip(context: Context, prices: Double, distance: Double, phone: String, typeCar: String){
+    fun addTrip(context: Context, prices: Double, phone: String, typeCar: String){
         try {
             val call = tripsDataSourceNetwork.addTrip(
                 Constants.PHP_TOKEN,
                 "no",
                 UserAccountShared.getUserEmail(context).toString(),
                 prices.toInt(),
-                distance,
+                lastDistance,
                 makeDate()!!,
                 _latitudeDestiny.value!!,
                 _longitudeDestiny.value!!,
                 _latitudeOrigin.value!!,
-                _longitudeDestiny.value!!,
+                _longitudeOrigin.value!!,
                 phone,
                 typeCar
             )
@@ -559,6 +563,7 @@ class MapHomeViewModel: ViewModel() {
             }
         })
     }
+
 }
 
 

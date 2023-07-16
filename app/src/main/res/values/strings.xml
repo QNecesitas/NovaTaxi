@@ -14,7 +14,6 @@
     <string name="cancelar_cuenta">Cancelar Cuenta</string>
     <string name="Tiene_seguridad_cancelar">¿Estás seguro de cancelar estos datos?</string>
     <string name="Acceder">Acceder</string>
-    <string name="correo">Correo electrónico</string>
     <string name="contrasena">Contraseña</string>
     <string name="Iniciar_sesion">Iniciar sesión</string>
     <string name="No_posee_cuenta">¿No posee cuenta?</string>
@@ -34,7 +33,6 @@
     <string name="telefono">Teléfono</string>
     <string name="precioKmS">Precio:</string>
     <string name="precioKm">Precio</string>
-    <string name="por_KM">CUP por Km</string>
     <string name="tipoCarS">Tipo de carro:</string>
     <string name="tipoCar">Tipo de carro</string>
     <string name="Correo_enviado">Correo enviado</string>
@@ -43,12 +41,9 @@
     <string name="se_enviara_contrasena">Tiene seguridad de enviar su contraseña al correo: %s</string>
     <string name="version_incorrecta">Descargue la nueva versión disponible en: %s</string>
     <string name="contraseña_no_coincide">La contraseña no coincide</string>
-    <string name="operacion_realizada_con_exito">Operación realizada con éxito</string>
-    <string name="correo_enviado">Correo enviado</string>
     <string name="hemos_enviado_correo">Le hemos enviado un correo a %s .Por favor confirme su cuenta</string>
     <string name="mantenga_presionado_en_el_mapa_para_seleccionar_su_ubicaci_n">Mantenga presionado en el mapa para seleccionar su ubicación</string>
     <string name="adicionar_localizacion">Agregar Localización</string>
-    <string name="aun_no_ubicacion">Aún no ha seleccionado su ubicación</string>
     <string name="no_ha_añadido_su_posicion">No ha añadido su posición</string>
     <string name="acerca_de_nosotros">Acerca de nosotros</string>
     <string name="sobre_desarrolladores">Sobre desarrolladores</string>
@@ -68,14 +63,10 @@
     <string name="sobre_nosotros_desc">¡Bienvenido a nuestra empresa de taxis! Nos enorgullece ofrecer un servicio de transporte seguro y confiable a nuestros clientes. Nuestros conductores están altamente capacitados y cuentan con años de experiencia en la industria del transporte. Ya sea que necesite un viaje al aeropuerto o simplemente quiera explorar la ciudad, estamos aquí para ayudarlo. En nuestra empresa, nos esforzamos por brindar un servicio excepcional a nuestros clientes. Nos aseguramos de que nuestros vehículos estén siempre limpios y bien mantenidos para garantizar su comodidad y seguridad.</string>
     <string name="cantSeatS">Cantidad de asientos:</string>
     <string name="cantSeat">Cantidad</string>
-    <string name="Mapa">Mapa</string>
     <string name="ubicaci_n">Ubicación</string>
     <string name="destino">Destino</string>
     <string name="pedir_taxi">Pedir Taxi</string>
     <string name="m_s_detalles">Más detalles</string>
-    <string name="errorObtenerUbic">Error al obtener la ubicación</string>
-    <string name="NoCarroEncontrado">No hay autos disponibles</string>
-    <string name="NoCarro">No encontramos algún taxi disponible.</string>
     <string name="no">No</string>
     <string name="ConfirmTaxi">Confirmar</string>
     <string name="SeguroPedirTaxi">¿Está seguro de pedir este taxi?</string>
@@ -95,13 +86,8 @@
     <string name="Desea_personal_ubicacion">Desea escoger su ubicación actual</string>
     <string name="Vaya_a_ajustes">Vaya a los ajustes y encienda la ubicación </string>
     <string name="Ubicacion_desconocida">Ubicación desactivada</string>
-    <string name="colocar_posici_n">Colocar posición</string>
-    <string name="su_taxi_esta_en_camino">Su taxi está en camino, por favor espere</string>
-    <string name="error_al_obtener_la_ruta">No encontramos una ruta</string>
-    <string name="cambiar_n_mero_de_tel_fono">Cambiar número de teléfono</string>
     <string name="Actualizando">Actualizando</string>
     <string name="error_al_encontrar_la_ubicaci_n">Error al encontrar la ubicación</string>
-    <string name="espere_confirmacion">Espere la confirmación del conductor</string>
     <string name="editar_informaci_n_de_usuario">Editar información de usuario</string>
     <string name="contrase_a">Contraseña</string>
     <string name="confirmar_contrase_a">Confirmar contraseña</string>
@@ -126,4 +112,6 @@
     <string name="confirmar_cuenta">Confirmar cuenta</string>
     <string name="el_correo_ya_existe">El correo ya existe</string>
     <string name="ya_existe_una_cuenta_creada_con_ese_correo">Ya existe una cuenta creada con ese correo</string>
+    <string name="Danada">Pantalla dañada</string>
+    <string name="esta_pantalla_parece_contener_un_error">Esta pantalla parece contener un error</string>
 </resources>

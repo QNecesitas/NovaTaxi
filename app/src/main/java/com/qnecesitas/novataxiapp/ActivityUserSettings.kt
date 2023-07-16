@@ -7,12 +7,13 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import com.qnecesitas.novataxiapp.auxiliary.NetworkTools
+import com.qnecesitas.novataxiapp.auxiliary.UserAccountShared
 import com.qnecesitas.novataxiapp.databinding.ActivityUserSettingsBinding
 import com.qnecesitas.novataxiapp.viewmodel.UserSettingsViewModel
 import com.qnecesitas.novataxiapp.viewmodel.UserSettingsViewModelFactory
 
 @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
-class Activity_UserSettings : AppCompatActivity() {
+class ActivityUserSettings : AppCompatActivity() {
     //Binding
     private lateinit var binding: ActivityUserSettingsBinding
 
@@ -32,9 +33,6 @@ class Activity_UserSettings : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(true)
         binding.toolbar.setNavigationOnClickListener { finish() }
-
-        //Get Email
-        val emailSelected = intent.getStringExtra("emailSelected")
 
         //Observer
 
@@ -62,22 +60,25 @@ class Activity_UserSettings : AppCompatActivity() {
         }
 
          //get User Information
-        viewModel.getUserInformationAll(emailSelected.toString())
+        UserAccountShared.getUserEmail(this)?.let { viewModel.getUserInformationAll(it) }
 
         //Accept Edit Account
         binding.acceptAccount.setOnClickListener {
             if (isEntryValid()) {
-                showAlertConfirm(emailSelected.toString(),binding.TIETPhone.text.toString(),binding.TIETPassword.text.toString())
+                UserAccountShared.getUserEmail(this)?.let { it1 ->
+                    showAlertConfirm(
+                        it1,binding.TIETPhone.text.toString(),binding.TIETPassword.text.toString())
+                }
             }
         }
         //About Us
-        binding.aboutUs.setOnClickListener {
+        binding.clAboutUs.setOnClickListener {
             val intent= Intent(this,ActivityAboutUs::class.java)
             startActivity(intent)
         }
 
         //About Dev
-        binding.aboutDev.setOnClickListener {
+        binding.clAboutDevelopers.setOnClickListener {
             val intent = Intent(this,ActivityAboutDev::class.java)
             startActivity(intent)
         }
