@@ -184,6 +184,7 @@ class ActivityUserSettings : AppCompatActivity() {
                     dialog.dismiss()
                     val intent = Intent(this , ActivityLogin::class.java)
                     startActivity(intent)
+                    UserAccountShared.setUserEmail(null,this)
                 }
                 .setNegativeButton(R.string.cancelar) { dialog , _ ->
                     dialog.dismiss()
@@ -203,6 +204,7 @@ class ActivityUserSettings : AppCompatActivity() {
                     viewModel.listUser.value?.get(0)?.let { viewModel.deleteUsers(it.email) }
                     val intent = Intent(this , ActivityLogin::class.java)
                     startActivity(intent)
+                    UserAccountShared.setUserEmail(null,this)
                 }
                 .setNegativeButton(R.string.cancelar) { dialog , _ ->
                     dialog.dismiss()
