@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
+    android:layout_margin="4dp"
+    app:cardCornerRadius="@dimen/card_my_elevation"
     android:elevation="@dimen/card_my_elevation"
     android:translationZ="@dimen/card_my_elevation">
 
     <!--Cl Container-->
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
         <!--cv_image-->
@@ -17,7 +18,7 @@
             android:id="@+id/cv_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
+            android:layout_margin="8dp"
             android:translationZ="4dp"
             app:cardCornerRadius="4dp"
             app:cardElevation="@dimen/card_my_elevation"
@@ -34,19 +35,13 @@
                 android:src="@drawable/vector_familiar"
                 android:importantForAccessibility="no" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-
-            </com.google.android.material.textfield.TextInputLayout>
-
         </androidx.cardview.widget.CardView>
-        
+
         <!--Cl Container InfoDriver-->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clContainer"
-            android:layout_width="0dp"
+            android:padding="12dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -70,13 +65,19 @@
 
                     <!--Tv PriceS-->
                     <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="@string/VehiculoS"
+                        android:textStyle="bold" />
+
+                    <!--Tv Price-->
+                    <TextView
                         android:id="@+id/tvTypeCar"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="12dp"
-                        android:text="@string/cargando"
-                        android:textStyle="bold" />
+                        android:layout_marginStart="8dp"
+                        android:text="@string/cargando" />
 
                 </LinearLayout>
 
@@ -91,7 +92,7 @@
                         android:id="@+id/tvCantSeatS"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
+                        android:layout_marginStart="4dp"
                         android:textStyle="bold"
                         android:text="@string/cantSeatS"/>
 
@@ -117,7 +118,7 @@
                         android:id="@+id/tvCantPriceS"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
+                        android:layout_marginStart="4dp"
                         android:textStyle="bold"
                         android:text="@string/precioKmS"/>
 
@@ -131,20 +132,19 @@
 
 
                 </LinearLayout>
-                
-            </LinearLayout>
-            
 
-            
-           
-           
+            </LinearLayout>
+
+
+
+
+
             <!--Tv Details-->
             <TextView
                 android:id="@+id/tvMoreDetails"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="4dp"
                 android:text="@string/m_s_detalles"
                 android:textColor="?attr/colorSecondary"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -152,9 +152,9 @@
 
             <View
                 android:id="@+id/vSeparator"
-                android:layout_width="0.5dp"
+                android:layout_width="2dp"
                 android:layout_height="0dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginEnd="4dp"
                 android:background="?attr/colorSecondary"
                 app:layout_constraintBottom_toBottomOf="@id/tvBuy"
                 app:layout_constraintEnd_toStartOf="@id/tvBuy"
@@ -165,8 +165,7 @@
                 android:id="@+id/tvBuy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
                 android:text="@string/pedir_taxi"
                 android:textColor="?attr/colorSecondary"
                 app:layout_constraintBottom_toBottomOf="parent"

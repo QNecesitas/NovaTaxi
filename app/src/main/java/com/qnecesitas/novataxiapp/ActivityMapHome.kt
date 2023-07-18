@@ -166,7 +166,7 @@ class ActivityMapHome : AppCompatActivity() {
         val adapterType = TypeTaxiAdapter(this)
         adapterType.setClickDetails(object: TypeTaxiAdapter.ITouchDetails{
             override fun onClickDetails(vehicle: Vehicle) {
-                showAlertDialogCarDetails(vehicle.details)
+                showAlertDialogCarDetails(vehicle.type,vehicle.details)
             }
         })
         adapterType.setClick(object: TypeTaxiAdapter.ITouchAsk{
@@ -229,6 +229,7 @@ class ActivityMapHome : AppCompatActivity() {
                     binding.llAwaitCarSelect.visibility = View.GONE
                     binding.extBtnUbicUser.visibility = View.VISIBLE
                     binding.extBtnUbicDest.visibility = View.VISIBLE
+                    binding.clAvailableTaxis.visibility = View.VISIBLE
                 }
                 MapHomeViewModel.StateConstants.ERROR -> {
                     NetworkTools.showAlertDialogNoInternet(this)
@@ -507,11 +508,11 @@ class ActivityMapHome : AppCompatActivity() {
         builder.create().show()
     }
 
-    private fun showAlertDialogCarDetails(details: String) {
+    private fun showAlertDialogCarDetails(typeCar: String, details: String) {
         //init alert dialog
         val builder = androidx.appcompat.app.AlertDialog.Builder(this)
         builder.setCancelable(false)
-        builder.setTitle(getString(R.string.detalles))
+        builder.setTitle("Vehículo: $typeCar")
         builder.setMessage(details)
         //set listeners for dialog buttons
         builder.setPositiveButton(R.string.Aceptar) { dialog, _ ->
@@ -603,11 +604,12 @@ class ActivityMapHome : AppCompatActivity() {
 
     private fun getDriverIcon(driver: Driver): Int{
         return when(driver.typeCar){
-            "Auto simple" -> R.drawable.dirver_icon_simple
+            "Auto básico" -> R.drawable.dirver_icon_simple
             "Auto de confort" -> R.drawable.dirver_icon_confort
             "Auto familiar" -> R.drawable.dirver_icon_familiar
             "Triciclo" -> R.drawable.dirver_icon_triciclo
             "Motor" -> R.drawable.dirver_icon_motor
+            "Bicitaxi" -> R.drawable.dirver_icon_bicitaxi
             else -> R.drawable.dirver_icon_simple
 
         }
@@ -745,6 +747,8 @@ class ActivityMapHome : AppCompatActivity() {
             binding.llAwaitCarSelect.visibility = View.GONE
             binding.extBtnUbicUser.visibility = View.VISIBLE
             binding.extBtnUbicDest.visibility = View.VISIBLE
+            binding.clAvailableTaxis.visibility = View.VISIBLE
+
         }
     }
 

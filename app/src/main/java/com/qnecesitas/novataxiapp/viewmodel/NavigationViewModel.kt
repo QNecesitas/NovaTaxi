@@ -15,28 +15,16 @@ import androidx.lifecycle.ViewModelProvider
 import com.qnecesitas.novataxiapp.auxiliary.Constants
 import com.qnecesitas.novataxiapp.auxiliary.UserAccountShared
 import com.qnecesitas.novataxiapp.model.Driver
+import com.qnecesitas.novataxiapp.model.Trip
 import com.qnecesitas.novataxiapp.network.AuxiliaryDataSourceNetwork
 import com.qnecesitas.novataxiapp.network.DriverDataSourceNetwork
+import com.qnecesitas.novataxiapp.network.TripsDataSourceNetwork
 import com.qnecesitas.novataxiapp.network.UserDataSourceNetwork
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class NavigationViewModel : ViewModel() {
-
-    //User Latitude
-    private val _latitudeGPS = MutableLiveData<Double>()
-    val latitudeGPS: LiveData<Double> get() = _latitudeGPS
-    fun setLatitudeGPS(latitude: Double){
-        _latitudeGPS.value = latitude
-    }
-
-    //User Longitude
-    private val _longitudeGPS = MutableLiveData<Double>()
-    val longitudeGPS: LiveData<Double> get() = _longitudeGPS
-    fun setLongitudeGPS(longitude: Double){
-        _longitudeGPS.value = longitude
-    }
 
     //Driver Latitude
     private val _latitudeDriver = MutableLiveData<Double>()
@@ -56,6 +44,17 @@ class NavigationViewModel : ViewModel() {
     private val _driver = MutableLiveData<Driver>()
     val driver: LiveData<Driver> get() = _driver
 
+    //Route state
+    private val _actualTrip = MutableLiveData<Trip>()
+    val actualTrip: LiveData<Trip> get() = _actualTrip
+    fun setRouteState(actualTrip: Trip){
+        _actualTrip.value = actualTrip
+    }
+
+
+    //Obtaining the data
+    private var driverDataSourceNetwork: DriverDataSourceNetwork = DriverDataSourceNetwork()
+    private var tripsDataSourceNetwork: TripsDataSourceNetwork = TripsDataSourceNetwork()
 
 
 
@@ -85,10 +84,6 @@ class NavigationViewModel : ViewModel() {
 
 
 
-
-    //Obtaining the data
-    private var driverDataSourceNetwork: DriverDataSourceNetwork = DriverDataSourceNetwork()
-
     fun getDriverPosition(email: String) {
         //Call
         val call = driverDataSourceNetwork.getDriverForNavigation(
@@ -115,6 +110,42 @@ class NavigationViewModel : ViewModel() {
             override fun onFailure(call: Call<Driver>, t: Throwable) {}
         })
     }
+
+
+
+
+    //Fetch state in the trip
+    fun fetchStateInTrip(email: String) {
+        //Call
+        val call = tripsDataSourceNetwork.fetchStateTrip(
+            Constants.PHP_TOKEN,
+            email
+        )
+        getResponseFetchStateInTrip(call)
+    }
+
+    //Get the response about the Driver info
+    private fun getResponseFetchStateInTrip(call: Call<Trip>) {
+        call.enqueue(object : Callback<Trip> {
+            override fun onResponse(
+                call: Call<Trip>,
+                response: Response<Trip>
+            ) {
+                if (response.isSuccessful) {
+                    if(response.body() != null) {
+                        _actualTrip.value = response.body()
+                    }else{
+                        _actualTrip.value = null
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<Trip>, t: Throwable) {
+                _actualTrip.value = null
+            }
+        })
+    }
+
 
 }
 

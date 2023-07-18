@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">Nova Taxi App</string>
+    <string name="app_name">NovaTaxi v1.1</string>
     <string name="mapbox_access_token" tools:ignore="Typos">pk.eyJ1Ijoicm9ubnlucCIsImEiOiJjbGl4YTg3bDgwNHpwM2RucTlwdWFkOXN1In0.MlTnx-myS4E3LJUeh5CVbw</string>
     <string name="crear_cuenta">Crear Cuenta</string>
     <string name="nombre">Nombre de Usuario</string>
@@ -122,4 +122,5 @@
     <string name="est_s_seguro_de_cerrar_su_sesi_n">¿Estás seguro de cerrar su sesión?</string>
     <string name="eliminar_cuenta1">Eliminar cuenta</string>
     <string name="est_s_seguro_de_eliminar_la_cuenta_">¿Estás seguro de eliminar la cuenta?</string>
+    <string name="VehiculoS">Vehículo:</string>
 </resources>

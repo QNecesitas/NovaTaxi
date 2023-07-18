@@ -94,19 +94,9 @@
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/AAU_CV_Logo_picture" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2sp"
-                        android:layout_marginBottom="20sp"
-                        android:text="@string/negocio_particular"
-                        android:textColor="?attr/colorOnPrimary"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/AAU_nombre_empresa" />
+                        app:layout_constraintTop_toBottomOf="@id/AAU_CV_Logo_picture"
+                        android:layout_marginBottom="12dp"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
 
 
                 </androidx.constraintlayout.widget.ConstraintLayout>

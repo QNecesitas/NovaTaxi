@@ -70,7 +70,7 @@ class ActivityInfoDriver : AppCompatActivity() {
     private fun showPhoto(){
         var drawableImage: Drawable? = null
         when(viewModel.listDriver.value?.get(0)?.typeCar){
-            "Auto simple" ->
+            "Auto básico" ->
                 drawableImage = AppCompatResources.getDrawable(this, R.drawable.baseline_drive_eta_24)!!
             "Auto de confort" ->
                 drawableImage = AppCompatResources.getDrawable(this, R.drawable.vector_car)!!
@@ -80,6 +80,8 @@ class ActivityInfoDriver : AppCompatActivity() {
                 drawableImage = AppCompatResources.getDrawable(this, R.drawable.vector_tricycle)!!
             "Motor" ->
                 drawableImage = AppCompatResources.getDrawable(this, R.drawable.baseline_directions_bike_24)!!
+            "Bicitaxi" ->
+                drawableImage = AppCompatResources.getDrawable(this, R.drawable.vector_bicitaxi)!!
         }
         binding.image.setImageDrawable(drawableImage)
 

@@ -127,6 +127,14 @@ class ActivityNavigation : AppCompatActivity() {
             RoutesTools.navigationTrip?.let { fetchARoute(it) }
         }
 
+        viewModel.actualTrip.observe(this){
+            when(it.state){
+                "Espera por cliente"->{
+
+                }
+            }
+        }
+
 
 
         //Start Search
@@ -171,6 +179,8 @@ class ActivityNavigation : AppCompatActivity() {
                 if(NetworkTools.isOnline(this@ActivityNavigation, true)) {
                     RoutesTools.navigationTrip?.let { viewModel.getDriverPosition(it.fk_driver)}
                     RoutesTools.navigationTrip?.let { fetchARoute(it) }
+                    UserAccountShared.getUserEmail(this@ActivityNavigation)
+                        ?.let { viewModel.fetchStateInTrip(it) }
                 }
                 delay(TimeUnit.SECONDS.toMillis(30))
             }
@@ -296,11 +306,12 @@ class ActivityNavigation : AppCompatActivity() {
 
     private fun getDriverIcon(driver: Driver): Int{
         return when(driver.typeCar){
-            "Auto simple" -> R.drawable.dirver_icon_simple
+            "Auto básico" -> R.drawable.dirver_icon_simple
             "Auto de confort" -> R.drawable.dirver_icon_confort
             "Auto familiar" -> R.drawable.dirver_icon_familiar
             "Triciclo" -> R.drawable.dirver_icon_triciclo
             "Motor" -> R.drawable.dirver_icon_motor
+            "Bicitaxi" -> R.drawable.dirver_icon_bicitaxi
             else -> R.drawable.dirver_icon_simple
 
         }

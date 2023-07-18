@@ -318,7 +318,7 @@ class MapHomeViewModel: ViewModel() {
         _listVehicles.value = listOf<Vehicle>().toMutableList()
         _listVehicles.value?.add(
             Vehicle(
-                "Auto simple",
+                "Auto básico",
                 (prices.priceNormalCar * distance).toInt(),
                 4,
                 "Vehículo sencillo con alrededor de 4 capacidades, ideal para obtener mejores precios"
@@ -351,17 +351,25 @@ class MapHomeViewModel: ViewModel() {
                 "Triciclo",
                 (prices.priceTricycle * distance).toInt(),
                 2,
-                "Vehículo triciclo con alrededor de 2 asientos, ideal para viajes cortos"
+                "Vehículo triciclo con alrededor de 2 capacidades, ideal para viajes cortos"
             )
         )
 
+        _listVehicles.value?.add(
+            Vehicle(
+                "Bicitaxi",
+                (prices.priceMotorcycle * distance).toInt(),
+                2,
+                "Vehículo con solo 2 capacidades, ideal para viajes cortos y cómodos"
+            )
+        )
 
         _listVehicles.value?.add(
             Vehicle(
                 "Motor",
                 (prices.priceMotorcycle * distance).toInt(),
                 1,
-                "Vehículo con solo 1 asiento, ideal para viajes rápidos y sin mucho equipaje"
+                "Vehículo con solo 1 capacidad, ideal para viajes rápidos y sin mucho equipaje"
             )
         )
 

@@ -36,7 +36,7 @@ class TypeTaxiAdapter(
             val cantSeat = vehicle.seats.toString()
 
             when(vehicle.type){
-                "Auto simple" -> binding.image.setImageDrawable(
+                "Auto básico" -> binding.image.setImageDrawable(
                     AppCompatResources.getDrawable(context, R.drawable.baseline_drive_eta_24)
                 )
                 "Auto de confort" -> binding.image.setImageDrawable(
@@ -51,6 +51,9 @@ class TypeTaxiAdapter(
                 "Motor" -> binding.image.setImageDrawable(
                     AppCompatResources.getDrawable(context, R.drawable.baseline_directions_bike_24)
                 )
+                "Bicitaxi" -> binding.image.setImageDrawable(
+                    AppCompatResources.getDrawable(context, R.drawable.vector_bicitaxi)
+                )
             }
 
             binding.tvTypeCar.text = vehicle.type
@@ -59,6 +62,7 @@ class TypeTaxiAdapter(
 
             binding.tvMoreDetails.setOnClickListener{ clickDetails?.onClickDetails(vehicle) }
             binding.tvBuy.setOnClickListener { clickAsk?.onClickAsk(vehicle) }
+
 
         }
 
