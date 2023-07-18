@@ -123,4 +123,7 @@
     <string name="eliminar_cuenta1">Eliminar cuenta</string>
     <string name="est_s_seguro_de_eliminar_la_cuenta_">¿Estás seguro de eliminar la cuenta?</string>
     <string name="VehiculoS">Vehículo:</string>
+    <string name="se_encuentra_en_espera">Su taxi ha llegado y está a la espera. Por favor no demore en abordar el vehículo, recuerde que hay un impuesto aplicado a partir de cierto tiempo a la espera</string>
+    <string name="Revisar_impuestos">Revisar impuestos</string>
+    <string name="impuestos">Impuestos</string>
 </resources>

@@ -13,6 +13,7 @@ import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.core.app.ActivityCompat
@@ -130,11 +131,21 @@ class ActivityNavigation : AppCompatActivity() {
         viewModel.actualTrip.observe(this){
             when(it.state){
                 "Espera por cliente"->{
-
+                    showAwaitOptions()
                 }
             }
         }
 
+        viewModel.actualPrices.observe(this){
+            if(it != null){
+                if(it.isNotEmpty()){
+                    val prices = it[0]
+                    showAlertDialogPrices(prices.delayTime, prices.priceDelay)
+                }
+            }else{
+                NetworkTools.showAlertDialogNoInternet(this)
+            }
+        }
 
 
         //Start Search
@@ -358,11 +369,18 @@ class ActivityNavigation : AppCompatActivity() {
 
 
         if (driverPoint != null) {
-            setRouteOptions(originPoint, destPoint, driverPoint)
+            if(viewModel.actualTrip.value != null) {
+                if (viewModel.actualTrip.value!!.state == "Espera por cliente"||
+                    viewModel.actualTrip.value!!.state == "En viaje") {
+                    setRouteOptions1Step( destPoint, driverPoint)
+                }else{
+                    setRouteOptions2Steps( originPoint, destPoint, driverPoint)
+                }
+            }
         }
     }
 
-    private fun setRouteOptions(originP: Point, destP: Point, driverP: Point) {
+    private fun setRouteOptions2Steps(originP: Point, destP: Point, driverP: Point) {
         val originLocation = Location("test").apply {
             longitude = driverP.longitude()
             latitude =  driverP.latitude()
@@ -413,6 +431,56 @@ class ActivityNavigation : AppCompatActivity() {
 
     }
 
+    private fun setRouteOptions1Step(destP: Point, driverP: Point) {
+        val originLocation = Location("test").apply {
+            longitude = driverP.longitude()
+            latitude =  driverP.latitude()
+            bearing = 10f
+        }
+
+
+        val routeOptions = RouteOptions.builder()
+            .applyDefaultNavigationOptions()
+            .applyLanguageAndVoiceUnitOptions(this@ActivityNavigation)
+            .coordinatesList(listOf(driverP, destP))
+            .alternatives(false)
+            .bearingsList(
+                listOf(
+                    Bearing.builder()
+                        .angle(originLocation.bearing.toDouble())
+                        .degrees(45.0)
+                        .build(),
+                    null
+                )
+            )
+            .build()
+
+        mapboxNavigation.requestRoutes(
+            routeOptions,
+            object : NavigationRouterCallback {
+                override fun onCanceled(routeOptions: RouteOptions, routerOrigin: RouterOrigin) {
+                }
+
+                override fun onFailure(reasons: List<RouterFailure>, routeOptions: RouteOptions) {
+                    FancyToast.makeText(
+                        this@ActivityNavigation ,
+                        getString(R.string.error_al_encontrar_la_ruta) ,
+                        FancyToast.LENGTH_SHORT,FancyToast.ERROR,false
+                    ).show()
+                    Log.e("TEST",reasons.toString())
+                }
+
+                override fun onRoutesReady(
+                    routes: List<NavigationRoute>,
+                    routerOrigin: RouterOrigin
+                ) {
+                    drawRouteLine(routes)
+                }
+            }
+        )
+
+    }
+
     private fun drawRouteLine(routes: List<NavigationRoute>){
         val routeLineOptions = MapboxRouteLineOptions.Builder(this).build()
         val routeLineApi = MapboxRouteLineApi(routeLineOptions)
@@ -425,6 +493,32 @@ class ActivityNavigation : AppCompatActivity() {
         }
     }
 
+
+
+
+    //Route await
+    private fun showAwaitOptions(){
+        binding.clAwait.visibility = View.VISIBLE
+        binding.llBtnAwait.setOnClickListener {
+
+        }
+    }
+
+    private fun showAlertDialogPrices(time: Int, price: Int) {
+        val message = "Cada $time minutos se suman $price CUP al precio total"
+        //init alert dialog
+        val builder = AlertDialog.Builder(this)
+        builder.setCancelable(false)
+        builder.setTitle(R.string.impuestos)
+        builder.setMessage(message)
+        //set listeners for dialog buttons
+        builder.setPositiveButton(R.string.Aceptar) { _: DialogInterface?, _: Int ->
+            //finish the activity
+
+        }
+        //create the alert dialog and show it
+        builder.create().show()
+    }
 
 
 

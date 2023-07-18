@@ -18,8 +18,10 @@ import com.qnecesitas.novataxiapp.model.Driver
 import com.qnecesitas.novataxiapp.model.Trip
 import com.qnecesitas.novataxiapp.network.AuxiliaryDataSourceNetwork
 import com.qnecesitas.novataxiapp.network.DriverDataSourceNetwork
+import com.qnecesitas.novataxiapp.network.PricesDataSourceNetwork
 import com.qnecesitas.novataxiapp.network.TripsDataSourceNetwork
 import com.qnecesitas.novataxiapp.network.UserDataSourceNetwork
+import com.qnecesitas.novataxidriver.model.Prices
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -47,14 +49,17 @@ class NavigationViewModel : ViewModel() {
     //Route state
     private val _actualTrip = MutableLiveData<Trip>()
     val actualTrip: LiveData<Trip> get() = _actualTrip
-    fun setRouteState(actualTrip: Trip){
-        _actualTrip.value = actualTrip
-    }
+
+    //Prices
+    private val _actualPrices = MutableLiveData<List<Prices>>()
+    val actualPrices: LiveData<List<Prices>> get() = _actualPrices
+
 
 
     //Obtaining the data
     private var driverDataSourceNetwork: DriverDataSourceNetwork = DriverDataSourceNetwork()
     private var tripsDataSourceNetwork: TripsDataSourceNetwork = TripsDataSourceNetwork()
+    private var pricesDataSourceNetwork: PricesDataSourceNetwork = PricesDataSourceNetwork()
 
 
 
@@ -142,6 +147,41 @@ class NavigationViewModel : ViewModel() {
 
             override fun onFailure(call: Call<Trip>, t: Throwable) {
                 _actualTrip.value = null
+            }
+        })
+    }
+
+
+
+
+    //Fetch state in the trip
+    fun fetchPrices() {
+        //Call
+        val call = pricesDataSourceNetwork.getPricesInformation(
+            Constants.PHP_TOKEN,
+            0
+        )
+        getResponseFetchPrices(call)
+    }
+
+    //Get the response about the Driver info
+    private fun getResponseFetchPrices(call: Call<List<Prices>>) {
+        call.enqueue(object : Callback<List<Prices>> {
+            override fun onResponse(
+                call: Call<List<Prices>>,
+                response: Response<List<Prices>>
+            ) {
+                if (response.isSuccessful) {
+                    if(response.body() != null) {
+                        _actualPrices.value = response.body()
+                    }else{
+                        _actualPrices.value = null
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<List<Prices>>, t: Throwable) {
+                _actualPrices.value = null
             }
         })
     }
