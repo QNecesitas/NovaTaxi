@@ -288,10 +288,6 @@ class ActivityMapHome : AppCompatActivity() {
 
         //Listeners
         binding.realTimeButton.setOnClickListener{
-
-            //UserAccountShared.setIsRatingInAwait(this,true)
-            //UserAccountShared.setLastDriver(this,"chofer")
-
             val lm = getSystemService(Context.LOCATION_SERVICE) as LocationManager
             if(lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 

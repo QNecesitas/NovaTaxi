@@ -159,7 +159,7 @@ class NavigationViewModel : ViewModel() {
         //Call
         val call = pricesDataSourceNetwork.getPricesInformation(
             Constants.PHP_TOKEN,
-            0
+            1
         )
         getResponseFetchPrices(call)
     }

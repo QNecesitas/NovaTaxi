@@ -3,20 +3,26 @@ package com.qnecesitas.novataxiapp
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import androidx.appcompat.app.AppCompatActivity
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.mapbox.api.directions.v5.models.Bearing
@@ -79,6 +85,10 @@ class ActivityNavigation : AppCompatActivity() {
         onInitialize = this::initNavigation
     )
 
+    //Notification
+    private val CHANNEL_ID: String = "NovaTaxi"
+    private val CHANNEL_NAME = "NovaTaxi"
+    lateinit var notificationManager : NotificationManager
 
 
 
@@ -109,6 +119,12 @@ class ActivityNavigation : AppCompatActivity() {
 
 
 
+        //Notification
+        notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
+
+
+
         //Listeners
         binding.realTimeButton.setOnClickListener {
             getLocationRealtime()
@@ -118,12 +134,12 @@ class ActivityNavigation : AppCompatActivity() {
 
 
         //Observers
-        viewModel.driver.observe(this){
-            viewModel.setLatitudeDriver(it.latitude)
-            viewModel.setLongitudeDriver(it.longitude)
+        viewModel.driver.observe(this){ driver->
+            viewModel.setLatitudeDriver(driver.latitude)
+            viewModel.setLongitudeDriver(driver.longitude)
             addAnnotationDrivers(
-                Point.fromLngLat(it.longitude, it.latitude),
-                getDriverIcon(it)
+                Point.fromLngLat(driver.longitude, driver.latitude),
+                getDriverIcon(driver)
             )
             RoutesTools.navigationTrip?.let { fetchARoute(it) }
         }
@@ -131,7 +147,14 @@ class ActivityNavigation : AppCompatActivity() {
         viewModel.actualTrip.observe(this){
             when(it.state){
                 "Espera por cliente"->{
-                    showAwaitOptions()
+                    showAwaitOptions(true)
+                    notificationManager.notify(9,displayNotification())
+                }
+                "En viaje"->{
+                    showAwaitOptions(false)
+                }
+                "Finalizado"->{
+                    showAlertDialogFinish()
                 }
             }
         }
@@ -141,14 +164,17 @@ class ActivityNavigation : AppCompatActivity() {
                 if(it.isNotEmpty()){
                     val prices = it[0]
                     showAlertDialogPrices(prices.delayTime, prices.priceDelay)
+                }else{
+                    NetworkTools.showAlertDialogNoInternet(this)
                 }
             }else{
                 NetworkTools.showAlertDialogNoInternet(this)
             }
         }
 
-
         //Start Search
+        UserAccountShared.setIsRatingInAwait(this,true)
+        RoutesTools.navigationTrip?.let { UserAccountShared.setLastDriver(this, it.fk_driver) }
         addRoutePoints()//Start-end points
         RoutesTools.navigationTrip?.let {
             viewCameraInPoint(
@@ -157,6 +183,7 @@ class ActivityNavigation : AppCompatActivity() {
         }//Camera
         getLocationRealtime()//User location
         startMainRoutine()//Main thread
+
     }
 
     //init
@@ -497,15 +524,19 @@ class ActivityNavigation : AppCompatActivity() {
 
 
     //Route await
-    private fun showAwaitOptions(){
-        binding.clAwait.visibility = View.VISIBLE
-        binding.llBtnAwait.setOnClickListener {
-
+    private fun showAwaitOptions(open: Boolean){
+        if(open) {
+            binding.clAwait.visibility = View.VISIBLE
+            binding.llBtnAwait.setOnClickListener {
+                viewModel.fetchPrices()
+            }
+        }else{
+            binding.clAwait.visibility = View.GONE
         }
     }
 
     private fun showAlertDialogPrices(time: Int, price: Int) {
-        val message = "Cada $time minutos se suman $price CUP al precio total"
+        val message = "Cada $time minutos de espera se suman $price CUP al precio total"
         //init alert dialog
         val builder = AlertDialog.Builder(this)
         builder.setCancelable(false)
@@ -519,6 +550,54 @@ class ActivityNavigation : AppCompatActivity() {
         //create the alert dialog and show it
         builder.create().show()
     }
+
+    private fun displayNotification(): Notification {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel =
+                NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH)
+            channel.description = getString(R.string.channel_decr)
+            channel.enableLights(true)
+            channel.lightColor = Color.RED
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val builder: NotificationCompat.Builder =
+            NotificationCompat.Builder(applicationContext, CHANNEL_ID)
+                .setContentTitle(getString(R.string.auto_llegado))
+                .setContentText(getString(R.string.vehiculo_espera))
+                .setSmallIcon(R.drawable.baseline_drive_eta_24)
+                .setAutoCancel(false)
+
+        return builder.build()
+
+    }
+
+
+
+
+
+    //Finishing
+    private fun showAlertDialogFinish() {
+        if(viewModel.actualTrip.value != null) {
+            val totalPrice =
+                viewModel.actualTrip.value!!.travelPrice + viewModel.actualTrip.value!!.priceAwait
+            val message =
+                "El precio total del viaje fue de $totalPrice CUP, le hemos enviado un correo con los detalles del viaje"
+            //init alert dialog
+            val builder = AlertDialog.Builder(this)
+            builder.setCancelable(false)
+            builder.setTitle(R.string.viaje_finalizado)
+            builder.setMessage(message)
+            //set listeners for dialog buttons
+            builder.setPositiveButton(R.string.Aceptar) { _: DialogInterface?, _: Int ->
+                //finish the activity
+                finish()
+            }
+            //create the alert dialog and show it
+            builder.create().show()
+        }
+    }
+
 
 
 
