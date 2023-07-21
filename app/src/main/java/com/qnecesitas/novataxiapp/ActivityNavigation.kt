@@ -29,6 +29,7 @@ import com.mapbox.api.directions.v5.models.Bearing
 import com.mapbox.api.directions.v5.models.RouteOptions
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
+import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
@@ -101,7 +102,8 @@ class ActivityNavigation : AppCompatActivity() {
 
         //Map
         binding.mapView.getMapboxMap()
-            .loadStyleUri("mapbox://styles/ronnynp/cljbmkjqs00gt01qrb2y3bgxj")
+            //.loadStyleUri("mapbox://styles/ronnynp/cljbmkjqs00gt01qrb2y3bgxj")
+            .loadStyleUri(Style.MAPBOX_STREETS)
         val lastPointSelected = UserAccountShared.getLastLocation(this)
         val camera = CameraOptions.Builder()
             .center(Point.fromLngLat(lastPointSelected.longitude(),lastPointSelected.latitude()))
@@ -582,7 +584,7 @@ class ActivityNavigation : AppCompatActivity() {
             val totalPrice =
                 viewModel.actualTrip.value!!.travelPrice + viewModel.actualTrip.value!!.priceAwait
             val message =
-                "El precio total del viaje fue de $totalPrice CUP, le hemos enviado un correo con los detalles del viaje"
+                "El precio total del viaje fue de $totalPrice CUP, le hemos enviado un correo al cliente con los detalles del viaje"
             //init alert dialog
             val builder = AlertDialog.Builder(this)
             builder.setCancelable(false)

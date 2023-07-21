@@ -15,6 +15,7 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -31,6 +32,7 @@ import com.mapbox.api.directions.v5.models.Bearing
 import com.mapbox.api.directions.v5.models.RouteOptions
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
+import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
@@ -82,6 +84,7 @@ class ActivityMapHome : AppCompatActivity() {
     private lateinit var pointAnnotationManagerPositions: PointAnnotationManager
     private lateinit var pointAnnotationManagerDrivers: PointAnnotationManager
     private lateinit var pointAnnotationManagerTrip: PointAnnotationManager
+    private lateinit var pointAnnotationManagerAnimation: PointAnnotationManager
 
     //Permissions
     private val permissionCode = 34
@@ -122,7 +125,8 @@ class ActivityMapHome : AppCompatActivity() {
 
         //Map
         binding.mapView.getMapboxMap()
-            .loadStyleUri("mapbox://styles/ronnynp/cljbmkjqs00gt01qrb2y3bgxj")
+            //.loadStyleUri("mapbox://styles/ronnynp/cljbmkjqs00gt01qrb2y3bgxj")
+            .loadStyleUri(Style.MAPBOX_STREETS)
         val lastPointSelected = UserAccountShared.getLastLocation(this)
         val camera = CameraOptions.Builder()
             .center(Point.fromLngLat(lastPointSelected.longitude(),lastPointSelected.latitude()))
@@ -136,6 +140,7 @@ class ActivityMapHome : AppCompatActivity() {
         pointAnnotationManagerPositions = annotationApi.createPointAnnotationManager()
         pointAnnotationManagerDrivers = annotationApi.createPointAnnotationManager()
         pointAnnotationManagerTrip = annotationApi.createPointAnnotationManager()
+        pointAnnotationManagerAnimation = annotationApi.createPointAnnotationManager()
 
 
 
@@ -171,7 +176,17 @@ class ActivityMapHome : AppCompatActivity() {
         })
         adapterType.setClick(object: TypeTaxiAdapter.ITouchAsk{
             override fun onClickAsk(vehicle: Vehicle) {
-                 showAlertDialogConfirmCar(vehicle)
+                if(viewModel.latitudeGPS.value != null && viewModel.longitudeGPS.value != null) {
+                    showAlertDialogConfirmCar(vehicle)
+                }else{
+                    FancyToast.makeText(
+                        this@ActivityMapHome,
+                        getString(R.string.aun_no_ubicacion),
+                        FancyToast.LENGTH_LONG,
+                        FancyToast.INFO,
+                        false
+                    ).show()
+                }
             }
         })
         binding.rvTaxis.adapter = adapterType
@@ -221,19 +236,22 @@ class ActivityMapHome : AppCompatActivity() {
         viewModel.stateCancelTrip.observe(this){
             when(it){
                 MapHomeViewModel.StateConstants.LOADING -> {
-                    binding.progressCancelAwait.visibility = View.VISIBLE
+                    binding.extBtnCancelSearch.visibility = View.GONE
+                    binding.progress.visibility = View.VISIBLE
                 }
                 MapHomeViewModel.StateConstants.SUCCESS ->{
+                    binding.progress.visibility = View.GONE
                     UserAccountShared.setLastPetition(this, 0)
-                    binding.progressCancelAwait.visibility = View.GONE
-                    binding.llAwaitCarSelect.visibility = View.GONE
+                    binding.extBtnCancelSearch.visibility = View.GONE
+                    addAnnotationAnimation(false)
                     binding.extBtnUbicUser.visibility = View.VISIBLE
                     binding.extBtnUbicDest.visibility = View.VISIBLE
                     binding.clAvailableTaxis.visibility = View.VISIBLE
                 }
                 MapHomeViewModel.StateConstants.ERROR -> {
                     NetworkTools.showAlertDialogNoInternet(this)
-                    binding.progressCancelAwait.visibility = View.GONE
+                    binding.extBtnCancelSearch.visibility = View.VISIBLE
+                    binding.progress.visibility = View.GONE
                 }
             }
         }
@@ -558,7 +576,6 @@ class ActivityMapHome : AppCompatActivity() {
                 .withIconImage(it)
                 .withIconSize(0.8)
             pointAnnotationManagerPositions.create(pointAnnotationOptions)
-
         }
     }
 
@@ -572,6 +589,59 @@ class ActivityMapHome : AppCompatActivity() {
                 .withIconImage(it)
                 .withIconSize(0.8)
             pointAnnotationManagerDrivers.create(pointAnnotationOptions)
+        }
+    }
+
+    private fun addAnnotationAnimation(working: Boolean) {
+        if (viewModel.longitudeGPS.value != null
+            && viewModel.latitudeGPS.value != null) {
+            if(working) {
+
+                viewModel.activateAnimation = working
+                lifecycleScope.launch {
+                    val images = listOf(
+                        R.drawable.animation_1,
+                        R.drawable.animation_2,
+                        R.drawable.animation_3,
+                        R.drawable.animation_4,
+                        R.drawable.animation_3,
+                        R.drawable.animation_2,
+                    )
+                    var position = 0
+                    viewCameraInPoint(
+                        Point.fromLngLat(
+                            viewModel.longitudeGPS.value!!,
+                            viewModel.latitudeGPS.value!!,
+                        )
+                    )
+
+                    while (viewModel.activateAnimation) {
+                        position++
+                        if (position == 6) position = 0
+                        pointAnnotationManagerAnimation.deleteAll()
+                        ImageTools.bitmapFromDrawableRes(
+                            this@ActivityMapHome,
+                            images[position]
+                        )?.let {
+                            val pointAnnotationOptions: PointAnnotationOptions =
+                                PointAnnotationOptions()
+                                    .withPoint(
+                                        Point.fromLngLat(
+                                            viewModel.longitudeGPS.value!!,
+                                            viewModel.latitudeGPS.value!!,
+                                        )
+                                    )
+                                    .withIconImage(it)
+                                    .withIconSize(0.8)
+                            pointAnnotationManagerAnimation.create(pointAnnotationOptions)
+                        }
+                        delay(500)
+                    }
+                }
+            }else{
+                viewModel.activateAnimation = false
+                pointAnnotationManagerAnimation.deleteAll()
+            }
         }
     }
 
@@ -731,16 +801,18 @@ class ActivityMapHome : AppCompatActivity() {
     private fun showAlertLLAwaitSelect(timeInMills: Long){
         lifecycleScope.launch {
             UserAccountShared.setLastPetition(this@ActivityMapHome,Calendar.getInstance().timeInMillis)
-            binding.llAwaitCarSelect.visibility = View.VISIBLE
+            addAnnotationAnimation(true)
+            binding.extBtnCancelSearch.visibility = View.VISIBLE
             binding.extBtnUbicUser.visibility = View.GONE
             binding.extBtnUbicDest.visibility = View.GONE
             binding.clAvailableTaxis.visibility = View.GONE
-            binding.llCancelAwait.setOnClickListener{
+            binding.extBtnCancelSearch.setOnClickListener{
                 viewModel.cancelTaxiAwait(this@ActivityMapHome)
             }
             delay(timeInMills)
             UserAccountShared.setLastPetition(this@ActivityMapHome,0)
-            binding.llAwaitCarSelect.visibility = View.GONE
+            addAnnotationAnimation(false)
+            binding.extBtnCancelSearch.visibility = View.GONE
             binding.extBtnUbicUser.visibility = View.VISIBLE
             binding.extBtnUbicDest.visibility = View.VISIBLE
             binding.clAvailableTaxis.visibility = View.VISIBLE

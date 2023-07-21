@@ -111,12 +111,14 @@ class MapHomeViewModel: ViewModel() {
 
     //LatitudeClient
     private val _latitudeGPS = MutableLiveData<Double>()
-    private val latitudeGPS: LiveData<Double> get() = _latitudeGPS
+    val latitudeGPS: LiveData<Double> get() = _latitudeGPS
 
     //LongitudeClient
     private val _longitudeGPS = MutableLiveData<Double>()
-    private val longitudeGPS: LiveData<Double> get() = _longitudeGPS
+    val longitudeGPS: LiveData<Double> get() = _longitudeGPS
 
+    //LongitudeClient
+    var activateAnimation: Boolean = false
 
 
     //Variable to setCamera

@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">NovaTaxi v1.1</string>
+    <string name="app_name">NovaTaxi v1.3</string>
     <string name="mapbox_access_token" tools:ignore="Typos">pk.eyJ1Ijoicm9ubnlucCIsImEiOiJjbGl4YTg3bDgwNHpwM2RucTlwdWFkOXN1In0.MlTnx-myS4E3LJUeh5CVbw</string>
     <string name="crear_cuenta">Crear Cuenta</string>
     <string name="nombre">Nombre de Usuario</string>
@@ -132,4 +132,6 @@
     <string name="irApp">Ir a la aplicación</string>
     <string name="viaje_finalizado">Viaje finalizado</string>
     <string name="le_hemos_enviado_corro_finalizado">Le hemos enviado un coreo con todos los detalles del viaje</string>
+    <string name="cancelar_espera">Cancelar espera</string>
+    <string name="aun_no_ubicacion">Aún no se ha encontrado su ubicación</string>
 </resources>

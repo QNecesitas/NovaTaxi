@@ -16,6 +16,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
+import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
@@ -63,7 +64,8 @@ class ActivityPutMap : AppCompatActivity() {
         val annotationApi = binding.mapView.annotations
         pointAnnotationManager = annotationApi.createPointAnnotationManager()
         binding.mapView.getMapboxMap()
-            .loadStyleUri("mapbox://styles/ronnynp/cljbmkjqs00gt01qrb2y3bgxj")
+            //.loadStyleUri("mapbox://styles/ronnynp/cljbmkjqs00gt01qrb2y3bgxj")
+            .loadStyleUri(Style.MAPBOX_STREETS)
         val lastPointSelected = UserAccountShared.getLastLocation(this)
         val camera = CameraOptions.Builder()
             .center(Point.fromLngLat(lastPointSelected.longitude(),lastPointSelected.latitude()))
