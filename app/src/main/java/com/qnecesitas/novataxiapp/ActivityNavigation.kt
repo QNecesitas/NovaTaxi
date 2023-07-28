@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.UiModeManager
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -29,7 +30,6 @@ import com.mapbox.api.directions.v5.models.Bearing
 import com.mapbox.api.directions.v5.models.RouteOptions
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
-import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
@@ -101,9 +101,14 @@ class ActivityNavigation : AppCompatActivity() {
 
 
         //Map
+        val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
+        val styleUri = if (uiModeManager.nightMode == UiModeManager.MODE_NIGHT_YES) {
+            "mapbox://styles/ronnynp/cljbmkjqs00gt01qrb2y3bgxj"
+        } else {
+            "mapbox://styles/ronnynp/clkdk8gcm008f01qwff3m06dy"
+        }
         binding.mapView.getMapboxMap()
-            //.loadStyleUri("mapbox://styles/ronnynp/cljbmkjqs00gt01qrb2y3bgxj")
-            .loadStyleUri(Style.MAPBOX_STREETS)
+            .loadStyleUri(styleUri)
         val lastPointSelected = UserAccountShared.getLastLocation(this)
         val camera = CameraOptions.Builder()
             .center(Point.fromLngLat(lastPointSelected.longitude(),lastPointSelected.latitude()))
@@ -323,6 +328,7 @@ class ActivityNavigation : AppCompatActivity() {
     }
 
     private fun addAnnotationDrivers(point: Point, @DrawableRes drawable: Int) {
+        pointAnnotationManagerDrivers.deleteAll()
         ImageTools.bitmapFromDrawableRes(
             this@ActivityNavigation,
             drawable
@@ -369,6 +375,7 @@ class ActivityNavigation : AppCompatActivity() {
             pointAnnotationManagerTrip.create(pointAnnotationOptions)
         }
     }
+
 
 
 
@@ -545,8 +552,9 @@ class ActivityNavigation : AppCompatActivity() {
         builder.setTitle(R.string.impuestos)
         builder.setMessage(message)
         //set listeners for dialog buttons
-        builder.setPositiveButton(R.string.Aceptar) { _: DialogInterface?, _: Int ->
-            //finish the activity
+        builder.setPositiveButton(R.string.Aceptar) { dialog: DialogInterface?, _: Int ->
+
+            dialog?.dismiss()
 
         }
         //create the alert dialog and show it
@@ -593,7 +601,8 @@ class ActivityNavigation : AppCompatActivity() {
             //set listeners for dialog buttons
             builder.setPositiveButton(R.string.Aceptar) { _: DialogInterface?, _: Int ->
                 //finish the activity
-                finish()
+                val intent = Intent(this, ActivityMapHome::class.java)
+                startActivity(intent   )
             }
             //create the alert dialog and show it
             builder.create().show()

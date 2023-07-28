@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">NovaTaxi v1.3</string>
+    <string name="app_name">NovaTaxi v1.4</string>
     <string name="mapbox_access_token" tools:ignore="Typos">pk.eyJ1Ijoicm9ubnlucCIsImEiOiJjbGl4YTg3bDgwNHpwM2RucTlwdWFkOXN1In0.MlTnx-myS4E3LJUeh5CVbw</string>
     <string name="crear_cuenta">Crear Cuenta</string>
     <string name="nombre">Nombre de Usuario</string>
@@ -42,19 +42,18 @@
     <string name="version_incorrecta">Descargue la nueva versión disponible en: %s</string>
     <string name="contraseña_no_coincide">La contraseña no coincide</string>
     <string name="hemos_enviado_correo">Le hemos enviado un correo a %s .Por favor confirme su cuenta</string>
-    <string name="mantenga_presionado_en_el_mapa_para_seleccionar_su_ubicaci_n">Mantenga presionado en el mapa para seleccionar su ubicación</string>
-    <string name="adicionar_localizacion">Agregar Localización</string>
+    <string name="mantenga_presionado_en_el_mapa_para_seleccionar_su_ubicaci_n">Mantenga presionado en el mapa para seleccionar una ubicación</string>
+    <string name="adicionar_localizacion">Seleccionar localización</string>
     <string name="no_ha_añadido_su_posicion">No ha añadido su posición</string>
     <string name="acerca_de_nosotros">Acerca de nosotros</string>
     <string name="sobre_desarrolladores">Sobre desarrolladores</string>
-    <string name="negocio_particular">Negocio particular</string>
     <string name="productos_informaticos">Productos Informáticos</string>
     <string name="nuestro_numero">55759386</string>
     <string name="ronnynordelo_gmail_com">ronnynordelo@gmail.com</string>
     <string name="https_www_facebook_com_qnecesitas_paginaprincipal">https://www.facebook.com/qnecesitas.paginaprincipal</string>
     <string name="misi_n">Misión</string>
     <string name="mision_nuestra">El enfoque que buscamos es el de una empresa acogedora, cuyos complicados servicios sean llevados a los clientes de forma fácil de comprender. Cuba es un país poco informatizado por lo que tenemos noción de que la mayoría de nuestros clientes conocen la importancia de llevar su negocio a las redes y la tecnología pero sus conocimientos de aplicaciones y páginas web son pocos o ninguno, así que si ese es su caso no se preocupe, solo tiene que decirnos alguna idea que tenga o la información que quiere informatizar y haremos magia.</string>
-    <string name="qnecesitas">Qnecesitas</string>
+    <string name="qnecesitas">QNecesitas</string>
     <string name="qnecesitas_nat_cu">qnecesitas.nat.cu</string>
     <string name="sobre_nosotros">Sobre nosotros:</string>
     <string name="nova_taxi">Nova Taxi</string>
@@ -102,8 +101,6 @@
     <string name="Sobre_nosotros">Sobre nosotros</string>
     <string name="error_al_encontrar_la_ruta">Error al encontrar la ruta</string>
     <string name="cargando">Cargando</string>
-    <string name="detalles">Detalles</string>
-    <string name="espere_mientras_alg_n_auto_escoge">Espere mientras algún auto escoge dar su viaje. Durante 10 minutos su viaje será visible para los autos cercanos</string>
     <string name="valorado_con_exito">Valorado con éxito</string>
     <string name="error_al_valorar">Error al valorar</string>
     <string name="valore_su_ltimo_viaje">Valore su último viaje</string>
@@ -112,8 +109,6 @@
     <string name="confirmar_cuenta">Confirmar cuenta</string>
     <string name="el_correo_ya_existe">El correo ya existe</string>
     <string name="ya_existe_una_cuenta_creada_con_ese_correo">Ya existe una cuenta creada con ese correo</string>
-    <string name="Danada">Pantalla dañada</string>
-    <string name="esta_pantalla_parece_contener_un_error">Esta pantalla parece contener un error</string>
     <string name="configuraci_n_de_cuenta">Configuración de cuenta</string>
     <string name="cerrar_sesi_n">Cerrar sesión</string>
     <string name="eliminar_cuenta">Eliminar cuenta</string>
@@ -129,9 +124,34 @@
     <string name="channel_decr">Aviso de llegada</string>
     <string name="auto_llegado">El vehículo ha llegado</string>
     <string name="vehiculo_espera">El vehículo ha llegado y está a la espera</string>
-    <string name="irApp">Ir a la aplicación</string>
     <string name="viaje_finalizado">Viaje finalizado</string>
-    <string name="le_hemos_enviado_corro_finalizado">Le hemos enviado un coreo con todos los detalles del viaje</string>
     <string name="cancelar_espera">Cancelar espera</string>
-    <string name="aun_no_ubicacion">Aún no se ha encontrado su ubicación</string>
+    <string name="aun_no_ubicacion">La aplicación no ha encontrado su ubicación aún</string>
+    <string name="terminos_condiciones">Términos y condiciones</string>
+    <string name="licencia_texto">Licencia
+La aplicación de Ya En Casa está bajo el uso de la licencia Creative Commons.
+¿Cómo funcionan las Licencias Creative Commons?
+Las licencias Creative Commons se basan en el derecho de autor, con lo cual la obra sigue perteneciendo al dominio privativo, pero con excepciones y limitaciones que son elegidas y explícitas por el autor de la obra. Un autor, que desea otorgar algunos permisos sobre su trabajo, para que terceros puedan copiarlo, o modificarlo sin problemas de copyright, puede licenciar su obra bajo una licencia CC y de esa forma explicitar su voluntad de que la obra circule sin restricciones legales.
+Esta licencia contiene: Reconocimiento-NoComercial-SinDerivadas 4.0 Internacional (CC BY-NC-ND 4.0).
+Eres libre de : Compartir, copiar y redistribuir el material en cualquier medio o formato. El licenciante no puede revocar estas libertades mientras siga los siguientes términos de la licencia:
+Reconocimiento : Debe otorgar el crédito correspondiente , proporcionar un enlace a la licencia e indicar si se realizaron cambios . Puede hacerlo de cualquier manera razonable, pero no de ninguna manera que sugiera que el licenciante lo respalda a usted o su uso.
+No comercial : No puede utilizar el material con fines comerciales.
+No Derivatives : Si remezcla, transforma o construye sobre el material, no puede distribuir el material modificado.
+Sin restricciones adicionales : No puede aplicar términos legales o medidas tecnológicas que restrinjan legalmente a otros de hacer cualquier cosa que permita la licencia.
+</string>
+    <string name="condiciones_texto">..........</string>
+    <string name="politica_privacidad_texto">Política de privacidad
+La aplicación NovaTaxi es un software móvil a través del cual el usuario puede encontrar y solicitar el servicio de taxis para una ruta determinada por el propio cliente. La presente Política de Privacidad establece los términos en que NovaTaxi usa y protege la información proporcionada por los usuarios al momento de usar la aplicación. Esta Política de Privacidad puede cambiar con el tiempo por lo que recomendamos revisar continuamente esta página para asegurarse que está de acuerdo con dichos cambios.
+Información que es recogida:
+La información es brindada por el mismo usuario. Tomamos su ubicación para saber cuál será la ruta a cumplir, también utilizaremos el correo electrónico del cliente, su nombre y número telefónico.
+Información de terceros:
+El contenido es brindado por NovaTaxi, los creadores no nos responsabilizamos de dicho contenido.No nos responsabilizamos por los datos dados por el usuario que no se correspondan con ubicación, correo electrónico, número de teléfono y nombre. Está aplicación no comparte datos con terceros.
+</string>
+    <string name="numero">Número:</string>
+    <string name="ir_al_viaje">Ir al viaje</string>
+    <string name="NombreS">Nombre:</string>
+    <string name="titulo_viaje_aceptado">Su viaje ha sido aceptado</string>
+    <string name="correo_electronicoS">Correo electrónico:</string>
+    <string name="m_s_conductor">Ver conductor</string>
+
 </resources>

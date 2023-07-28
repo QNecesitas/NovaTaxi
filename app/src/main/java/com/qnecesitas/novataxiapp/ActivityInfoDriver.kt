@@ -47,6 +47,7 @@ class ActivityInfoDriver : AppCompatActivity() {
             binding.tvPhoneDriver.text = viewModel.listDriver.value?.get(0)?.phone
             binding.tvCarType.text = viewModel.listDriver.value?.get(0)?.typeCar
             binding.tvCantSeat.text = viewModel.listDriver.value?.get(0)?.cantSeat.toString()
+            binding.rating.rating = viewModel.listDriver.value?.get(0)?.rating?.toFloat() ?: 0f
             showPhoto()
         }
 

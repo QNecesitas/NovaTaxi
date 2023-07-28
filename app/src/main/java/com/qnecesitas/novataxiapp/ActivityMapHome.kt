@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.UiModeManager
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -15,7 +16,6 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -32,7 +32,6 @@ import com.mapbox.api.directions.v5.models.Bearing
 import com.mapbox.api.directions.v5.models.RouteOptions
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
-import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
@@ -62,8 +61,9 @@ import com.qnecesitas.novataxiapp.auxiliary.NetworkTools
 import com.qnecesitas.novataxiapp.auxiliary.RoutesTools
 import com.qnecesitas.novataxiapp.auxiliary.UserAccountShared
 import com.qnecesitas.novataxiapp.databinding.ActivityMapHomeBinding
+import com.qnecesitas.novataxiapp.databinding.LiDriverAcceptBinding
 import com.qnecesitas.novataxiapp.databinding.LiRateDriverBinding
-import com.qnecesitas.novataxiapp.model.Driver
+import com.qnecesitas.novataxiapp.model.Trip
 import com.qnecesitas.novataxiapp.model.Vehicle
 import com.qnecesitas.novataxiapp.viewmodel.LoginViewModel
 import com.qnecesitas.novataxiapp.viewmodel.MapHomeViewModel
@@ -120,13 +120,15 @@ class ActivityMapHome : AppCompatActivity() {
         binding = ActivityMapHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
-
-
         //Map
+        val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
+        val styleUri = if (uiModeManager.nightMode == UiModeManager.MODE_NIGHT_YES) {
+            "mapbox://styles/ronnynp/cljbmkjqs00gt01qrb2y3bgxj"
+        } else {
+            "mapbox://styles/ronnynp/clkdk8gcm008f01qwff3m06dy"
+        }
         binding.mapView.getMapboxMap()
-            //.loadStyleUri("mapbox://styles/ronnynp/cljbmkjqs00gt01qrb2y3bgxj")
-            .loadStyleUri(Style.MAPBOX_STREETS)
+            .loadStyleUri(styleUri)
         val lastPointSelected = UserAccountShared.getLastLocation(this)
         val camera = CameraOptions.Builder()
             .center(Point.fromLngLat(lastPointSelected.longitude(),lastPointSelected.latitude()))
@@ -176,17 +178,7 @@ class ActivityMapHome : AppCompatActivity() {
         })
         adapterType.setClick(object: TypeTaxiAdapter.ITouchAsk{
             override fun onClickAsk(vehicle: Vehicle) {
-                if(viewModel.latitudeGPS.value != null && viewModel.longitudeGPS.value != null) {
-                    showAlertDialogConfirmCar(vehicle)
-                }else{
-                    FancyToast.makeText(
-                        this@ActivityMapHome,
-                        getString(R.string.aun_no_ubicacion),
-                        FancyToast.LENGTH_LONG,
-                        FancyToast.INFO,
-                        false
-                    ).show()
-                }
+                showAlertDialogConfirmCar(vehicle)
             }
         })
         binding.rvTaxis.adapter = adapterType
@@ -280,9 +272,7 @@ class ActivityMapHome : AppCompatActivity() {
 
         viewModel.tripState.observe(this){
             if(it.state == "Aceptado"){
-                RoutesTools.navigationTrip = it
-                val intent = Intent(this, ActivityNavigation::class.java)
-                startActivity(intent)
+                liDriverAccept(it)
             }
         }
 
@@ -317,9 +307,53 @@ class ActivityMapHome : AppCompatActivity() {
             }
         }
 
-        binding.extBtnUbicUser.setOnClickListener{ getUserOrigin() }
+        binding.extBtnUbicUser.setOnClickListener{
+            val lm = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            if(lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                if(viewModel.latitudeGPS.value != null && viewModel.longitudeGPS.value != null) {
 
-        binding.extBtnUbicDest.setOnClickListener{ viewModel.getAppVersion() }
+                    getUserOrigin()
+
+                }else{
+
+                    FancyToast.makeText(
+                        this@ActivityMapHome,
+                        getString(R.string.aun_no_ubicacion),
+                        FancyToast.LENGTH_LONG,
+                        FancyToast.INFO,
+                        false
+                    ).show()
+
+                }
+
+            }else{
+                showAlertDialogNotLocationSettings()
+            }
+        }
+
+        binding.extBtnUbicDest.setOnClickListener{
+            val lm = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            if(lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                if(viewModel.latitudeGPS.value != null && viewModel.longitudeGPS.value != null) {
+
+                    viewModel.getAppVersion()
+
+                }else{
+
+                    FancyToast.makeText(
+                        this@ActivityMapHome,
+                        getString(R.string.aun_no_ubicacion),
+                        FancyToast.LENGTH_LONG,
+                        FancyToast.INFO,
+                        false
+                    ).show()
+
+                }
+
+            }else{
+                showAlertDialogNotLocationSettings()
+            }
+        }
 
         binding.settingsButton.setOnClickListener {
             val intent = Intent(this, ActivityUserSettings::class.java)
@@ -368,7 +402,7 @@ class ActivityMapHome : AppCompatActivity() {
 
     private fun showAlertDialogNotVersion(url: String) {
         //init alert dialog
-        val builder = android.app.AlertDialog.Builder(this)
+        val builder = AlertDialog.Builder(this)
         builder.setCancelable(true)
         builder.setTitle(R.string.Version_desactualizada)
         builder.setMessage(getString(R.string.version_incorrecta, url))
@@ -396,6 +430,7 @@ class ActivityMapHome : AppCompatActivity() {
 
     //Location
     private fun getLocationRealtime() {
+
         val locationManager =
             this@ActivityMapHome.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val locationListener: LocationListener = object : LocationListener {
@@ -562,6 +597,34 @@ class ActivityMapHome : AppCompatActivity() {
         builder.create().show()
     }
 
+    private fun liDriverAccept(trip: Trip){
+        val inflater = LayoutInflater.from(binding.root.context)
+        val liBinding = LiDriverAcceptBinding.inflate(inflater)
+        val builder = androidx.appcompat.app.AlertDialog.Builder(binding.root.context)
+        builder.setView(liBinding.root)
+        val alertDialog = builder.create()
+
+
+        liBinding.image.setImageResource(getDriverIcon(trip.typeCar))
+        liBinding.tvMoreDetails.setOnClickListener {
+            val intent = Intent(this, ActivityInfoDriver::class.java)
+            intent.putExtra("emailSelected",trip.fk_driver)
+            startActivity(intent)
+        }
+        liBinding.tvBuy.setOnClickListener {
+            RoutesTools.navigationTrip = trip
+            val intent = Intent(this, ActivityNavigation::class.java)
+            startActivity(intent)
+        }
+
+
+        //Finish
+        builder.setCancelable(true)
+        alertDialog.window!!.setGravity(Gravity.CENTER)
+        alertDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        alertDialog.show()
+    }
+
 
 
     //Methods Maps
@@ -661,15 +724,15 @@ class ActivityMapHome : AppCompatActivity() {
                 if (it.longitude != 0.0 && it.latitude != 0.0) {
                     addAnnotationDrivers(
                         Point.fromLngLat(it.longitude, it.latitude),
-                        getDriverIcon(it)
+                        getDriverIcon(it.typeCar)
                     )
                 }
             }
         }
     }
 
-    private fun getDriverIcon(driver: Driver): Int{
-        return when(driver.typeCar){
+    private fun getDriverIcon(typeCar: String): Int{
+        return when(typeCar){
             "Auto básico" -> R.drawable.dirver_icon_simple
             "Auto de confort" -> R.drawable.dirver_icon_confort
             "Auto familiar" -> R.drawable.dirver_icon_familiar

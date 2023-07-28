@@ -6,6 +6,7 @@ data class Prices(
     val priceComfortCar:Int,
     val priceFamiliarCar:Int,
     val priceTricycle:Int,
+    val priceBiciTaxi:Int,
     val priceMotorcycle:Int,
     val priceDelay: Int,
     val delayTime: Int,

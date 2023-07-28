@@ -2,6 +2,7 @@ package com.qnecesitas.novataxiapp
 
 import android.Manifest
 import android.app.Activity
+import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -63,9 +64,14 @@ class ActivityPutMap : AppCompatActivity() {
         //Add Map Event
         val annotationApi = binding.mapView.annotations
         pointAnnotationManager = annotationApi.createPointAnnotationManager()
+        val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
+        val styleUri = if (uiModeManager.nightMode == UiModeManager.MODE_NIGHT_YES) {
+            "mapbox://styles/ronnynp/cljbmkjqs00gt01qrb2y3bgxj"
+        } else {
+            "mapbox://styles/ronnynp/clkdk8gcm008f01qwff3m06dy"
+        }
         binding.mapView.getMapboxMap()
-            //.loadStyleUri("mapbox://styles/ronnynp/cljbmkjqs00gt01qrb2y3bgxj")
-            .loadStyleUri(Style.MAPBOX_STREETS)
+            .loadStyleUri(styleUri)
         val lastPointSelected = UserAccountShared.getLastLocation(this)
         val camera = CameraOptions.Builder()
             .center(Point.fromLngLat(lastPointSelected.longitude(),lastPointSelected.latitude()))

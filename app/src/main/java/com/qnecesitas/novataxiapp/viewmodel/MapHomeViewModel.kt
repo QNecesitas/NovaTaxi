@@ -197,7 +197,7 @@ class MapHomeViewModel: ViewModel() {
                     longitudeGPS.value!!,
                     it.latitude,
                     it.longitude
-                )
+                ) || it.maxDist == 0
             }.toMutableList()
             _listDrivers.value = alResult
         }
@@ -360,7 +360,7 @@ class MapHomeViewModel: ViewModel() {
         _listVehicles.value?.add(
             Vehicle(
                 "Bicitaxi",
-                (prices.priceMotorcycle * distance).toInt(),
+                (prices.priceBiciTaxi * distance).toInt(),
                 2,
                 "Vehículo con solo 2 capacidades, ideal para viajes cortos y cómodos"
             )

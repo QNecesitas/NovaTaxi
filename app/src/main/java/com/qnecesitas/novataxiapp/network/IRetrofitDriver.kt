@@ -26,7 +26,7 @@ interface IRetrofitDriver {
     fun rateDriver(
         @Field("token") token: String,
         @Field("rate") rate: Int,
-        @Field("driver ") driver: String
+        @Field("driver") driver: String
     ): Call<String>
 
 
