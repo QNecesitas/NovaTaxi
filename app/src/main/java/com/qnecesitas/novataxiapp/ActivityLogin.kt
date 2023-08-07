@@ -39,7 +39,6 @@ class ActivityLogin : AppCompatActivity() {
         setContentView(binding.root)
 
 
-
         //Listeners
         binding.tvForgotPasswClick.setOnClickListener{
             clickRecover()
@@ -58,6 +57,7 @@ class ActivityLogin : AppCompatActivity() {
             val intent = Intent(this, ActivityAboutDev::class.java)
             startActivity(intent)
         }
+
 
         //Observers
         viewModel.existDriver.observe(this) {
