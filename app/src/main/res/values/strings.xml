@@ -2,7 +2,7 @@
     <string name="app_name">NovaTaxi v1.4</string>
     <string name="mapbox_access_token" tools:ignore="Typos">pk.eyJ1Ijoicm9ubnlucCIsImEiOiJjbGl4YTg3bDgwNHpwM2RucTlwdWFkOXN1In0.MlTnx-myS4E3LJUeh5CVbw</string>
     <string name="crear_cuenta">Crear Cuenta</string>
-    <string name="nombre">Nombre de Usuario</string>
+    <string name="nombre">Nombre y apellidos</string>
     <string name="correo_electronico">Correo electrónico</string>
     <string name="numero_de_telefono">Número de teléfono</string>
     <string name="cancelar">Cancelar</string>
@@ -153,5 +153,6 @@ El contenido es brindado por NovaTaxi, los creadores no nos responsabilizamos de
     <string name="titulo_viaje_aceptado">Su viaje ha sido aceptado</string>
     <string name="correo_electronicoS">Correo electrónico:</string>
     <string name="m_s_conductor">Ver conductor</string>
+    <string name="introduzca_su_nombre_con_sus_apellidos">Introduzca su nombre con sus apellidos</string>
 
 </resources>

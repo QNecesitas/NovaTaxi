@@ -1,16 +1,21 @@
 package com.qnecesitas.novataxiapp
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.InputType
+import android.view.MotionEvent
 import android.view.View
 import com.qnecesitas.novataxiapp.databinding.ActivityCreateAccountBinding
 import androidx.activity.viewModels
+import com.google.android.material.textfield.TextInputEditText
 import com.qnecesitas.novataxiapp.auxiliary.NetworkTools
 import com.qnecesitas.novataxiapp.viewmodel.CreateAccountViewModel
 import com.qnecesitas.novataxiapp.viewmodel.CreateAccountViewModelFactory
 
-@Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
+@Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA" , "ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
 class ActivityCreateAccount : AppCompatActivity() {
 
     //Binding
@@ -21,6 +26,7 @@ class ActivityCreateAccount : AppCompatActivity() {
         CreateAccountViewModelFactory()
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables" , "ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivityCreateAccountBinding.inflate(layoutInflater)
@@ -42,9 +48,7 @@ class ActivityCreateAccount : AppCompatActivity() {
             showAlertCancel()
         }
 
-
-
-            //Observes
+        //Observes
         viewModel.state.observe(this){
             when(it){
                 CreateAccountViewModel.StateConstants.LOADING -> binding.loadingAccount.visibility = View.VISIBLE
@@ -81,11 +85,14 @@ class ActivityCreateAccount : AppCompatActivity() {
       //Date Correct
     private fun isEntryValid(): Boolean {
         var result = true
+        val inputText =binding.TIETName.text.toString()
+        val wordCount = inputText.trim().split("\\s+".toRegex()).size
 
-        if (binding.TIETName.text.toString().trim().isNotEmpty()) {
+
+        if (binding.TIETName.text.toString().trim().isNotEmpty() && wordCount >=3) {
             binding.TIETName.error = null
         } else {
-            binding.TIETName.error = getString(R.string.Este_campo_no_debe)
+            binding.TIETName.error = (getString(R.string.introduzca_su_nombre_con_sus_apellidos))
             result = false
         }
 

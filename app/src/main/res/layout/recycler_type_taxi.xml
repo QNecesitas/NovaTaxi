@@ -29,8 +29,8 @@
             <!--IV Picture Car-->
             <ImageView
                 android:id="@+id/image"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:background="?attr/colorSecondary"
                 android:src="@drawable/vector_familiar"
                 android:importantForAccessibility="no" />
@@ -40,7 +40,7 @@
         <!--Cl Container InfoDriver-->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clContainer"
-            android:padding="12dp"
+            android:padding="4dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -81,31 +81,7 @@
 
                 </LinearLayout>
 
-                <!--Seats-->
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
 
-                    <!--Tv SeatsS-->
-                    <TextView
-                        android:id="@+id/tvCantSeatS"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:textStyle="bold"
-                        android:text="@string/cantSeatS"/>
-
-                    <!--Tv Price-->
-                    <TextView
-                        android:id="@+id/tvCantSeat"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="@string/cargando" />
-
-
-                </LinearLayout>
 
                 <!--Price-->
                 <LinearLayout

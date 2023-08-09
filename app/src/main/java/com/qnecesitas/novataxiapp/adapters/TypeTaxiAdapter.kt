@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.qnecesitas.novataxiapp.R
 import com.qnecesitas.novataxiapp.databinding.RecyclerTypeTaxiBinding
 import com.qnecesitas.novataxiapp.model.Vehicle
-import kotlinx.coroutines.DelicateCoroutinesApi
 
 class TypeTaxiAdapter(
     private val context: Context
@@ -22,7 +21,7 @@ class TypeTaxiAdapter(
 
     class VehicleViewHolder(private var binding: RecyclerTypeTaxiBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        @OptIn(DelicateCoroutinesApi::class)
+
         @SuppressLint("SimpleDateFormat")
         fun bind(
             context: Context,
@@ -33,7 +32,6 @@ class TypeTaxiAdapter(
 
             //Declare
             val price = "${vehicle.price} CUP"
-            val cantSeat = vehicle.seats.toString()
 
             when(vehicle.type){
                 "Auto básico" -> binding.image.setImageDrawable(
@@ -57,7 +55,6 @@ class TypeTaxiAdapter(
             }
 
             binding.tvTypeCar.text = vehicle.type
-            binding.tvCantSeat.text = cantSeat
             binding.tvCantPrice.text = price
 
             binding.tvMoreDetails.setOnClickListener{ clickDetails?.onClickDetails(vehicle) }

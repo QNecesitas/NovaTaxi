@@ -97,7 +97,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="12dp"
-                        android:layout_marginBottom="4dp">
+                        android:layout_marginBottom="4dp"
+                        app:passwordToggleEnabled="true">
 
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -121,7 +122,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="12dp"
-                        android:layout_marginBottom="4dp">
+                        android:layout_marginBottom="4dp"
+                        app:passwordToggleEnabled="true">
 
 
                         <com.google.android.material.textfield.TextInputEditText

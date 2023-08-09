@@ -95,7 +95,8 @@
                 android:layout_marginTop="12dp"
                 app:errorIconTint="?attr/colorSecondary"
                 app:errorTextColor="?attr/colorSecondary"
-                app:hintTextColor="?attr/colorSecondary">
+                app:hintTextColor="?attr/colorSecondary"
+                app:passwordToggleEnabled="true">
 
                 <!--Tiet Password-->
                 <com.google.android.material.textfield.TextInputEditText
