@@ -271,7 +271,7 @@ class MapHomeViewModel: ViewModel() {
         viewModelScope.launch {
             while (true){
                 getDriversAll()
-                delay(TimeUnit.SECONDS.toMillis(30))
+                delay(TimeUnit.SECONDS.toMillis(15))
                 getTripState(context)
             }
         }
@@ -464,6 +464,8 @@ class MapHomeViewModel: ViewModel() {
                 if (response.isSuccessful) {
                     if(response.body() == "Success") {
                         _stateCancelTrip.value = StateConstants.SUCCESS
+                    }else if(response.body() =="Accepted"){
+                        //Not do nothing
                     }else{
                         _stateCancelTrip.value = StateConstants.ERROR
                     }
