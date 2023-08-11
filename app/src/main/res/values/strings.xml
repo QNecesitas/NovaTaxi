@@ -153,5 +153,6 @@ El contenido es brindado por NovaTaxi, los creadores no nos responsabilizamos de
     <string name="titulo_viaje_aceptado">Su viaje ha sido aceptado</string>
     <string name="correo_electronicoS">Correo electrónico:</string>
     <string name="m_s_conductor">Ver conductor</string>
+    <string name="su_viaje_ha_comenzado">¡Enhorabuena! Su viaje a comenzado</string>
 
 </resources>
