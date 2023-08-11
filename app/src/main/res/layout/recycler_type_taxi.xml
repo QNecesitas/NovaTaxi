@@ -1,156 +1,165 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_margin="4dp"
-    app:cardCornerRadius="@dimen/card_my_elevation"
-    android:elevation="@dimen/card_my_elevation"
-    android:translationZ="@dimen/card_my_elevation">
+    android:layout_height="match_parent"
+    android:gravity="bottom">
 
-    <!--Cl Container-->
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.cardview.widget.CardView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        app:cardCornerRadius="@dimen/card_my_elevation"
+        android:elevation="@dimen/card_my_elevation"
+        android:translationZ="@dimen/card_my_elevation">
 
-        <!--cv_image-->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cv_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:translationZ="4dp"
-            app:cardCornerRadius="4dp"
-            app:cardElevation="@dimen/card_my_elevation"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <!--IV Picture Car-->
-            <ImageView
-                android:id="@+id/image"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="?attr/colorSecondary"
-                android:src="@drawable/vector_familiar"
-                android:importantForAccessibility="no" />
-
-        </androidx.cardview.widget.CardView>
-
-        <!--Cl Container InfoDriver-->
+        <!--Cl Container-->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/clContainer"
-            android:padding="4dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/cv_image"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="wrap_content">
 
-            <!--Information-->
-            <LinearLayout
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/tvMoreDetails"
-                android:layout_width="match_parent"
+            <!--cv_image-->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cv_image"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_margin="8dp"
+                android:translationZ="4dp"
+                app:cardCornerRadius="4dp"
+                app:cardElevation="@dimen/card_my_elevation"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-                <!--Type car-->
+                <!--IV Picture Car-->
+                <ImageView
+                    android:id="@+id/image"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/colorSecondary"
+                    android:src="@drawable/vector_familiar"
+                    android:importantForAccessibility="no" />
+
+            </androidx.cardview.widget.CardView>
+
+            <!--Cl Container InfoDriver-->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clContainer"
+                android:padding="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/cv_image"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <!--Information-->
                 <LinearLayout
-                    android:id="@+id/ll_typeCar"
-                    android:layout_width="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/tvMoreDetails"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
-                    <!--Tv PriceS-->
-                    <TextView
+                    <!--Type car-->
+                    <LinearLayout
+                        android:id="@+id/ll_typeCar"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:text="@string/VehiculoS"
-                        android:textStyle="bold" />
+                        android:orientation="horizontal">
 
-                    <!--Tv Price-->
-                    <TextView
-                        android:id="@+id/tvTypeCar"
+                        <!--Tv PriceS-->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:text="@string/VehiculoS"
+                            android:textStyle="bold" />
+
+                        <!--Tv Price-->
+                        <TextView
+                            android:id="@+id/tvTypeCar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="@string/cargando" />
+
+                    </LinearLayout>
+
+
+
+                    <!--Price-->
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="@string/cargando" />
+                        android:orientation="horizontal">
+
+                        <!--Tv PriceS-->
+                        <TextView
+                            android:id="@+id/tvCantPriceS"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:textStyle="bold"
+                            android:text="@string/precioKmS"/>
+
+                        <!--Tv Price-->
+                        <TextView
+                            android:id="@+id/tvCantPrice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="@string/cargando" />
+
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
 
 
-                <!--Price-->
-                <LinearLayout
+
+
+                <!--Tv Details-->
+                <TextView
+                    android:id="@+id/tvMoreDetails"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_marginEnd="4dp"
+                    android:text="@string/m_s_detalles"
+                    android:textColor="?attr/colorSecondary"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/vSeparator" />
 
-                    <!--Tv PriceS-->
-                    <TextView
-                        android:id="@+id/tvCantPriceS"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:textStyle="bold"
-                        android:text="@string/precioKmS"/>
+                <View
+                    android:id="@+id/vSeparator"
+                    android:layout_width="2dp"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="4dp"
+                    android:background="?attr/colorSecondary"
+                    app:layout_constraintBottom_toBottomOf="@id/tvBuy"
+                    app:layout_constraintEnd_toStartOf="@id/tvBuy"
+                    app:layout_constraintTop_toTopOf="@id/tvBuy" />
 
-                    <!--Tv Price-->
-                    <TextView
-                        android:id="@+id/tvCantPrice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text="@string/cargando" />
-
-
-                </LinearLayout>
-
-            </LinearLayout>
-
+                <!--Tv Buy-->
+                <TextView
+                    android:id="@+id/tvBuy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/pedir_taxi"
+                    android:textColor="?attr/colorSecondary"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
 
 
-
-
-            <!--Tv Details-->
-            <TextView
-                android:id="@+id/tvMoreDetails"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:text="@string/m_s_detalles"
-                android:textColor="?attr/colorSecondary"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/vSeparator" />
-
-            <View
-                android:id="@+id/vSeparator"
-                android:layout_width="2dp"
-                android:layout_height="0dp"
-                android:layout_marginEnd="4dp"
-                android:background="?attr/colorSecondary"
-                app:layout_constraintBottom_toBottomOf="@id/tvBuy"
-                app:layout_constraintEnd_toStartOf="@id/tvBuy"
-                app:layout_constraintTop_toTopOf="@id/tvBuy" />
-
-            <!--Tv Buy-->
-            <TextView
-                android:id="@+id/tvBuy"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="@string/pedir_taxi"
-                android:textColor="?attr/colorSecondary"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
+    </androidx.cardview.widget.CardView>
 
-</androidx.cardview.widget.CardView>
+</androidx.appcompat.widget.LinearLayoutCompat>
+
