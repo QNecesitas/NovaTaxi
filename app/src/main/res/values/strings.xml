@@ -33,8 +33,8 @@
     <string name="telefono">Teléfono</string>
     <string name="precioKmS">Precio:</string>
     <string name="precioKm">Precio</string>
-    <string name="tipoCarS">Tipo de carro:</string>
-    <string name="tipoCar">Tipo de carro</string>
+    <string name="tipoCarS">Tipo de vehículo:</string>
+    <string name="tipoCar">Tipo de vehículo</string>
     <string name="Correo_enviado">Correo enviado</string>
     <string name="se_ha_enviado_contrasena">Se le ha enviado un correo con su contraseña a la dirección que proporcionó</string>
     <string name="Enviar_contrasena">Enviar contraseña</string>
@@ -154,5 +154,16 @@ El contenido es brindado por NovaTaxi, los creadores no nos responsabilizamos de
     <string name="correo_electronicoS">Correo electrónico:</string>
     <string name="m_s_conductor">Ver conductor</string>
     <string name="introduzca_su_nombre_con_sus_apellidos">Introduzca su nombre con sus apellidos</string>
+    <string name="su_viaje_ha_comenzado">Su viaje ha comenzado</string>
+    <string name="Nombre_apellidos">Nombre y apellidos:</string>
+    <string name="Conductor">Conductor:</string>
+    <string name="Cliente">Cliente:</string>
+    <string name="Distancia">Distancia:</string>
+    <string name="Fecha">Fecha:</string>
+    <string name="tiempo_de_espera">Tiempo de espera:</string>
+    <string name="Precio_por_espera">Precio por espera:</string>
+    <string name="Precio_del_viaje">Precio del viaje:</string>
+    <string name="precioTotal">Precio total:</string>
+    <string name="chapaS">Chapa:</string>
 
 </resources>

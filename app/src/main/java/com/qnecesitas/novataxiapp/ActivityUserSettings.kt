@@ -194,9 +194,9 @@ class ActivityUserSettings : AppCompatActivity() {
             .setMessage(getString(R.string.est_s_seguro_de_cerrar_su_sesi_n))
             .setPositiveButton(R.string.aceptar) { dialog, _ ->
                 dialog.dismiss()
+                UserAccountShared.setUserEmail(null, this)
                 val intent = Intent(this, ActivityLogin::class.java)
                 startActivity(intent)
-                UserAccountShared.setUserEmail(null, this)
             }
             .setNegativeButton(R.string.cancelar) { dialog, _ ->
                 dialog.dismiss()
@@ -213,10 +213,10 @@ class ActivityUserSettings : AppCompatActivity() {
             .setMessage(getString(R.string.est_s_seguro_de_eliminar_la_cuenta_))
             .setPositiveButton(R.string.aceptar) { dialog, _ ->
                 dialog.dismiss()
+                UserAccountShared.setUserEmail(null, this)
                 viewModel.listUser.value?.get(0)?.let { viewModel.deleteUsers(it.email) }
                 val intent = Intent(this, ActivityLogin::class.java)
                 startActivity(intent)
-                UserAccountShared.setUserEmail(null, this)
             }
             .setNegativeButton(R.string.cancelar) { dialog, _ ->
                 dialog.dismiss()

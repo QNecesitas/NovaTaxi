@@ -464,7 +464,7 @@ class MapHomeViewModel: ViewModel() {
                 if (response.isSuccessful) {
                     if(response.body() == "Success") {
                         _stateCancelTrip.value = StateConstants.SUCCESS
-                    }else if(response.body() =="Accepted"){
+                    }else if(response.body() =="Aceptado"){
                         //Not do nothing
                     }else{
                         _stateCancelTrip.value = StateConstants.ERROR
@@ -511,8 +511,6 @@ class MapHomeViewModel: ViewModel() {
             }
         })
     }
-
-
 
 
     //Await for accepted

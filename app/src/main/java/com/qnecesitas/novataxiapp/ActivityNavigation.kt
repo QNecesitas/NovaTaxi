@@ -12,12 +12,17 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.media.AudioAttributes
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
@@ -54,6 +59,8 @@ import com.qnecesitas.novataxiapp.auxiliary.NetworkTools
 import com.qnecesitas.novataxiapp.auxiliary.RoutesTools
 import com.qnecesitas.novataxiapp.auxiliary.UserAccountShared
 import com.qnecesitas.novataxiapp.databinding.ActivityNavigationBinding
+import com.qnecesitas.novataxiapp.databinding.LiDriverAcceptBinding
+import com.qnecesitas.novataxiapp.databinding.LiFinishedTripBinding
 import com.qnecesitas.novataxiapp.model.Driver
 import com.qnecesitas.novataxiapp.model.Trip
 import com.qnecesitas.novataxiapp.viewmodel.NavigationViewModel
@@ -91,6 +98,8 @@ class ActivityNavigation : AppCompatActivity() {
     private val CHANNEL_NAME = "NovaTaxi"
     lateinit var notificationManager : NotificationManager
 
+    //Resolving problem with repetition in a showAlertDialog
+    private var isShowedTripStartedDialog = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -159,10 +168,13 @@ class ActivityNavigation : AppCompatActivity() {
                 }
                 "En viaje"->{
                     showAwaitOptions(false)
-                    showAlertDialogStartedTrip()
+                    if(!isShowedTripStartedDialog) {
+                        isShowedTripStartedDialog = true
+                        showAlertDialogStartedTrip()
+                    }
                 }
                 "Finalizado"->{
-                    showAlertDialogFinish()
+                    viewModel.actualTrip.value?.let { it1 -> liFinishedTrip(it1) }
                 }
             }
         }
@@ -184,7 +196,7 @@ class ActivityNavigation : AppCompatActivity() {
         UserAccountShared.setIsRatingInAwait(this,true)
         RoutesTools.navigationTrip?.let { UserAccountShared.setLastDriver(this, it.fk_driver) }
         addRoutePoints()//Start-end points
-        RoutesTools.navigationTrip?.let {
+        RoutesTools.navigationTrip?.let  {
             viewCameraInPoint(
                 Point.fromLngLat(it.longOri,it.latOri)
             )
@@ -228,7 +240,7 @@ class ActivityNavigation : AppCompatActivity() {
                     UserAccountShared.getUserEmail(this@ActivityNavigation)
                         ?.let { viewModel.fetchStateInTrip(it) }
                 }
-                delay(TimeUnit.SECONDS.toMillis(30))
+                delay(TimeUnit.SECONDS.toMillis(15))
             }
         }
     }
@@ -577,12 +589,20 @@ class ActivityNavigation : AppCompatActivity() {
     }
 
     private fun displayNotification(): Notification {
+        //Sound of car in the notification
+        val soundUri = Uri.parse("android.resource://"+packageName+"/"+R.raw.notification)
+        val audioAttributes = AudioAttributes.Builder()
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+            .build()
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel =
                 NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH)
             channel.description = getString(R.string.channel_decr)
             channel.enableLights(true)
             channel.lightColor = Color.RED
+            channel.setSound(soundUri, audioAttributes)
             notificationManager.createNotificationChannel(channel)
         }
 
@@ -592,6 +612,7 @@ class ActivityNavigation : AppCompatActivity() {
                 .setContentText(getString(R.string.vehiculo_espera))
                 .setSmallIcon(R.drawable.baseline_drive_eta_24)
                 .setAutoCancel(false)
+                .setSound(soundUri)
 
         return builder.build()
 
@@ -602,27 +623,43 @@ class ActivityNavigation : AppCompatActivity() {
 
 
     //Finishing
-    private fun showAlertDialogFinish() {
-        if(viewModel.actualTrip.value != null) {
-            val totalPrice =
-                viewModel.actualTrip.value!!.travelPrice + viewModel.actualTrip.value!!.priceAwait
-            val message =
-                "El precio total del viaje fue de $totalPrice CUP, le hemos enviado un correo con los detalles del viaje"
-            //init alert dialog
-            val builder = AlertDialog.Builder(this)
-            builder.setCancelable(false)
-            builder.setTitle(R.string.viaje_finalizado)
-            builder.setMessage(message)
-            //set listeners for dialog buttons
-            builder.setPositiveButton(R.string.Aceptar) { _: DialogInterface?, _: Int ->
-                //finish the activity
-                val intent = Intent(this, ActivityMapHome::class.java)
-                startActivity(intent   )
-            }
-            //create the alert dialog and show it
-            builder.create().show()
+    private fun liFinishedTrip(trip: Trip){
+        val inflater = LayoutInflater.from(binding.root.context)
+        val liBinding = LiFinishedTripBinding.inflate(inflater)
+        val builder = androidx.appcompat.app.AlertDialog.Builder(binding.root.context)
+        builder.setView(liBinding.root)
+        val alertDialog = builder.create()
+
+
+        liBinding.driverName.text = trip.driverName
+        liBinding.clientName.text = trip.clientName
+        val distance = String.format("%.2f",trip.distance) + " km"
+        liBinding.distance.text = distance
+        liBinding.date.text = trip.date
+        val awaitTime = trip.timeAwait.toString() + " min"
+        liBinding.awaitTime.text = awaitTime
+        val awaitPrice = String.format("%.2f ",trip.priceAwait) + " CUP"
+        liBinding.awaitPrice.text = awaitPrice
+        val tripPrice = String.format("%.2f",trip.travelPrice) + " CUP"
+        liBinding.tripPrice.text = tripPrice
+        liBinding.typeCar.text = trip.typeCar
+        val totalPrice = "${trip.travelPrice + trip.priceAwait} CUP"
+        liBinding.totalPrice.text = totalPrice
+        liBinding.numberPlate.text = trip.numberPlate
+        liBinding.aceptar.setOnClickListener{
+            val intent = Intent(this, ActivityMapHome::class.java)
+            startActivity(intent)
         }
+
+
+        //Finish
+        builder.setCancelable(false)
+        alertDialog.window!!.setGravity(Gravity.CENTER)
+        alertDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        alertDialog.show()
     }
+
+
 
 
 
