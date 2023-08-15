@@ -613,6 +613,7 @@ class ActivityMapHome : AppCompatActivity() {
         }
         liBinding.tvBuy.setOnClickListener {
             RoutesTools.navigationTrip = trip
+            showAlertLLAwaitSelect(TimeUnit.MINUTES.toMillis(0))
             val intent = Intent(this, ActivityNavigation::class.java)
             startActivity(intent)
         }

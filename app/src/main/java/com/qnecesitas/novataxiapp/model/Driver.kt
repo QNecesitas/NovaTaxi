@@ -13,5 +13,6 @@ data class Driver(
     val statePhoto: Int,
     val balance: Double,
     val cantSeat:Int ,
-    val rating: Int
+    val rating: Int,
+    val numberPlate: String
 )

@@ -228,7 +228,6 @@
             android:id="@+id/cvCantSeat"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
-            android:layout_marginBottom="20dp"
             android:layout_marginStart="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -268,6 +267,50 @@
 
         </androidx.cardview.widget.CardView>
 
+        <!--CV NumberPlate-->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cvNumberPlate"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginStart="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!--LL Container-->
+            <LinearLayout
+                android:background="?attr/colorSurface"
+                android:translationZ="12dp"
+                android:orientation="horizontal"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!--TV CantSeat-->
+                <TextView
+                    android:textColor="?attr/colorOnPrimaryContainer"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/text_m"
+                    android:text="@string/chapaS"/>
+
+                <!--TV Cant Seats-->
+                <TextView
+                    android:textColor="?attr/colorOnPrimaryContainer"
+                    android:id="@+id/tvNumberPlate"
+                    android:layout_marginStart="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cantSeat"
+                    android:textSize="@dimen/text_m"/>
+
+            </LinearLayout>
+
+
+
+
+        </androidx.cardview.widget.CardView>
 
 
 

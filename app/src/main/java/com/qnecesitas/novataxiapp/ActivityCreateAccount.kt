@@ -1,21 +1,16 @@
 package com.qnecesitas.novataxiapp
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.graphics.drawable.Drawable
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.InputType
-import android.view.MotionEvent
 import android.view.View
-import com.qnecesitas.novataxiapp.databinding.ActivityCreateAccountBinding
 import androidx.activity.viewModels
-import com.google.android.material.textfield.TextInputEditText
+import androidx.appcompat.app.AppCompatActivity
 import com.qnecesitas.novataxiapp.auxiliary.NetworkTools
+import com.qnecesitas.novataxiapp.databinding.ActivityCreateAccountBinding
 import com.qnecesitas.novataxiapp.viewmodel.CreateAccountViewModel
 import com.qnecesitas.novataxiapp.viewmodel.CreateAccountViewModelFactory
 
-@Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA" , "ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+@Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
 class ActivityCreateAccount : AppCompatActivity() {
 
     //Binding
@@ -26,7 +21,7 @@ class ActivityCreateAccount : AppCompatActivity() {
         CreateAccountViewModelFactory()
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables" , "ClickableViewAccessibility")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivityCreateAccountBinding.inflate(layoutInflater)
