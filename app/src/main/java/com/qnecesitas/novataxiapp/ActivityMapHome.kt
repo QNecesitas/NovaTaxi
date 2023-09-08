@@ -235,7 +235,7 @@ class ActivityMapHome : AppCompatActivity() {
                     binding.progress.visibility = View.GONE
                     UserAccountShared.setLastPetition(this, 0)
                     binding.extBtnCancelSearch.visibility = View.GONE
-                    addAnnotationAnimation(false)
+                     (false)
                     binding.extBtnUbicUser.visibility = View.VISIBLE
                     binding.extBtnUbicDest.visibility = View.VISIBLE
                     binding.clAvailableTaxis.visibility = View.VISIBLE
@@ -880,7 +880,6 @@ class ActivityMapHome : AppCompatActivity() {
             binding.extBtnUbicUser.visibility = View.VISIBLE
             binding.extBtnUbicDest.visibility = View.VISIBLE
             binding.clAvailableTaxis.visibility = View.VISIBLE
-
         }
     }
 
