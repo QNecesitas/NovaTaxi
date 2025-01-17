@@ -19,3 +19,8 @@ The application does not contain any sensitive information related to the client
 - **Ride Offers**: Accept or decline ride requests from customers based on their location and destination.
 - **Navigation**: Follow the best route to the customer's pickup location and then to the destination.
 - **Availability**: Set your availability and get notified when customers in your area request a ride.
+
+## ScreenShots
+<img src="https://github.com/QNecesitas/NovaTaxi/blob/main/ScreenShots/novataxi_2.png">
+<img src="https://github.com/QNecesitas/NovaTaxi/blob/main/ScreenShots/novataxi_3.png">
+<img src="https://github.com/QNecesitas/NovaTaxi/blob/main/ScreenShots/novataxi_1.png">
